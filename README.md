@@ -1,2 +1,2 @@
 # spar-etl
-ETL- Etract , Load and Transform
+ETL- Extract , Load and Transform
