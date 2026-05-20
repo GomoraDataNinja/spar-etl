@@ -26,12 +26,12 @@ DEPLOYMENT_MODE = "production"
 # ============================================
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "your_email@gmail.com"
-SENDER_PASSWORD = "your_app_password"
+SENDER_EMAIL = "your_email@gmail.com"  # Update this
+SENDER_PASSWORD = "your_app_password"  # Update this
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
-# WEBHOOK URL
+# WEBHOOK URL (Update with your tunnel)
 # ============================================
 WEBHOOK_URL = "https://assessed-triumph-accessed-nam.trycloudflare.com/webhook"
 
@@ -54,10 +54,10 @@ GOOGLE_BORDER = "#E0E0E0"
 GOOGLE_LIGHT_GREY = "#F5F5F5"
 GOOGLE_DARK_GREY = "#666666"
 
-# Custom CSS - Everything centered, SPAR red on borders only
+# Custom CSS - Compressed spacing
 st.markdown(f"""
     <style>
-    /* Main app background - clean white */
+    /* Main app background */
     .stApp {{
         background: {GOOGLE_WHITE};
     }}
@@ -72,13 +72,13 @@ st.markdown(f"""
         background: {GOOGLE_WHITE};
     }}
     
-    /* The main card - everything inside this one box */
+    /* The main card - compressed */
     .main-card {{
         background: {GOOGLE_WHITE};
         border-radius: 12px;
-        padding: 2rem;
+        padding: 1.5rem 2rem 1.5rem 2rem;
         width: 100%;
-        max-width: 440px;
+        max-width: 400px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         border-left: 4px solid {SPAR_RED};
         border-right: 4px solid {SPAR_RED};
@@ -98,56 +98,57 @@ st.markdown(f"""
         }}
     }}
     
-    /* Title - centered */
+    /* Title - compressed spacing */
     .title {{
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: {SPAR_RED};
         text-align: center;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.1rem;
+        line-height: 1.2;
     }}
     
-    /* Subtitle - centered */
+    /* Subtitle - compressed spacing */
     .subtitle {{
         color: {GOOGLE_DARK_GREY};
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }}
     
-    /* Version chip - centered */
+    /* Version chip - compressed spacing */
     .chip-container {{
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.8rem;
     }}
     
     .chip {{
         background: {GOOGLE_LIGHT_GREY};
-        padding: 0.25rem 0.75rem;
+        padding: 0.2rem 0.6rem;
         border-radius: 20px;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         color: {GOOGLE_DARK_GREY};
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
     }}
     
     .chip-dot {{
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         background-color: {SPAR_GREEN};
         border-radius: 50%;
         display: inline-block;
     }}
     
-    /* Toggle buttons - centered */
+    /* Toggle buttons - compressed */
     .toggle-container {{
         display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
     }}
     
-    /* Form styling */
+    /* Form styling - compressed */
     .stForm {{
         background: transparent;
     }}
@@ -155,8 +156,8 @@ st.markdown(f"""
     .stTextInput > div > div > input {{
         border-radius: 8px;
         border: 1px solid {GOOGLE_BORDER};
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
         background: {GOOGLE_WHITE};
     }}
     
@@ -165,25 +166,25 @@ st.markdown(f"""
         box-shadow: 0 0 0 2px rgba(227, 0, 15, 0.1);
     }}
     
-    /* Button styling */
+    /* Button styling - compressed */
     .stButton > button {{
         background-color: {SPAR_RED};
         color: white;
         border: none;
-        padding: 0.7rem;
+        padding: 0.5rem;
         font-weight: 600;
         border-radius: 8px;
         width: 100%;
         transition: all 0.2s ease;
+        font-size: 0.85rem;
     }}
     
     .stButton > button:hover {{
         background-color: {SPAR_DARK_RED};
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(227, 0, 15, 0.3);
     }}
     
-    /* Secondary button style */
+    /* Secondary button */
     div[data-testid="column"]:has(button[kind="secondary"]) button {{
         background-color: transparent;
         color: {SPAR_RED};
@@ -193,13 +194,12 @@ st.markdown(f"""
     div[data-testid="column"]:has(button[kind="secondary"]) button:hover {{
         background-color: {GOOGLE_LIGHT_GREY};
         transform: none;
-        box-shadow: none;
     }}
     
-    /* Divider */
+    /* Divider - compressed */
     .divider {{
         text-align: center;
-        margin: 1.2rem 0;
+        margin: 0.8rem 0;
         position: relative;
     }}
     
@@ -215,103 +215,101 @@ st.markdown(f"""
     
     .divider span {{
         background: {GOOGLE_WHITE};
-        padding: 0 1rem;
+        padding: 0 0.8rem;
         position: relative;
         color: {GOOGLE_DARK_GREY};
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }}
     
-    /* Alert messages */
+    /* Alert messages - compressed */
     .stAlert {{
         border-radius: 8px;
-        font-size: 0.8rem;
-        padding: 0.5rem;
+        font-size: 0.75rem;
+        padding: 0.4rem;
+        margin: 0.5rem 0;
     }}
     
     /* Footer text */
     .footer-text {{
         text-align: center;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         color: {GOOGLE_DARK_GREY};
-        margin-top: 1.5rem;
+        margin-top: 0.8rem;
     }}
     
     /* Main app styles after login */
     .app-header {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
-        padding: 1.5rem 2rem;
+        padding: 1rem 1.5rem;
         border-radius: 12px;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         color: white;
     }}
     
     .app-header h1 {{
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }}
     
     .app-header p {{
-        margin: 0.3rem 0 0 0;
+        margin: 0.2rem 0 0 0;
         opacity: 0.9;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
     }}
     
     .content-card {{
         background: white;
-        padding: 1.5rem;
+        padding: 1rem;
         border-radius: 12px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         border: 1px solid {GOOGLE_BORDER};
         border-left: 3px solid {SPAR_RED};
     }}
     
     .user-info {{
         background: white;
-        padding: 0.4rem 1rem;
+        padding: 0.3rem 0.8rem;
         border-radius: 30px;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        font-size: 0.85rem;
+        font-size: 0.75rem;
     }}
     
     .stTabs [data-baseweb="tab-list"] {{
-        gap: 0.5rem;
+        gap: 0.3rem;
         background-color: white;
-        padding: 0.5rem;
+        padding: 0.3rem;
         border-radius: 10px;
         border: 1px solid {GOOGLE_BORDER};
+        margin-bottom: 1rem;
     }}
     
     .stTabs [data-baseweb="tab"] {{
         border-radius: 6px;
-        padding: 0.4rem 1rem;
-        font-size: 0.85rem;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
     }}
     
     .stTabs [aria-selected="true"] {{
         background-color: {SPAR_RED};
         color: white;
     }}
+    
+    /* Reduce form field spacing */
+    .row-widget.stSelectbox, .row-widget.stNumberInput {{
+        margin-bottom: 0.3rem;
+    }}
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------
-# USER DATABASE
+# USER DATABASE - No hardcoded admin initially
 # -----------------------------
 if 'users' not in st.session_state:
-    st.session_state.users = {
-        'admin@tengai.com': {
-            'name': 'Administrator',
-            'email': 'admin@tengai.com',
-            'username': 'admin',
-            'password': hashlib.sha256('Admin@123'.encode()).hexdigest(),
-            'role': 'admin',
-            'created_at': datetime.now().isoformat()
-        }
-    }
+    st.session_state.users = {}  # Empty initially - first user becomes admin
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'current_user' not in st.session_state:
@@ -322,6 +320,8 @@ if 'sales_history' not in st.session_state:
     st.session_state.sales_history = []
 if 'offline_queue' not in st.session_state:
     st.session_state.offline_queue = []
+if 'first_user_created' not in st.session_state:
+    st.session_state.first_user_created = False
 
 # -----------------------------
 # AUTHENTICATION FUNCTIONS
@@ -334,6 +334,9 @@ def verify_password(password, hashed):
     return hash_password(password) == hashed
 
 def register_user(name, username, email, password):
+    # Check if this is the first user ever
+    is_first_user = len(st.session_state.users) == 0
+    
     if email in st.session_state.users:
         return False, "Email already registered"
     
@@ -347,16 +350,23 @@ def register_user(name, username, email, password):
     if len(password) < 6:
         return False, "Password must be at least 6 characters"
     
+    # First user becomes admin, others are regular users
+    role = "admin" if is_first_user else "user"
+    
     st.session_state.users[email] = {
         'name': name,
         'email': email,
         'username': username,
         'password': hash_password(password),
-        'role': 'user',
+        'role': role,
         'created_at': datetime.now().isoformat()
     }
     
-    return True, "Registration successful! Please login."
+    if is_first_user:
+        st.session_state.first_user_created = True
+        return True, "Admin account created successfully! Please login."
+    else:
+        return True, "Registration successful! Please login."
 
 def login_user(email, password):
     if email in st.session_state.users:
@@ -431,7 +441,7 @@ def check_connection():
         return False
 
 # -----------------------------
-# LOGIN/REGISTER SCREEN - Everything in one small centered box
+# LOGIN/REGISTER SCREEN - Compressed, no hardcoded credentials
 # -----------------------------
 
 def login_register_screen():
@@ -482,8 +492,9 @@ def login_register_screen():
                 else:
                     st.error("Please enter email and password")
         
-        # Demo credentials hint
-        st.markdown('<div class="footer-text">Demo: admin@tengai.com / Admin@123</div>', unsafe_allow_html=True)
+        # Info message for first time users
+        if len(st.session_state.users) == 0:
+            st.markdown('<div class="footer-text">✨ First user will be the Admin</div>', unsafe_allow_html=True)
     
     else:
         # Registration Form
@@ -510,6 +521,10 @@ def login_register_screen():
                         st.rerun()
                     else:
                         st.error(message)
+        
+        # Info about first user becoming admin
+        if len(st.session_state.users) == 0:
+            st.markdown('<div class="footer-text">🔑 First account created will be the Administrator</div>', unsafe_allow_html=True)
     
     st.markdown('</div></div>', unsafe_allow_html=True)
 
@@ -585,8 +600,8 @@ def main_app():
                 with col_h:
                     total_sales = quantity * unit_price
                     st.markdown(f"""
-                    <div style="background: #F8F9FA; padding: 0.75rem; border-radius: 8px; text-align: center;">
-                        <strong>💰 Total:</strong> <span style="font-size: 1.2rem; color: #E3000F;">${total_sales:,.2f}</span>
+                    <div style="background: #F8F9FA; padding: 0.5rem; border-radius: 8px; text-align: center;">
+                        <strong>💰 Total:</strong> <span style="font-size: 1.1rem; color: #E3000F;">${total_sales:,.2f}</span>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -664,7 +679,7 @@ def main_app():
     # TAB 3: Dashboard
     with tab3:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.title("📊 Sales Dashboard")
+        st.title("Sales Dashboard")
         
         if st.session_state.sales_history:
             df = pd.DataFrame(st.session_state.sales_history)
@@ -707,7 +722,8 @@ def main_app():
                         'Name': user['name'],
                         'Email': email,
                         'Username': user['username'],
-                        'Role': user['role']
+                        'Role': user['role'],
+                        'Joined': user['created_at'][:10]
                     })
                 st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
         
