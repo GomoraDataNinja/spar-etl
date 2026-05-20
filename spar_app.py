@@ -12,12 +12,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 import hashlib
-import secrets
+import base64
+from streamlit_option_menu import option_menu
 
 # Configure page
 st.set_page_config(
-    page_title="Ruzivo - SPAR Sales & Rewards System",
-    page_icon="📚",
+    page_title="Tengai - SPAR Sales & Rewards System",
+    page_icon="🛒",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -29,31 +30,38 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SENDER_EMAIL = "your_email@gmail.com"  # Update this
 SENDER_PASSWORD = "your_app_password"  # Update this
-ADMIN_EMAIL = "gomoraefesto97@gmail.com"  # Hidden from users
+ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
 # WEBHOOK URL (Update with your tunnel)
 # ============================================
 WEBHOOK_URL = "https://assessed-triumph-accessed-nam.trycloudflare.com/webhook"
 
-# SPAR Brand Colours
+# SPAR Brand Colours (used sparingly as accents)
 SPAR_RED = "#E3000F"
 SPAR_GREEN = "#007A3D"
 SPAR_DARK_RED = "#C4000D"
 SPAR_DARK_GREEN = "#005C2E"
-SPAR_WHITE = "#FFFFFF"
-SPAR_GRAY = "#F5F5F5"
-SPAR_DARK_GRAY = "#666666"
 
-# Custom CSS with centered box
+# Modern, friendly colours (Google-inspired)
+GOOGLE_BLUE = "#1A73E8"
+GOOGLE_GREY = "#5F6368"
+GOOGLE_LIGHT_GREY = "#F8F9FA"
+GOOGLE_WHITE = "#FFFFFF"
+GOOGLE_BORDER = "#DADCE0"
+GOOGLE_RED = "#EA4335"
+GOOGLE_YELLOW = "#FBBC05"
+
+# Custom CSS for modern, friendly interface
 st.markdown(f"""
     <style>
+    /* Main app background - light and friendly */
     .stApp {{
-        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
+        background: linear-gradient(135deg, #E8F0FE 0%, #FFFFFF 100%);
     }}
     
-    /* Centered Container */
-    .login-container {{
+    /* Centered container for login */
+    .login-wrapper {{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -61,20 +69,22 @@ st.markdown(f"""
         padding: 1rem;
     }}
     
-    .login-box {{
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
+    /* Modern login card */
+    .login-card {{
+        background: {GOOGLE_WHITE};
+        border-radius: 16px;
+        padding: 2rem 2rem 2rem 2rem;
         width: 100%;
-        max-width: 440px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        animation: fadeIn 0.5s ease;
+        max-width: 460px;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+        animation: fadeInUp 0.4s ease;
+        border-top: 4px solid {SPAR_RED};
     }}
     
-    @keyframes fadeIn {{
+    @keyframes fadeInUp {{
         from {{
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateY(20px);
         }}
         to {{
             opacity: 1;
@@ -82,27 +92,58 @@ st.markdown(f"""
         }}
     }}
     
-    .login-header {{
+    /* Profile icon */
+    .profile-icon {{
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }}
     
-    .login-header h1 {{
-        color: {SPAR_RED};
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        font-weight: 700;
+    .profile-circle {{
+        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }}
     
-    .login-header p {{
-        color: {SPAR_DARK_GRAY};
+    .profile-circle span {{
+        font-size: 2.5rem;
+    }}
+    
+    /* Welcome text */
+    .welcome-text {{
+        text-align: center;
+        margin-bottom: 1rem;
+    }}
+    
+    .welcome-text h2 {{
+        color: #202124;
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: 0;
+    }}
+    
+    .welcome-text p {{
+        color: {GOOGLE_GREY};
         font-size: 0.85rem;
+        margin-top: 0.25rem;
     }}
     
-    .login-header .version {{
-        color: #999;
+    .version-badge {{
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }}
+    
+    .version-badge span {{
+        background: {GOOGLE_LIGHT_GREY};
+        color: {GOOGLE_GREY};
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
         font-size: 0.7rem;
-        margin-top: 0.5rem;
     }}
     
     /* Form styling */
@@ -110,36 +151,49 @@ st.markdown(f"""
         background: transparent;
     }}
     
-    .stButton > button {{
-        background-color: {SPAR_RED};
-        color: white;
-        border: none;
-        padding: 0.6rem 1.2rem;
-        font-weight: 600;
+    .stTextInput > div > div > input {{
         border-radius: 8px;
-        width: 100%;
-        transition: all 0.3s ease;
-    }}
-    
-    .stButton > button:hover {{
-        background-color: {SPAR_DARK_RED};
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3);
-    }}
-    
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div > select,
-    .stNumberInput > div > div > input,
-    .stTextArea > div > div > textarea {{
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        padding: 0.6rem;
-        font-size: 0.9rem;
+        border: 1px solid {GOOGLE_BORDER};
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
     }}
     
     .stTextInput > div > div > input:focus {{
         border-color: {SPAR_RED};
         box-shadow: 0 0 0 2px rgba(227, 0, 15, 0.1);
+    }}
+    
+    /* Button styling */
+    .stButton > button {{
+        background-color: {SPAR_RED};
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        font-weight: 500;
+        border-radius: 8px;
+        width: 100%;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }}
+    
+    .stButton > button:hover {{
+        background-color: {SPAR_DARK_RED};
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3);
+    }}
+    
+    /* Secondary button */
+    .secondary-btn > button {{
+        background-color: transparent;
+        color: {SPAR_RED};
+        border: 1px solid {GOOGLE_BORDER};
+    }}
+    
+    .secondary-btn > button:hover {{
+        background-color: {GOOGLE_LIGHT_GREY};
+        transform: none;
+        box-shadow: none;
     }}
     
     /* Divider */
@@ -156,100 +210,92 @@ st.markdown(f"""
         left: 0;
         right: 0;
         height: 1px;
-        background: #e0e0e0;
+        background: {GOOGLE_BORDER};
     }}
     
     .divider span {{
-        background: white;
+        background: {GOOGLE_WHITE};
         padding: 0 1rem;
         position: relative;
-        color: #999;
+        color: {GOOGLE_GREY};
         font-size: 0.8rem;
     }}
     
-    /* Toggle buttons for login/register */
-    .toggle-buttons {{
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }}
-    
-    .toggle-btn {{
-        flex: 1;
-        text-align: center;
-        padding: 0.75rem;
-        cursor: pointer;
+    /* Error/success messages */
+    .stAlert {{
         border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        font-size: 0.85rem;
     }}
     
-    .toggle-btn-active {{
-        background-color: {SPAR_RED};
-        color: white;
-    }}
-    
-    .toggle-btn-inactive {{
-        background-color: {SPAR_GRAY};
-        color: {SPAR_DARK_GRAY};
-    }}
-    
-    .spar-header {{
+    /* Main app header after login */
+    .app-header {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
-        padding: 2rem;
-        border-radius: 15px;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
         margin-bottom: 2rem;
-        text-align: center;
         color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }}
     
-    .spar-card {{
+    .app-header h1 {{
+        margin: 0;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }}
+    
+    .app-header p {{
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }}
+    
+    .card {{
         background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         margin-bottom: 1.5rem;
-        border-top: 4px solid {SPAR_RED};
+        border: 1px solid {GOOGLE_BORDER};
     }}
     
     .metric-card {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
-        padding: 1.2rem;
+        padding: 1rem;
         border-radius: 12px;
         color: white;
         text-align: center;
     }}
     
-    .info-box {{
-        background: {SPAR_GRAY};
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 4px solid {SPAR_GREEN};
-    }}
-    
-    .user-info {{
+    .user-chip {{
         background: white;
         padding: 0.5rem 1rem;
-        border-radius: 20px;
-        display: inline-block;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border-radius: 40px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }}
     
-    .success-message {{
-        background: #d4edda;
-        color: #155724;
-        padding: 0.75rem;
-        border-radius: 8px;
-        margin: 1rem 0;
+    /* Tabs styling */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 0.5rem;
+        background-color: white;
+        padding: 0.5rem;
+        border-radius: 12px;
+        border: 1px solid {GOOGLE_BORDER};
     }}
     
-    .error-message {{
-        background: #f8d7da;
-        color: #721c24;
-        padding: 0.75rem;
+    .stTabs [data-baseweb="tab"] {{
         border-radius: 8px;
-        margin: 1rem 0;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+    }}
+    
+    .stTabs [aria-selected="true"] {{
+        background-color: {SPAR_RED};
+        color: white;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -332,28 +378,31 @@ def logout_user():
 def main_app():
     """Main application content"""
     
-    # User info bar
-    col_user, col_logout = st.columns([4, 1])
-    with col_user:
-        st.markdown(f"""
-        <div class="user-info">
-            👋 Welcome, <strong>{st.session_state.current_user['name']}</strong> 
-            ({st.session_state.current_user['role'].upper()})
+    # Header with user info
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        st.markdown("""
+        <div class="app-header">
+            <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
+            <p>Your trusted partner in retail excellence</p>
         </div>
         """, unsafe_allow_html=True)
-    with col_logout:
-        if st.button("🚪 Logout", use_container_width=True):
+    
+    with col2:
+        st.markdown(f"""
+        <div style="text-align: right;">
+            <div class="user-chip">
+                👋 {st.session_state.current_user['name']}<br>
+                <small style="font-size: 0.7rem;">{st.session_state.current_user['role'].upper()}</small>
+            </div>
+            <br>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("🚪 Sign Out", use_container_width=True):
             logout_user()
             st.rerun()
     
-    st.markdown("""
-    <div class="spar-header">
-        <h1>📚 Ruzivo - SPAR Sales & Rewards System</h1>
-        <p>Your trusted partner in retail excellence</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Initialize session state for app data
+    # Initialize session state
     if 'sales_history' not in st.session_state:
         st.session_state.sales_history = []
     if 'offline_queue' not in st.session_state:
@@ -381,16 +430,16 @@ def main_app():
             
             html_content = f"""
             <html>
-            <body>
-                <h2>New SPAR Sale Recorded!</h2>
+            <body style="font-family: Arial, sans-serif;">
+                <h2 style="color: #E3000F;">New SPAR Sale Recorded!</h2>
                 <p><strong>Sale ID:</strong> {sale_id}</p>
                 <p><strong>Customer:</strong> {customer_name}</p>
-                <p><strong>Customer Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
+                <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
                 <p><strong>Product:</strong> {product}</p>
                 <p><strong>Quantity:</strong> {quantity}</p>
-                <p><strong>Total Amount:</strong> ${total_sales:,.2f}</p>
-                <p><strong>Rewards Earned:</strong> {rewards_earned:.0f} points</p>
-                <p><strong>Recorded by:</strong> {st.session_state.current_user['name']} ({st.session_state.current_user['email']})</p>
+                <p><strong>Total:</strong> ${total_sales:,.2f}</p>
+                <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
+                <p><strong>Recorded by:</strong> {st.session_state.current_user['name']}</p>
                 <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
             </body>
             </html>
@@ -403,8 +452,7 @@ def main_app():
             server.send_message(msg)
             server.quit()
             return True
-        except Exception as e:
-            print(f"Email error: {e}")
+        except:
             return False
     
     def check_connection():
@@ -415,14 +463,14 @@ def main_app():
             return False
     
     # Tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["📝 Record Sale", "🏆 SPAR Rewards", "📊 Dashboard", "⚙️ Settings"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📝 Record Sale", "🏆 Rewards Analysis", "📊 Dashboard", "⚙️ Settings"])
     
     # TAB 1: Record Sale
     with tab1:
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            st.markdown('<div class="spar-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card">', unsafe_allow_html=True)
             sale_id = generate_sale_id()
             
             with st.form(key="sales_form", clear_on_submit=True):
@@ -445,27 +493,25 @@ def main_app():
                 with col_e:
                     product = st.selectbox("Product *", [
                         "Fresh Produce", "Meat & Poultry", "Dairy", 
-                        "Bakery", "Beverages", "Household", "Personal Care", "Other"
+                        "Bakery", "Beverages", "Household", "Personal Care"
                     ])
-                    if product == "Other":
-                        product = st.text_input("Specify Product")
                 
                 with col_f:
                     quantity = st.number_input("Quantity *", min_value=1, value=1, step=1)
                 
                 col_g, col_h = st.columns(2)
                 with col_g:
-                    unit_price = st.number_input("Unit Price (USD) *", min_value=0.01, value=99.99, step=0.01, format="%.2f")
+                    unit_price = st.number_input("Unit Price (USD) *", min_value=0.01, value=49.99, step=0.01, format="%.2f")
                 with col_h:
                     total_sales = quantity * unit_price
                     st.markdown(f"""
-                    <div class="info-box">
-                        <strong>💰 Total Amount:</strong> <span style="font-size: 1.2rem;">${total_sales:,.2f} USD</span>
+                    <div style="background: #F8F9FA; padding: 0.75rem; border-radius: 8px; text-align: center;">
+                        <strong>💰 Total:</strong> <span style="font-size: 1.3rem; color: #E3000F;">${total_sales:,.2f}</span>
                     </div>
                     """, unsafe_allow_html=True)
                 
                 rewards_earned = total_sales * 0.02
-                st.info(f"⭐ SPAR Rewards Points Earned: {rewards_earned:.0f} points (2% of purchase)")
+                st.info(f"⭐ Rewards Points: {rewards_earned:.0f} (2% of purchase)")
                 
                 send_receipt = st.checkbox("📧 Send receipt to customer", value=True)
                 
@@ -487,57 +533,50 @@ def main_app():
                             'total_sales': total_sales,
                             'rewards_earned': rewards_earned,
                             'timestamp': datetime.now().isoformat(),
-                            'recorded_by': st.session_state.current_user['name'],
-                            'recorded_by_email': st.session_state.current_user['email']
+                            'recorded_by': st.session_state.current_user['name']
                         }
                         
-                        # Send to webhook
                         success, message = send_to_webhook(data)
-                        
-                        # Send admin notification
                         send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                         
                         if success:
-                            st.success(f"✅ Sale recorded successfully! Sale ID: {sale_id}")
+                            st.success(f"✅ Sale recorded! ID: {sale_id}")
                             if send_receipt and customer_email:
-                                st.info(f"📧 Receipt will be sent to {customer_email}")
+                                st.info(f"📧 Receipt sent to {customer_email}")
                             st.balloons()
                         else:
-                            st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
+                            st.warning(f"⚠️ Sale recorded but ETL offline: {message}")
                         
                         st.session_state.sales_history.insert(0, data)
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col2:
-            st.markdown('<div class="spar-card">', unsafe_allow_html=True)
-            st.markdown("### 📊 Today's Summary")
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown("### 📊 Status")
             
             if check_connection():
-                st.success("✅ Connected to ETL")
+                st.success("✅ ETL Connected")
             else:
-                st.warning("⚠️ ETL Offline - Data will queue")
+                st.warning("⚠️ ETL Offline")
             
             if st.session_state.sales_history:
                 df = pd.DataFrame(st.session_state.sales_history)
                 st.metric("Session Sales", f"${df['total_sales'].sum():,.2f}")
                 st.metric("Transactions", len(df))
-                if len(df) > 0:
-                    st.metric("Average Order", f"${df['total_sales'].mean():,.2f}")
             
             if st.session_state.offline_queue:
-                st.error(f"📱 {len(st.session_state.offline_queue)} pending sync")
+                st.error(f"📱 {len(st.session_state.offline_queue)} pending")
             
             st.markdown("---")
-            st.markdown("### ℹ️ Info")
-            st.caption("Sales data is sent to your local ETL system automatically")
+            st.caption("Data is sent to your local ETL system automatically")
             st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 2: SPAR Rewards
+    # TAB 2: Rewards Analysis
     with tab2:
-        st.markdown('<div class="spar-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.title("🏆 SPAR Rewards Analysis")
-        st.markdown("Upload your SPAR rewards CSV file to analyze customer behavior")
+        st.markdown("Upload your rewards CSV file to analyze customer behavior")
         
         uploaded_file = st.file_uploader("Choose CSV file", type=['csv'])
         
@@ -550,7 +589,7 @@ def main_app():
     
     # TAB 3: Dashboard
     with tab3:
-        st.markdown('<div class="spar-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.title("📊 Sales Dashboard")
         
         if st.session_state.sales_history:
@@ -560,16 +599,16 @@ def main_app():
             with col1:
                 st.metric("Total Sales", f"${df['total_sales'].sum():,.2f}")
             with col2:
-                st.metric("Total Transactions", len(df))
+                st.metric("Transactions", len(df))
             with col3:
-                st.metric("Total Rewards", f"{df['rewards_earned'].sum():,.0f} pts")
+                st.metric("Rewards Given", f"{df['rewards_earned'].sum():,.0f} pts")
             
             st.subheader("Recent Transactions")
-            st.dataframe(df[['sale_id', 'customer_name', 'product', 'total_sales', 'timestamp']].head(10), 
+            st.dataframe(df[['sale_id', 'customer_name', 'product', 'total_sales']].head(10), 
                         use_container_width=True, hide_index=True)
             
             csv = df.to_csv(index=False)
-            st.download_button("📥 Download Sales Data", csv, f"sales_{datetime.now().strftime('%Y%m%d')}.csv")
+            st.download_button("📥 Download Data", csv, f"sales_{datetime.now().strftime('%Y%m%d')}.csv")
         else:
             st.info("No sales recorded yet")
         
@@ -577,7 +616,7 @@ def main_app():
     
     # TAB 4: Settings
     with tab4:
-        st.markdown('<div class="spar-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.title("⚙️ Settings")
         
         st.subheader("👤 My Profile")
@@ -585,61 +624,48 @@ def main_app():
         st.write(f"**Email:** {st.session_state.current_user['email']}")
         st.write(f"**Username:** {st.session_state.current_user['username']}")
         st.write(f"**Role:** {st.session_state.current_user['role'].capitalize()}")
-        st.write(f"**Member since:** {st.session_state.current_user.get('created_at', 'N/A')[:10]}")
         
-        # Admin-only section
         if st.session_state.current_user['role'] == 'admin':
             st.divider()
-            st.subheader("👑 Admin Controls")
-            
-            with st.expander("📋 Registered Users"):
+            st.subheader("👑 Admin Panel")
+            with st.expander("View Registered Users"):
                 users_list = []
                 for email, user in st.session_state.users.items():
                     users_list.append({
                         'Name': user['name'],
                         'Email': email,
                         'Username': user['username'],
-                        'Role': user['role'],
-                        'Joined': user['created_at'][:10]
+                        'Role': user['role']
                     })
-                if users_list:
-                    st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------
-# LOGIN PAGE WITH TOGGLE
+# LOGIN PAGE (Modern, like reference image)
 # -----------------------------
 
 def show_login_page():
-    """Display centered login/register page"""
+    """Display modern centered login page"""
     
     st.markdown("""
-    <div class="login-container">
-        <div class="login-box">
-            <div class="login-header">
-                <h1>📚 Ruzivo</h1>
-                <p>SPAR Sales & Rewards System</p>
-                <div class="version">Version 3.3.0 • Production</div>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="profile-icon">
+                <div class="profile-circle">
+                    <span>🛒</span>
+                </div>
+            </div>
+            
+            <div class="welcome-text">
+                <h2>Batsirai</h2>
+                <p>Sign in to continue.</p>
+            </div>
+            
+            <div class="version-badge">
+                <span>Version 3.3.0 • Production</span>
             </div>
     """, unsafe_allow_html=True)
-    
-    # Custom toggle using columns (no JavaScript)
-    col_login, col_register = st.columns(2)
-    
-    with col_login:
-        if st.button("Sign In", use_container_width=True, 
-                     type="primary" if not st.session_state.show_register else "secondary"):
-            st.session_state.show_register = False
-            st.rerun()
-    
-    with col_register:
-        if st.button("Create Account", use_container_width=True,
-                     type="primary" if st.session_state.show_register else "secondary"):
-            st.session_state.show_register = True
-            st.rerun()
-    
-    st.markdown("<br>", unsafe_allow_html=True)
     
     if not st.session_state.show_register:
         # Login Form
@@ -659,6 +685,17 @@ def show_login_page():
                         st.error(message)
                 else:
                     st.error("Please enter email and password")
+        
+        # Divider
+        st.markdown('<div class="divider"><span>or</span></div>', unsafe_allow_html=True)
+        
+        # Create account button
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Create Account", use_container_width=True):
+                st.session_state.show_register = True
+                st.rerun()
+    
     else:
         # Registration Form
         with st.form("register_form"):
@@ -683,6 +720,15 @@ def show_login_page():
                         st.rerun()
                     else:
                         st.error(message)
+        
+        # Back to login
+        st.markdown('<div class="divider"><span>or</span></div>', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Back to Sign In", use_container_width=True):
+                st.session_state.show_register = False
+                st.rerun()
     
     st.markdown('</div></div>', unsafe_allow_html=True)
 
