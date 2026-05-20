@@ -20,7 +20,6 @@ import time
 APP_NAME = "Tengai"
 APP_VERSION = "3.3.0"
 DEPLOYMENT_MODE = "production"
-ORG_PASSWORD = "SPAR2024"  # Organisation password - change this!
 
 # ============================================
 # EMAIL CONFIGURATION
@@ -53,31 +52,43 @@ SPAR_DARK_GREEN = "#005C2E"
 # Modern colours
 GOOGLE_WHITE = "#FFFFFF"
 GOOGLE_BORDER = "#DADCE0"
-GOOGLE_LIGHT_GREY = "#F5F5F5"
+GOOGLE_LIGHT_GREY = "#F8F9FA"
 GOOGLE_DARK_GREY = "#5F6368"
 
-# Custom CSS
+# Custom CSS - No blue background outside
 st.markdown(f"""
     <style>
-    /* Main app background */
+    /* Main app background - clean white */
     .stApp {{
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: {GOOGLE_WHITE};
     }}
     
-    /* Card styling */
+    /* Centered container */
+    .login-wrapper {{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 1rem;
+        background: {GOOGLE_WHITE};
+    }}
+    
+    /* Card styling - everything in one box */
     .card {{
         background: {GOOGLE_WHITE};
         border-radius: 16px;
         padding: 2rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        text-align: center;
-        animation: fadeIn 0.5s ease;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border: 1px solid {GOOGLE_BORDER};
+        animation: fadeIn 0.4s ease;
     }}
     
     @keyframes fadeIn {{
         from {{
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateY(20px);
         }}
         to {{
             opacity: 1;
@@ -91,12 +102,14 @@ st.markdown(f"""
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-align: center;
         margin-bottom: 0.5rem;
     }}
     
     .subtitle {{
         color: {GOOGLE_DARK_GREY};
         font-size: 0.9rem;
+        text-align: center;
         margin-bottom: 1rem;
     }}
     
@@ -119,16 +132,36 @@ st.markdown(f"""
         display: inline-block;
     }}
     
+    /* Toggle buttons */
+    .toggle-container {{
+        display: flex;
+        gap: 1rem;
+        margin: 1.5rem 0 1rem 0;
+        border-bottom: 2px solid {GOOGLE_BORDER};
+    }}
+    
+    .toggle-btn {{
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }}
+    
     /* Form styling */
     .stForm {{
         background: transparent;
     }}
     
-    .stTextInput > div > div > input {{
+    .stTextInput > div > div > input,
+    .stSelectbox > div > div > select,
+    .stNumberInput > div > div > input {{
         border-radius: 8px;
         border: 1px solid {GOOGLE_BORDER};
         padding: 0.75rem 1rem;
         font-size: 0.95rem;
+        background: {GOOGLE_WHITE};
     }}
     
     .stTextInput > div > div > input:focus {{
@@ -146,11 +179,50 @@ st.markdown(f"""
         border-radius: 8px;
         width: 100%;
         transition: all 0.3s ease;
+        margin-top: 0.5rem;
     }}
     
     .stButton > button:hover {{
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3);
+    }}
+    
+    /* Secondary button */
+    .secondary-btn > button {{
+        background: transparent;
+        color: {SPAR_RED};
+        border: 1px solid {GOOGLE_BORDER};
+    }}
+    
+    .secondary-btn > button:hover {{
+        background: {GOOGLE_LIGHT_GREY};
+        transform: none;
+        box-shadow: none;
+    }}
+    
+    /* Divider */
+    .divider {{
+        text-align: center;
+        margin: 1.5rem 0;
+        position: relative;
+    }}
+    
+    .divider::before {{
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: {GOOGLE_BORDER};
+    }}
+    
+    .divider span {{
+        background: {GOOGLE_WHITE};
+        padding: 0 1rem;
+        position: relative;
+        color: {GOOGLE_DARK_GREY};
+        font-size: 0.8rem;
     }}
     
     /* Main app header after login */
@@ -207,15 +279,6 @@ st.markdown(f"""
         color: white;
     }}
     
-    /* Metric card */
-    .metric-card {{
-        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
-        padding: 1rem;
-        border-radius: 12px;
-        color: white;
-        text-align: center;
-    }}
-    
     /* User info */
     .user-info {{
         background: white;
@@ -227,66 +290,106 @@ st.markdown(f"""
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }}
     
-    /* Success message */
-    .success-message {{
-        background: #d4edda;
-        color: #155724;
-        padding: 0.75rem;
+    /* Alert messages */
+    .stAlert {{
         border-radius: 8px;
-        margin: 1rem 0;
-    }}
-    
-    /* Info box */
-    .info-box {{
-        background: #f8f9fa;
-        padding: 0.75rem;
-        border-radius: 8px;
-        border-left: 4px solid {SPAR_GREEN};
+        font-size: 0.85rem;
     }}
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------
-# SESSION STATE
+# USER DATABASE
 # -----------------------------
-if 'authenticated' not in st.session_state:
-    st.session_state.authenticated = False
+if 'users' not in st.session_state:
+    st.session_state.users = {
+        'admin@tengai.com': {
+            'name': 'Administrator',
+            'email': 'admin@tengai.com',
+            'username': 'admin',
+            'password': hashlib.sha256('Admin@123'.encode()).hexdigest(),
+            'role': 'admin',
+            'created_at': datetime.now().isoformat()
+        }
+    }
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'current_user' not in st.session_state:
+    st.session_state.current_user = None
+if 'active_tab' not in st.session_state:
+    st.session_state.active_tab = "login"  # login or register
 if 'sales_history' not in st.session_state:
     st.session_state.sales_history = []
 if 'offline_queue' not in st.session_state:
     st.session_state.offline_queue = []
 
 # -----------------------------
+# AUTHENTICATION FUNCTIONS
+# -----------------------------
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password, hashed):
+    return hash_password(password) == hashed
+
+def register_user(name, username, email, password):
+    if email in st.session_state.users:
+        return False, "Email already registered"
+    
+    for user_email, user_data in st.session_state.users.items():
+        if user_data['username'] == username:
+            return False, "Username already taken"
+    
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return False, "Invalid email format"
+    
+    if len(password) < 6:
+        return False, "Password must be at least 6 characters"
+    
+    st.session_state.users[email] = {
+        'name': name,
+        'email': email,
+        'username': username,
+        'password': hash_password(password),
+        'role': 'user',
+        'created_at': datetime.now().isoformat()
+    }
+    
+    return True, "Registration successful! Please login."
+
+def login_user(email, password):
+    if email in st.session_state.users:
+        user = st.session_state.users[email]
+        if verify_password(password, user['password']):
+            st.session_state.logged_in = True
+            st.session_state.current_user = user
+            return True, f"Welcome back, {user['name']}!"
+    
+    return False, "Invalid email or password"
+
+def logout_user():
+    st.session_state.logged_in = False
+    st.session_state.current_user = None
+    st.session_state.active_tab = "login"
+
+# -----------------------------
 # HELPER FUNCTIONS
 # -----------------------------
 
-def touch():
-    """Update session timestamp"""
-    st.session_state.last_activity = time.time()
-
-def safe_rerun():
-    """Safe rerun with small delay"""
-    time.sleep(0.1)
-    st.rerun()
-
 def generate_sale_id():
-    """Generate unique Sale ID"""
     return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
 def send_to_webhook(data):
-    """Send data to local ETL via webhook"""
     try:
         response = requests.post(WEBHOOK_URL, json=data, timeout=10)
         if response.status_code == 200:
             return True, "Data sent to ETL"
         return False, f"Server error: {response.status_code}"
-    except requests.exceptions.ConnectionError:
-        return False, "Cannot connect to ETL server"
     except Exception as e:
         return False, str(e)
 
 def send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email=None):
-    """Send email notification to admin"""
     try:
         msg = MIMEMultipart()
         msg['From'] = SENDER_EMAIL
@@ -304,6 +407,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
             <p><strong>Quantity:</strong> {quantity}</p>
             <p><strong>Total:</strong> ${total_sales:,.2f}</p>
             <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
+            <p><strong>Recorded by:</strong> {st.session_state.current_user['name']}</p>
             <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </body>
         </html>
@@ -316,12 +420,10 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         server.send_message(msg)
         server.quit()
         return True
-    except Exception as e:
-        print(f"Email error: {e}")
+    except:
         return False
 
 def check_connection():
-    """Test connection to ETL server"""
     try:
         response = requests.get(WEBHOOK_URL.replace('/webhook', '/health'), timeout=5)
         return response.status_code == 200
@@ -329,47 +431,94 @@ def check_connection():
         return False
 
 # -----------------------------
-# LOGIN SCREEN
+# LOGIN/REGISTER SCREEN (Everything in one box)
 # -----------------------------
 
-def login_screen():
-    st.markdown('<div style="height: 1.8rem;"></div>', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([1, 1.25, 1])
-    with c2:
-        st.markdown(
-            f"""
-            <div class="card" style="margin-top: 10vh;">
-                <div class="title" style="text-align:center;">{APP_NAME}</div>
-                <div class="subtitle" style="text-align:center;">Sign in to continue.</div>
-                <div style="height: 14px;"></div>
-                <div style="display:flex; justify-content:center;">
-                    <div class="chip"><span class="chip-dot"></span> Version {APP_VERSION} • {DEPLOYMENT_MODE.title()}</div>
-                </div>
+def login_register_screen():
+    """Display login and register in the same centered box"""
+    
+    st.markdown("""
+    <div class="login-wrapper">
+        <div class="card">
+            <div class="title">Tengai</div>
+            <div class="subtitle">Sign in to continue.</div>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div class="chip"><span class="chip-dot"></span> Version 3.3.0 • Production</div>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        with st.form("login_form", clear_on_submit=True):
-            pw = st.text_input("Password", type="password", placeholder="Organisation password")
-            ok = st.form_submit_button("Sign in", use_container_width=True)
-
-        if ok:
-            if pw == ORG_PASSWORD:
-                st.session_state.authenticated = True
-                touch()
-                safe_rerun()
-            else:
-                st.error("Wrong password.")
+    """, unsafe_allow_html=True)
+    
+    # Toggle buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Sign In", use_container_width=True, 
+                     type="primary" if st.session_state.active_tab == "login" else "secondary"):
+            st.session_state.active_tab = "login"
+            st.rerun()
+    with col2:
+        if st.button("Create Account", use_container_width=True,
+                     type="primary" if st.session_state.active_tab == "register" else "secondary"):
+            st.session_state.active_tab = "register"
+            st.rerun()
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    if st.session_state.active_tab == "login":
+        # Login Form
+        with st.form("login_form"):
+            email = st.text_input("Email", placeholder="your@email.com")
+            password = st.text_input("Password", type="password", placeholder="Enter your password")
+            
+            submitted = st.form_submit_button("Sign In", use_container_width=True)
+            
+            if submitted:
+                if email and password:
+                    success, message = login_user(email, password)
+                    if success:
+                        st.success(message)
+                        st.rerun()
+                    else:
+                        st.error(message)
+                else:
+                    st.error("Please enter email and password")
+        
+        # Demo credentials hint
+        st.caption("Demo: admin@tengai.com / Admin@123")
+    
+    else:
+        # Registration Form
+        with st.form("register_form"):
+            name = st.text_input("Full Name", placeholder="Enter your full name")
+            username = st.text_input("Username", placeholder="Choose a username")
+            email = st.text_input("Email", placeholder="your@email.com")
+            password = st.text_input("Password", type="password", placeholder="Min 6 characters")
+            confirm_password = st.text_input("Confirm Password", type="password")
+            
+            submitted = st.form_submit_button("Create Account", use_container_width=True)
+            
+            if submitted:
+                if not all([name, username, email, password]):
+                    st.error("Please fill all fields")
+                elif password != confirm_password:
+                    st.error("Passwords do not match")
+                else:
+                    success, message = register_user(name, username, email, password)
+                    if success:
+                        st.success(message)
+                        st.session_state.active_tab = "login"
+                        st.rerun()
+                    else:
+                        st.error(message)
+    
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 # -----------------------------
-# MAIN APP CONTENT
+# MAIN APP CONTENT (After Login)
 # -----------------------------
 
 def main_app():
     """Main application content after login"""
     
-    # Header
+    # Header with user info and logout
     col1, col2 = st.columns([4, 1])
     with col1:
         st.markdown("""
@@ -383,14 +532,13 @@ def main_app():
         st.markdown(f"""
         <div style="text-align: right;">
             <div class="user-info">
-                👤 Admin • <a href="#" onclick="location.reload();" style="color: #E3000F; text-decoration: none;">Sign Out</a>
+                👋 {st.session_state.current_user['name']}<br>
+                <small>({st.session_state.current_user['role'].upper()})</small>
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Sign out button
         if st.button("🚪 Sign Out", use_container_width=True):
-            st.session_state.authenticated = False
+            logout_user()
             st.rerun()
     
     # Tabs
@@ -436,7 +584,7 @@ def main_app():
                 with col_h:
                     total_sales = quantity * unit_price
                     st.markdown(f"""
-                    <div class="info-box" style="text-align: center;">
+                    <div style="background: #F8F9FA; padding: 0.75rem; border-radius: 8px; text-align: center;">
                         <strong>💰 Total Amount:</strong> 
                         <span style="font-size: 1.3rem; color: #E3000F;">${total_sales:,.2f}</span>
                     </div>
@@ -466,24 +614,20 @@ def main_app():
                             'rewards_earned': rewards_earned,
                             'timestamp': datetime.now().isoformat(),
                             'date': datetime.now().strftime('%Y-%m-%d'),
-                            'recorded_by': 'Admin'
+                            'recorded_by': st.session_state.current_user['name']
                         }
                         
-                        # Send to webhook
                         success, message = send_to_webhook(data)
-                        
-                        # Send admin notification
                         send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                         
                         if success:
-                            st.success(f"✅ Sale recorded successfully! Sale ID: {sale_id}")
+                            st.success(f"✅ Sale recorded! ID: {sale_id}")
                             if send_receipt and customer_email:
                                 st.info(f"📧 Receipt sent to {customer_email}")
                             st.balloons()
                         else:
-                            st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
+                            st.warning(f"⚠️ Sale recorded but ETL offline: {message}")
                         
-                        # Store in history
                         st.session_state.sales_history.insert(0, data)
             
             st.markdown('</div>', unsafe_allow_html=True)
@@ -495,17 +639,12 @@ def main_app():
             if check_connection():
                 st.success("✅ ETL Connected")
             else:
-                st.warning("⚠️ ETL Offline - Data will queue")
+                st.warning("⚠️ ETL Offline")
             
             if st.session_state.sales_history:
                 df = pd.DataFrame(st.session_state.sales_history)
                 st.metric("Session Sales", f"${df['total_sales'].sum():,.2f}")
                 st.metric("Transactions", len(df))
-                if len(df) > 0:
-                    st.metric("Average Order", f"${df['total_sales'].mean():,.2f}")
-            
-            if st.session_state.offline_queue:
-                st.error(f"📱 {len(st.session_state.offline_queue)} pending sync")
             
             st.markdown("---")
             st.caption("Data is sent to your local ETL system automatically")
@@ -515,24 +654,11 @@ def main_app():
     with tab2:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.title("🏆 SPAR Rewards Analysis")
-        st.markdown("Upload your SPAR rewards CSV file to analyze customer behavior")
-        
-        uploaded_file = st.file_uploader("Choose CSV file", type=['csv'])
-        
-        if uploaded_file is not None:
+        uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
+        if uploaded_file:
             df = pd.read_csv(uploaded_file)
             st.success(f"✅ Loaded {len(df)} records")
             st.dataframe(df.head(), use_container_width=True)
-            
-            # Basic statistics
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Total Customers", df['CustomerID'].nunique())
-            with col2:
-                st.metric("Total Sales", f"${df['SalesAmount'].sum():,.2f}")
-            with col3:
-                st.metric("Total Rewards", f"{df['RewardsEarned'].sum():,.0f}")
-        
         st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 3: Dashboard
@@ -542,30 +668,22 @@ def main_app():
         
         if st.session_state.sales_history:
             df = pd.DataFrame(st.session_state.sales_history)
-            
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric("Total Sales", f"${df['total_sales'].sum():,.2f}")
             with col2:
-                st.metric("Total Transactions", len(df))
+                st.metric("Transactions", len(df))
             with col3:
-                st.metric("Total Rewards", f"{df['rewards_earned'].sum():,.0f} pts")
+                st.metric("Rewards Given", f"{df['rewards_earned'].sum():,.0f} pts")
             
             st.subheader("Recent Transactions")
-            st.dataframe(df[['sale_id', 'customer_name', 'product', 'total_sales', 'timestamp']].head(10), 
+            st.dataframe(df[['sale_id', 'customer_name', 'product', 'total_sales']].head(10), 
                         use_container_width=True, hide_index=True)
             
-            # Download button
             csv = df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download Sales Data (CSV)",
-                data=csv,
-                file_name=f"tengai_sales_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/csv"
-            )
+            st.download_button("📥 Download Data", csv, f"sales_{datetime.now().strftime('%Y%m%d')}.csv")
         else:
-            st.info("No sales recorded yet. Start recording sales to see insights!")
-        
+            st.info("No sales recorded yet")
         st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 4: Settings
@@ -573,35 +691,25 @@ def main_app():
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.title("⚙️ Settings")
         
-        st.subheader("ℹ️ System Information")
-        st.write(f"**App Name:** {APP_NAME}")
-        st.write(f"**Version:** {APP_VERSION}")
-        st.write(f"**Deployment:** {DEPLOYMENT_MODE.title()}")
-        st.write(f"**Webhook URL:** {WEBHOOK_URL}")
+        st.subheader("👤 My Profile")
+        st.write(f"**Name:** {st.session_state.current_user['name']}")
+        st.write(f"**Email:** {st.session_state.current_user['email']}")
+        st.write(f"**Username:** {st.session_state.current_user['username']}")
+        st.write(f"**Role:** {st.session_state.current_user['role'].capitalize()}")
         
-        st.divider()
-        
-        st.subheader("📁 Data Management")
-        if st.session_state.sales_history:
-            st.write(f"**Sales in session:** {len(st.session_state.sales_history)}")
-            if st.button("🗑️ Clear Session Data", use_container_width=True):
-                st.session_state.sales_history = []
-                st.session_state.offline_queue = []
-                st.success("Session data cleared!")
-                st.rerun()
-        else:
-            st.info("No session data")
-        
-        st.divider()
-        
-        st.subheader("🔌 Connection Test")
-        if st.button("Test ETL Connection", use_container_width=True):
-            if check_connection():
-                st.success("✅ Successfully connected to ETL server!")
-                st.info(f"Webhook URL: {WEBHOOK_URL}")
-            else:
-                st.error("❌ Cannot connect to ETL server")
-                st.info("Make sure your tunnel is running: cloudflared tunnel --url http://localhost:8000")
+        if st.session_state.current_user['role'] == 'admin':
+            st.divider()
+            st.subheader("👑 Admin Panel")
+            with st.expander("View Registered Users"):
+                users_list = []
+                for email, user in st.session_state.users.items():
+                    users_list.append({
+                        'Name': user['name'],
+                        'Email': email,
+                        'Username': user['username'],
+                        'Role': user['role']
+                    })
+                st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -609,7 +717,7 @@ def main_app():
 # MAIN
 # -----------------------------
 
-if st.session_state.authenticated:
+if st.session_state.logged_in:
     main_app()
 else:
-    login_screen()
+    login_register_screen()
