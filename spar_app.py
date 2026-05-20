@@ -26,8 +26,8 @@ DEPLOYMENT_MODE = "production"
 # ============================================
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "your_email@gmail.com"  # Update this
-SENDER_PASSWORD = "your_app_password"  # Update this
+SENDER_EMAIL = "gomoraefesto97@gmail.com"  # Update this
+SENDER_PASSWORD = "picz cijg kgbw zoup"  # Update this
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
