@@ -38,7 +38,7 @@ WEBHOOK_URL = "https://assessed-triumph-accessed-nam.trycloudflare.com/webhook"
 # Configure page
 st.set_page_config(
     page_title="Tengai - SPAR Sales & Rewards System",
-    page_icon="🎯",
+    page_icon="🛒",,
     layout="wide",
     initial_sidebar_state="collapsed"
 )
