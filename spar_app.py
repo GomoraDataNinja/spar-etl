@@ -540,7 +540,7 @@ def main_app():
     with col1:
         st.markdown("""
         <div class="app-header">
-            <h1>🎯 Tengai - SPAR Sales & Rewards System</h1>
+            <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
             <p>Your trusted partner in retail excellence</p>
         </div>
         """, unsafe_allow_html=True)
@@ -553,7 +553,7 @@ def main_app():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("🚪 Sign Out", use_container_width=True):
+        if st.button("Sign Out", use_container_width=True):
             logout_user()
             st.rerun()
     
