@@ -13,7 +13,6 @@ from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 import hashlib
 import base64
-from streamlit_option_menu import option_menu
 
 # Configure page
 st.set_page_config(
@@ -181,19 +180,6 @@ st.markdown(f"""
         background-color: {SPAR_DARK_RED};
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3);
-    }}
-    
-    /* Secondary button */
-    .secondary-btn > button {{
-        background-color: transparent;
-        color: {SPAR_RED};
-        border: 1px solid {GOOGLE_BORDER};
-    }}
-    
-    .secondary-btn > button:hover {{
-        background-color: {GOOGLE_LIGHT_GREY};
-        transform: none;
-        box-shadow: none;
     }}
     
     /* Divider */
