@@ -13,6 +13,8 @@ from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 import hashlib
 import time
+import gspread
+from google.oauth2.service_account import Credentials
 
 # ============================================
 # APP CONFIGURATION
@@ -26,14 +28,159 @@ DEPLOYMENT_MODE = "production"
 # ============================================
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "gomoraefesto97@gmail.com"  # Update this
-SENDER_PASSWORD = "picz cijg kgbw zoup"  # Update this
+SENDER_EMAIL = "gomoraefesto97@gmail.com"
+SENDER_PASSWORD = "picz cijg kgbw zoup"
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
 # WEBHOOK URL (Update with your tunnel)
 # ============================================
 WEBHOOK_URL = "https://kitchen-council-identification-technological.trycloudflare.com/webhook"
+
+# ============================================
+# GOOGLE SHEETS SETUP
+# ============================================
+
+def get_google_sheets_client():
+    """Get Google Sheets client using credentials from secrets or local file"""
+    try:
+        # For Streamlit Cloud - use secrets
+        if 'google' in st.secrets:
+            creds_dict = dict(st.secrets["google"])
+            creds = Credentials.from_service_account_info(
+                creds_dict,
+                scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+            )
+        else:
+            # For local development - use JSON file
+            creds = Credentials.from_service_account_file(
+                'credentials.json',
+                scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+            )
+        client = gspread.authorize(creds)
+        return client
+    except Exception as e:
+        st.error(f"Google Sheets connection error: {e}")
+        return None
+
+def init_users_sheet():
+    """Initialize the users sheet if it doesn't exist"""
+    client = get_google_sheets_client()
+    if client:
+        try:
+            # Try to open existing sheet
+            sheet = client.open("Tengai_Users").sheet1
+        except:
+            # Create new sheet
+            sheet = client.create("Tengai_Users").sheet1
+            # Add headers
+            sheet.append_row(["Email", "Name", "Username", "Password", "Role", "Created At"])
+            
+            # Add default admin
+            sheet.append_row([
+                "admin@tengai.com",
+                "Administrator",
+                "admin",
+                hashlib.sha256("Admin@123".encode()).hexdigest(),
+                "admin",
+                datetime.now().isoformat()
+            ])
+        return sheet
+    return None
+
+def get_all_users():
+    """Get all users from Google Sheets"""
+    sheet = init_users_sheet()
+    if sheet:
+        records = sheet.get_all_records()
+        users = {}
+        for record in records:
+            email = record.get('Email')
+            if email:
+                users[email] = {
+                    'name': record.get('Name', ''),
+                    'email': email,
+                    'username': record.get('Username', ''),
+                    'password': record.get('Password', ''),
+                    'role': record.get('Role', 'user'),
+                    'created_at': record.get('Created At', datetime.now().isoformat())
+                }
+        return users
+    return {}
+
+def save_user_to_sheet(email, name, username, password_hash, role):
+    """Save a new user to Google Sheets"""
+    sheet = init_users_sheet()
+    if sheet:
+        sheet.append_row([
+            email,
+            name,
+            username,
+            password_hash,
+            role,
+            datetime.now().isoformat()
+        ])
+        return True
+    return False
+
+# ============================================
+# AUTHENTICATION FUNCTIONS
+# ============================================
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password, hashed):
+    return hash_password(password) == hashed
+
+def register_user(name, username, email, password):
+    # Get current users
+    users = get_all_users()
+    
+    # Check if email exists
+    if email in users:
+        return False, "Email already registered"
+    
+    # Check if username exists
+    for user_email, user_data in users.items():
+        if user_data['username'] == username:
+            return False, "Username already taken"
+    
+    # Validate
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return False, "Invalid email format"
+    
+    if len(password) < 6:
+        return False, "Password must be at least 6 characters"
+    
+    # Determine role (first user becomes admin)
+    role = "admin" if len(users) == 0 else "user"
+    
+    # Save to Google Sheets
+    password_hash = hash_password(password)
+    success = save_user_to_sheet(email, name, username, password_hash, role)
+    
+    if success:
+        return True, f"Registration successful! You are the {role}."
+    else:
+        return False, "Registration failed. Please try again."
+
+def login_user(email, password):
+    users = get_all_users()
+    
+    if email in users:
+        user = users[email]
+        if verify_password(password, user['password']):
+            st.session_state.logged_in = True
+            st.session_state.current_user = user
+            return True, f"Welcome back, {user['name']}!"
+    
+    return False, "Invalid email or password"
+
+def logout_user():
+    st.session_state.logged_in = False
+    st.session_state.current_user = None
+    st.session_state.active_tab = "login"
 
 # Configure page
 st.set_page_config(
@@ -54,15 +201,13 @@ GOOGLE_BORDER = "#E0E0E0"
 GOOGLE_LIGHT_GREY = "#F5F5F5"
 GOOGLE_DARK_GREY = "#666666"
 
-# Custom CSS - Compressed spacing
+# Custom CSS
 st.markdown(f"""
     <style>
-    /* Main app background */
     .stApp {{
         background: {GOOGLE_WHITE};
     }}
     
-    /* Main container - centers everything */
     .main-container {{
         display: flex;
         justify-content: center;
@@ -72,7 +217,6 @@ st.markdown(f"""
         background: {GOOGLE_WHITE};
     }}
     
-    /* The main card - compressed */
     .main-card {{
         background: {GOOGLE_WHITE};
         border-radius: 12px;
@@ -98,7 +242,6 @@ st.markdown(f"""
         }}
     }}
     
-    /* Title - compressed spacing */
     .title {{
         font-size: 1.8rem;
         font-weight: 700;
@@ -108,7 +251,6 @@ st.markdown(f"""
         line-height: 1.2;
     }}
     
-    /* Subtitle - compressed spacing */
     .subtitle {{
         color: {GOOGLE_DARK_GREY};
         font-size: 0.8rem;
@@ -116,7 +258,6 @@ st.markdown(f"""
         margin-bottom: 0.5rem;
     }}
     
-    /* Version chip - compressed spacing */
     .chip-container {{
         text-align: center;
         margin-bottom: 0.8rem;
@@ -141,14 +282,6 @@ st.markdown(f"""
         display: inline-block;
     }}
     
-    /* Toggle buttons - compressed */
-    .toggle-container {{
-        display: flex;
-        gap: 0.8rem;
-        margin-bottom: 0.8rem;
-    }}
-    
-    /* Form styling - compressed */
     .stForm {{
         background: transparent;
     }}
@@ -166,7 +299,6 @@ st.markdown(f"""
         box-shadow: 0 0 0 2px rgba(227, 0, 15, 0.1);
     }}
     
-    /* Button styling - compressed */
     .stButton > button {{
         background-color: {SPAR_RED};
         color: white;
@@ -184,7 +316,6 @@ st.markdown(f"""
         transform: translateY(-1px);
     }}
     
-    /* Secondary button */
     div[data-testid="column"]:has(button[kind="secondary"]) button {{
         background-color: transparent;
         color: {SPAR_RED};
@@ -196,7 +327,6 @@ st.markdown(f"""
         transform: none;
     }}
     
-    /* Divider - compressed */
     .divider {{
         text-align: center;
         margin: 0.8rem 0;
@@ -221,15 +351,6 @@ st.markdown(f"""
         font-size: 0.7rem;
     }}
     
-    /* Alert messages - compressed */
-    .stAlert {{
-        border-radius: 8px;
-        font-size: 0.75rem;
-        padding: 0.4rem;
-        margin: 0.5rem 0;
-    }}
-    
-    /* Footer text */
     .footer-text {{
         text-align: center;
         font-size: 0.65rem;
@@ -237,7 +358,6 @@ st.markdown(f"""
         margin-top: 0.8rem;
     }}
     
-    /* Main app styles after login */
     .app-header {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         padding: 1rem 1.5rem;
@@ -298,18 +418,13 @@ st.markdown(f"""
         color: white;
     }}
     
-    /* Reduce form field spacing */
     .row-widget.stSelectbox, .row-widget.stNumberInput {{
         margin-bottom: 0.3rem;
     }}
     </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# USER DATABASE - No hardcoded admin initially
-# -----------------------------
-if 'users' not in st.session_state:
-    st.session_state.users = {}  # Empty initially - first user becomes admin
+# Initialize session state
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'current_user' not in st.session_state:
@@ -320,72 +435,10 @@ if 'sales_history' not in st.session_state:
     st.session_state.sales_history = []
 if 'offline_queue' not in st.session_state:
     st.session_state.offline_queue = []
-if 'first_user_created' not in st.session_state:
-    st.session_state.first_user_created = False
 
-# -----------------------------
-# AUTHENTICATION FUNCTIONS
-# -----------------------------
-
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-def verify_password(password, hashed):
-    return hash_password(password) == hashed
-
-def register_user(name, username, email, password):
-    # Check if this is the first user ever
-    is_first_user = len(st.session_state.users) == 0
-    
-    if email in st.session_state.users:
-        return False, "Email already registered"
-    
-    for user_email, user_data in st.session_state.users.items():
-        if user_data['username'] == username:
-            return False, "Username already taken"
-    
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return False, "Invalid email format"
-    
-    if len(password) < 6:
-        return False, "Password must be at least 6 characters"
-    
-    # First user becomes admin, others are regular users
-    role = "admin" if is_first_user else "user"
-    
-    st.session_state.users[email] = {
-        'name': name,
-        'email': email,
-        'username': username,
-        'password': hash_password(password),
-        'role': role,
-        'created_at': datetime.now().isoformat()
-    }
-    
-    if is_first_user:
-        st.session_state.first_user_created = True
-        return True, "Admin account created successfully! Please login."
-    else:
-        return True, "Registration successful! Please login."
-
-def login_user(email, password):
-    if email in st.session_state.users:
-        user = st.session_state.users[email]
-        if verify_password(password, user['password']):
-            st.session_state.logged_in = True
-            st.session_state.current_user = user
-            return True, f"Welcome back, {user['name']}!"
-    
-    return False, "Invalid email or password"
-
-def logout_user():
-    st.session_state.logged_in = False
-    st.session_state.current_user = None
-    st.session_state.active_tab = "login"
-
-# -----------------------------
+# ============================================
 # HELPER FUNCTIONS
-# -----------------------------
+# ============================================
 
 def generate_sale_id():
     return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -417,7 +470,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
             <p><strong>Quantity:</strong> {quantity}</p>
             <p><strong>Total:</strong> ${total_sales:,.2f}</p>
             <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
-            <p><strong>Recorded by:</strong> {st.session_state.current_user['name']}</p>
+            <p><strong>Recorded by:</strong> {st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'}</p>
             <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </body>
         </html>
@@ -430,7 +483,8 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         server.send_message(msg)
         server.quit()
         return True
-    except:
+    except Exception as e:
+        print(f"Email error: {e}")
         return False
 
 def check_connection():
@@ -440,13 +494,11 @@ def check_connection():
     except:
         return False
 
-# -----------------------------
-# LOGIN/REGISTER SCREEN - Compressed, no hardcoded credentials
-# -----------------------------
+# ============================================
+# LOGIN/REGISTER SCREEN
+# ============================================
 
 def login_register_screen():
-    """Display login and register in ONE small centered box"""
-    
     st.markdown("""
     <div class="main-container">
         <div class="main-card">
@@ -457,7 +509,6 @@ def login_register_screen():
             </div>
     """, unsafe_allow_html=True)
     
-    # Toggle buttons (Sign In / Create Account)
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Sign In", use_container_width=True, 
@@ -473,7 +524,6 @@ def login_register_screen():
     st.markdown("<br>", unsafe_allow_html=True)
     
     if st.session_state.active_tab == "login":
-        # Login Form
         with st.form("login_form"):
             email = st.text_input("Email", placeholder="your@email.com")
             password = st.text_input("Password", type="password", placeholder="Enter your password")
@@ -491,13 +541,7 @@ def login_register_screen():
                         st.error(message)
                 else:
                     st.error("Please enter email and password")
-        
-        # Info message for first time users
-        if len(st.session_state.users) == 0:
-            st.markdown('<div class="footer-text">✨ First user will be the Admin</div>', unsafe_allow_html=True)
-    
     else:
-        # Registration Form
         with st.form("register_form"):
             name = st.text_input("Full Name", placeholder="Enter your full name")
             username = st.text_input("Username", placeholder="Choose a username")
@@ -521,21 +565,14 @@ def login_register_screen():
                         st.rerun()
                     else:
                         st.error(message)
-        
-        # Info about first user becoming admin
-        if len(st.session_state.users) == 0:
-            st.markdown('<div class="footer-text">🔑 First account created will be the Administrator</div>', unsafe_allow_html=True)
     
     st.markdown('</div></div>', unsafe_allow_html=True)
 
-# -----------------------------
+# ============================================
 # MAIN APP CONTENT
-# -----------------------------
+# ============================================
 
 def main_app():
-    """Main application content after login"""
-    
-    # Header
     col1, col2 = st.columns([3, 1])
     with col1:
         st.markdown("""
@@ -557,7 +594,6 @@ def main_app():
             logout_user()
             st.rerun()
     
-    # Tabs
     tab1, tab2, tab3, tab4 = st.tabs(["📝 Record Sale", "🏆 Rewards Analysis", "📊 Dashboard", "⚙️ Settings"])
     
     # TAB 1: Record Sale
@@ -716,22 +752,24 @@ def main_app():
             st.divider()
             st.subheader("👑 Admin Panel")
             with st.expander("Registered Users"):
-                users_list = []
-                for email, user in st.session_state.users.items():
-                    users_list.append({
-                        'Name': user['name'],
-                        'Email': email,
-                        'Username': user['username'],
-                        'Role': user['role'],
-                        'Joined': user['created_at'][:10]
-                    })
-                st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
+                users = get_all_users()
+                if users:
+                    users_list = []
+                    for email, user in users.items():
+                        users_list.append({
+                            'Name': user['name'],
+                            'Email': email,
+                            'Username': user['username'],
+                            'Role': user['role'],
+                            'Joined': user['created_at'][:10] if user['created_at'] else 'N/A'
+                        })
+                    st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
 
-# -----------------------------
+# ============================================
 # MAIN
-# -----------------------------
+# ============================================
 
 if st.session_state.logged_in:
     main_app()
