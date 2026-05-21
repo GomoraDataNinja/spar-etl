@@ -1,4 +1,87 @@
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# Google Credentials (IMPORTANT - keep these secret!)
+credentials.json
+*.json
+!requirements.txt
+!package.json
+
+# Cloudflare
+cert.pem
+*.pem
+*.key
+.cloudflared/
+
+# Local data files
+raw_data/
+processed_data/
+error_data/
+*.csv
+!requirements.txt
+master_sales_data.csv
+etl_log.txt
+users.json
+*.db
+*.sqlite
+
+# Logs
 *.log
+spar_etl_receiver.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Secret files
+secrets/
+.secrets/
+*.secret
+*.key
+*.p8
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
