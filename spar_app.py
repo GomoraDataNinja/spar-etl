@@ -54,44 +54,41 @@ BORDER = "#E5E7EB"
 LIGHT_GREY = "#F9FAFB"
 DARK_GREY = "#6B7280"
 
-# Custom CSS - Compact, clean box layout
+# Custom CSS - Clean box layout
 st.markdown(f"""
     <style>
     /* Main app background */
     .stApp {{
-        background: linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%);
+        background: linear-gradient(135deg, #E8F0FE 0%, #FFFFFF 100%);
     }}
     
-    /* Main container - centers the box, positioned higher */
+    /* Main container - centers the box */
     .main-container {{
         display: flex;
         justify-content: center;
-        align-items: flex-start;
+        align-items: center;
         min-height: 100vh;
-        padding: 3rem 1rem 1rem 1rem;
+        padding: 1rem;
         background: transparent;
     }}
     
-    /* The compact card/box */
-    .login-card {{
+    /* The main box - everything inside */
+    .main-box {{
         background: {WHITE};
-        border-radius: 20px;
-        padding: 2rem 2rem 1.8rem 2rem;
+        border-radius: 24px;
+        padding: 2rem 2rem 2rem 2rem;
         width: 100%;
         max-width: 400px;
-        box-shadow: 0 10px 35px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid {BORDER};
         transition: all 0.3s ease;
-        border-top: 4px solid {SPAR_RED};
-        border-bottom: 1px solid {BORDER};
     }}
     
-    /* App name styling */
+    /* App name */
     .app-name {{
         font-size: 2rem;
         font-weight: 700;
-        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: {SPAR_RED};
         text-align: center;
         margin-bottom: 0.25rem;
         letter-spacing: -0.5px;
@@ -100,9 +97,9 @@ st.markdown(f"""
     /* Subtitle */
     .subtitle {{
         color: {DARK_GREY};
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         text-align: center;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
     }}
     
     /* Version badge */
@@ -111,9 +108,9 @@ st.markdown(f"""
         margin-bottom: 1.5rem;
     }}
     
-    .chip {{
+    .badge {{
         background: {LIGHT_GREY};
-        padding: 0.2rem 0.8rem;
+        padding: 0.25rem 0.8rem;
         border-radius: 30px;
         font-size: 0.7rem;
         color: {DARK_GREY};
@@ -130,11 +127,11 @@ st.markdown(f"""
         display: inline-block;
     }}
     
-    /* Toggle buttons */
-    .toggle-buttons {{
+    /* Toggle buttons container */
+    .toggle-container {{
         display: flex;
         gap: 0.75rem;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
     }}
     
     /* Form styling */
@@ -145,7 +142,7 @@ st.markdown(f"""
     .stTextInput > div > div > input {{
         border-radius: 12px;
         border: 1px solid {BORDER};
-        padding: 0.55rem 0.9rem;
+        padding: 0.6rem 0.9rem;
         font-size: 0.85rem;
         background: {WHITE};
         transition: all 0.2s;
@@ -156,12 +153,12 @@ st.markdown(f"""
         box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.1);
     }}
     
-    /* Button styling */
+    /* Primary button */
     .stButton > button {{
         background-color: {SPAR_RED};
         color: white;
         border: none;
-        padding: 0.55rem;
+        padding: 0.6rem;
         font-weight: 600;
         border-radius: 12px;
         width: 100%;
@@ -175,10 +172,10 @@ st.markdown(f"""
         box-shadow: 0 4px 12px rgba(227, 0, 15, 0.25);
     }}
     
-    /* Secondary button */
+    /* Secondary button (inactive tab) */
     div[data-testid="column"]:has(button[kind="secondary"]) button {{
         background-color: transparent;
-        color: {SPAR_RED};
+        color: {DARK_GREY};
         border: 1px solid {BORDER};
     }}
     
@@ -186,38 +183,20 @@ st.markdown(f"""
         background-color: {LIGHT_GREY};
         transform: none;
         box-shadow: none;
+        border-color: {SPAR_RED};
     }}
     
-    /* Divider */
-    .divider {{
-        text-align: center;
-        margin: 1rem 0;
-        position: relative;
+    /* Active tab button */
+    div[data-testid="column"]:has(button[kind="primary"]) button {{
+        background-color: {SPAR_RED};
+        color: white;
     }}
     
-    .divider::before {{
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: {BORDER};
-    }}
-    
-    .divider span {{
-        background: {WHITE};
-        padding: 0 0.8rem;
-        position: relative;
-        color: {DARK_GREY};
-        font-size: 0.7rem;
-    }}
-    
-    /* Footer text */
-    .footer-text {{
-        text-align: center;
-        font-size: 0.65rem;
-        color: {DARK_GREY};
+    /* Alert messages */
+    .stAlert {{
+        border-radius: 12px;
+        font-size: 0.75rem;
+        padding: 0.5rem;
         margin-top: 1rem;
     }}
     
@@ -284,13 +263,6 @@ st.markdown(f"""
     .stTabs [aria-selected="true"] {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         color: white;
-    }}
-    
-    /* Alert styling */
-    .stAlert {{
-        border-radius: 12px;
-        font-size: 0.75rem;
-        padding: 0.5rem;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -464,21 +436,21 @@ def check_connection():
         return False
 
 # ============================================
-# LOGIN/REGISTER SCREEN - Compact Box Layout
+# LOGIN/REGISTER SCREEN - Everything in one box
 # ============================================
 
 def login_register_screen():
     st.markdown("""
     <div class="main-container">
-        <div class="login-card">
+        <div class="main-box">
             <div class="app-name">Tengai</div>
             <div class="subtitle">Sign in to continue.</div>
             <div class="version-badge">
-                <div class="chip"><span class="dot"></span> Version 3.3.0 • Production</div>
+                <div class="badge"><span class="dot"></span> Version 3.3.0 • Production</div>
             </div>
     """, unsafe_allow_html=True)
     
-    # Toggle buttons
+    # Toggle buttons (Sign In / Create Account)
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Sign In", use_container_width=True, 
@@ -491,7 +463,7 @@ def login_register_screen():
             st.session_state.active_tab = "register"
             st.rerun()
     
-    st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 1rem;'></div>", unsafe_allow_html=True)
     
     if st.session_state.active_tab == "login":
         with st.form("login_form", clear_on_submit=False):
@@ -722,7 +694,6 @@ def main_app():
             st.divider()
             st.subheader("👑 Admin Panel")
             
-            # Registered Users Table
             with st.expander("📋 Registered Users", expanded=False):
                 users = get_all_users()
                 if users:
@@ -739,7 +710,6 @@ def main_app():
                 else:
                     st.info("No users found")
             
-            # Database Export
             st.subheader("📁 Database Export")
             users = get_all_users()
             if users:
@@ -764,7 +734,6 @@ def main_app():
                     mime="text/csv"
                 )
                 
-                # View raw JSON
                 with st.expander("View Raw JSON Data"):
                     st.json(users)
             else:
