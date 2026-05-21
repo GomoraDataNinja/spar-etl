@@ -49,85 +49,80 @@ SPAR_GREEN = "#007A3D"
 SPAR_DARK_RED = "#C4000D"
 
 # Modern colours
-GOOGLE_WHITE = "#FFFFFF"
-GOOGLE_BORDER = "#E0E0E0"
-GOOGLE_LIGHT_GREY = "#F5F5F5"
-GOOGLE_DARK_GREY = "#666666"
+WHITE = "#FFFFFF"
+BORDER = "#E5E7EB"
+LIGHT_GREY = "#F9FAFB"
+DARK_GREY = "#6B7280"
 
-# Custom CSS
+# Custom CSS - Compact, clean box layout
 st.markdown(f"""
     <style>
+    /* Main app background */
     .stApp {{
-        background: {GOOGLE_WHITE};
+        background: linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%);
     }}
     
+    /* Main container - centers the box, positioned higher */
     .main-container {{
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         min-height: 100vh;
-        padding: 1rem;
-        background: {GOOGLE_WHITE};
+        padding: 3rem 1rem 1rem 1rem;
+        background: transparent;
     }}
     
-    .main-card {{
-        background: {GOOGLE_WHITE};
-        border-radius: 12px;
-        padding: 1.5rem 2rem 1.5rem 2rem;
+    /* The compact card/box */
+    .login-card {{
+        background: {WHITE};
+        border-radius: 20px;
+        padding: 2rem 2rem 1.8rem 2rem;
         width: 100%;
         max-width: 400px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        border-left: 4px solid {SPAR_RED};
-        border-right: 4px solid {SPAR_RED};
-        border-top: 1px solid {GOOGLE_BORDER};
-        border-bottom: 1px solid {GOOGLE_BORDER};
-        animation: fadeIn 0.4s ease;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        border-top: 4px solid {SPAR_RED};
+        border-bottom: 1px solid {BORDER};
     }}
     
-    @keyframes fadeIn {{
-        from {{
-            opacity: 0;
-            transform: translateY(10px);
-        }}
-        to {{
-            opacity: 1;
-            transform: translateY(0);
-        }}
-    }}
-    
-    .title {{
-        font-size: 1.8rem;
+    /* App name styling */
+    .app-name {{
+        font-size: 2rem;
         font-weight: 700;
-        color: {SPAR_RED};
+        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-align: center;
-        margin-bottom: 0.1rem;
-        line-height: 1.2;
+        margin-bottom: 0.25rem;
+        letter-spacing: -0.5px;
     }}
     
+    /* Subtitle */
     .subtitle {{
-        color: {GOOGLE_DARK_GREY};
+        color: {DARK_GREY};
         font-size: 0.8rem;
         text-align: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1.25rem;
     }}
     
-    .chip-container {{
+    /* Version badge */
+    .version-badge {{
         text-align: center;
-        margin-bottom: 0.8rem;
+        margin-bottom: 1.5rem;
     }}
     
     .chip {{
-        background: {GOOGLE_LIGHT_GREY};
-        padding: 0.2rem 0.6rem;
-        border-radius: 20px;
-        font-size: 0.65rem;
-        color: {GOOGLE_DARK_GREY};
+        background: {LIGHT_GREY};
+        padding: 0.2rem 0.8rem;
+        border-radius: 30px;
+        font-size: 0.7rem;
+        color: {DARK_GREY};
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
     }}
     
-    .chip-dot {{
+    .dot {{
         width: 5px;
         height: 5px;
         background-color: {SPAR_GREEN};
@@ -135,30 +130,40 @@ st.markdown(f"""
         display: inline-block;
     }}
     
+    /* Toggle buttons */
+    .toggle-buttons {{
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }}
+    
+    /* Form styling */
     .stForm {{
         background: transparent;
     }}
     
     .stTextInput > div > div > input {{
-        border-radius: 8px;
-        border: 1px solid {GOOGLE_BORDER};
-        padding: 0.5rem 0.8rem;
+        border-radius: 12px;
+        border: 1px solid {BORDER};
+        padding: 0.55rem 0.9rem;
         font-size: 0.85rem;
-        background: {GOOGLE_WHITE};
+        background: {WHITE};
+        transition: all 0.2s;
     }}
     
     .stTextInput > div > div > input:focus {{
         border-color: {SPAR_RED};
-        box-shadow: 0 0 0 2px rgba(227, 0, 15, 0.1);
+        box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.1);
     }}
     
+    /* Button styling */
     .stButton > button {{
         background-color: {SPAR_RED};
         color: white;
         border: none;
-        padding: 0.5rem;
+        padding: 0.55rem;
         font-weight: 600;
-        border-radius: 8px;
+        border-radius: 12px;
         width: 100%;
         transition: all 0.2s ease;
         font-size: 0.85rem;
@@ -167,22 +172,26 @@ st.markdown(f"""
     .stButton > button:hover {{
         background-color: {SPAR_DARK_RED};
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(227, 0, 15, 0.25);
     }}
     
+    /* Secondary button */
     div[data-testid="column"]:has(button[kind="secondary"]) button {{
         background-color: transparent;
         color: {SPAR_RED};
-        border: 1px solid {GOOGLE_BORDER};
+        border: 1px solid {BORDER};
     }}
     
     div[data-testid="column"]:has(button[kind="secondary"]) button:hover {{
-        background-color: {GOOGLE_LIGHT_GREY};
+        background-color: {LIGHT_GREY};
         transform: none;
+        box-shadow: none;
     }}
     
+    /* Divider */
     .divider {{
         text-align: center;
-        margin: 0.8rem 0;
+        margin: 1rem 0;
         position: relative;
     }}
     
@@ -193,35 +202,41 @@ st.markdown(f"""
         left: 0;
         right: 0;
         height: 1px;
-        background: {GOOGLE_BORDER};
+        background: {BORDER};
     }}
     
     .divider span {{
-        background: {GOOGLE_WHITE};
+        background: {WHITE};
         padding: 0 0.8rem;
         position: relative;
-        color: {GOOGLE_DARK_GREY};
+        color: {DARK_GREY};
         font-size: 0.7rem;
     }}
     
+    /* Footer text */
     .footer-text {{
         text-align: center;
         font-size: 0.65rem;
-        color: {GOOGLE_DARK_GREY};
-        margin-top: 0.8rem;
+        color: {DARK_GREY};
+        margin-top: 1rem;
     }}
     
+    /* Main app styles after login */
     .app-header {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         padding: 1rem 1.5rem;
-        border-radius: 12px;
+        border-radius: 16px;
         margin-bottom: 1.5rem;
         color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }}
     
     .app-header h1 {{
         margin: 0;
         font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }}
     
     .app-header p {{
@@ -232,22 +247,22 @@ st.markdown(f"""
     
     .content-card {{
         background: white;
-        padding: 1rem;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         margin-bottom: 1rem;
-        border: 1px solid {GOOGLE_BORDER};
+        border: 1px solid {BORDER};
         border-left: 3px solid {SPAR_RED};
     }}
     
     .user-info {{
         background: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 30px;
+        padding: 0.3rem 1rem;
+        border-radius: 40px;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         font-size: 0.75rem;
     }}
     
@@ -255,34 +270,39 @@ st.markdown(f"""
         gap: 0.3rem;
         background-color: white;
         padding: 0.3rem;
-        border-radius: 10px;
-        border: 1px solid {GOOGLE_BORDER};
+        border-radius: 12px;
+        border: 1px solid {BORDER};
         margin-bottom: 1rem;
     }}
     
     .stTabs [data-baseweb="tab"] {{
-        border-radius: 6px;
-        padding: 0.3rem 0.8rem;
+        border-radius: 8px;
+        padding: 0.3rem 1rem;
         font-size: 0.8rem;
     }}
     
     .stTabs [aria-selected="true"] {{
-        background-color: {SPAR_RED};
+        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         color: white;
+    }}
+    
+    /* Alert styling */
+    .stAlert {{
+        border-radius: 12px;
+        font-size: 0.75rem;
+        padding: 0.5rem;
     }}
     </style>
 """, unsafe_allow_html=True)
 
 # ============================================
-# USER STORAGE (File-based, no Google Sheets)
+# USER STORAGE (File-based)
 # ============================================
 
 def get_users_file():
-    """Get the users file path"""
     return Path("users_data.json")
 
 def get_all_users():
-    """Get all users from JSON file"""
     users_file = get_users_file()
     if users_file.exists():
         try:
@@ -293,7 +313,6 @@ def get_all_users():
     return {}
 
 def save_user(email, name, username, password_hash, role):
-    """Save a new user to JSON file"""
     users_file = get_users_file()
     users = get_all_users()
     
@@ -311,7 +330,6 @@ def save_user(email, name, username, password_hash, role):
     return True
 
 def init_default_admin():
-    """Initialize default admin if no users exist"""
     users = get_all_users()
     if len(users) == 0:
         save_user(
@@ -446,20 +464,21 @@ def check_connection():
         return False
 
 # ============================================
-# LOGIN/REGISTER SCREEN
+# LOGIN/REGISTER SCREEN - Compact Box Layout
 # ============================================
 
 def login_register_screen():
     st.markdown("""
     <div class="main-container">
-        <div class="main-card">
-            <div class="title">Tengai</div>
+        <div class="login-card">
+            <div class="app-name">Tengai</div>
             <div class="subtitle">Sign in to continue.</div>
-            <div class="chip-container">
-                <div class="chip"><span class="chip-dot"></span> Version 3.3.0 • Production</div>
+            <div class="version-badge">
+                <div class="chip"><span class="dot"></span> Version 3.3.0 • Production</div>
             </div>
     """, unsafe_allow_html=True)
     
+    # Toggle buttons
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Sign In", use_container_width=True, 
@@ -472,10 +491,10 @@ def login_register_screen():
             st.session_state.active_tab = "register"
             st.rerun()
     
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
     
     if st.session_state.active_tab == "login":
-        with st.form("login_form"):
+        with st.form("login_form", clear_on_submit=False):
             email = st.text_input("Email", placeholder="your@email.com")
             password = st.text_input("Password", type="password", placeholder="Enter your password")
             
@@ -493,7 +512,7 @@ def login_register_screen():
                 else:
                     st.error("Please enter email and password")
     else:
-        with st.form("register_form"):
+        with st.form("register_form", clear_on_submit=False):
             name = st.text_input("Full Name", placeholder="Enter your full name")
             username = st.text_input("Username", placeholder="Choose a username")
             email = st.text_input("Email", placeholder="your@email.com")
@@ -587,7 +606,7 @@ def main_app():
                 with col_h:
                     total_sales = quantity * unit_price
                     st.markdown(f"""
-                    <div style="background: #F8F9FA; padding: 0.5rem; border-radius: 8px; text-align: center;">
+                    <div style="background: #F8F9FA; padding: 0.5rem; border-radius: 10px; text-align: center;">
                         <strong>💰 Total:</strong> <span style="font-size: 1.1rem; color: #E3000F;">${total_sales:,.2f}</span>
                     </div>
                     """, unsafe_allow_html=True)
@@ -702,7 +721,9 @@ def main_app():
         if st.session_state.current_user['role'] == 'admin':
             st.divider()
             st.subheader("👑 Admin Panel")
-            with st.expander("Registered Users"):
+            
+            # Registered Users Table
+            with st.expander("📋 Registered Users", expanded=False):
                 users = get_all_users()
                 if users:
                     users_list = []
@@ -715,6 +736,39 @@ def main_app():
                             'Joined': user['created_at'][:10] if user['created_at'] else 'N/A'
                         })
                     st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
+                else:
+                    st.info("No users found")
+            
+            # Database Export
+            st.subheader("📁 Database Export")
+            users = get_all_users()
+            if users:
+                users_list = []
+                for email, user in users.items():
+                    users_list.append({
+                        'Name': user['name'],
+                        'Email': email,
+                        'Username': user['username'],
+                        'Role': user['role'],
+                        'Joined': user['created_at'][:19] if user['created_at'] else 'N/A'
+                    })
+                
+                users_df = pd.DataFrame(users_list)
+                st.info(f"Total Users: {len(users_df)}")
+                
+                csv = users_df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Export Users to CSV",
+                    data=csv,
+                    file_name=f"tengai_users_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                    mime="text/csv"
+                )
+                
+                # View raw JSON
+                with st.expander("View Raw JSON Data"):
+                    st.json(users)
+            else:
+                st.info("No users found")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -726,3 +780,4 @@ if st.session_state.logged_in:
     main_app()
 else:
     login_register_screen()
+    
