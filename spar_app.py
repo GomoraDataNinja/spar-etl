@@ -33,7 +33,7 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL (Update with your tunnel)
 # ============================================
-WEBHOOK_URL = "https://assessed-triumph-accessed-nam.trycloudflare.com/webhook"
+WEBHOOK_URL = "https://kitchen-council-identification-technological.trycloudflare.com"
 
 # Configure page
 st.set_page_config(
