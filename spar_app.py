@@ -13,8 +13,6 @@ from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 import hashlib
 import time
-import gspread
-from google.oauth2.service_account import Credentials
 
 # ============================================
 # APP CONFIGURATION
@@ -36,151 +34,6 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # WEBHOOK URL (Update with your tunnel)
 # ============================================
 WEBHOOK_URL = "https://kitchen-council-identification-technological.trycloudflare.com/webhook"
-
-# ============================================
-# GOOGLE SHEETS SETUP
-# ============================================
-
-def get_google_sheets_client():
-    """Get Google Sheets client using credentials from secrets or local file"""
-    try:
-        # For Streamlit Cloud - use secrets
-        if 'google' in st.secrets:
-            creds_dict = dict(st.secrets["google"])
-            creds = Credentials.from_service_account_info(
-                creds_dict,
-                scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-            )
-        else:
-            # For local development - use JSON file
-            creds = Credentials.from_service_account_file(
-                'credentials.json',
-                scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-            )
-        client = gspread.authorize(creds)
-        return client
-    except Exception as e:
-        st.error(f"Google Sheets connection error: {e}")
-        return None
-
-def init_users_sheet():
-    """Initialize the users sheet if it doesn't exist"""
-    client = get_google_sheets_client()
-    if client:
-        try:
-            # Try to open existing sheet
-            sheet = client.open("Tengai_Users").sheet1
-        except:
-            # Create new sheet
-            sheet = client.create("Tengai_Users").sheet1
-            # Add headers
-            sheet.append_row(["Email", "Name", "Username", "Password", "Role", "Created At"])
-            
-            # Add default admin
-            sheet.append_row([
-                "admin@tengai.com",
-                "Administrator",
-                "admin",
-                hashlib.sha256("Admin@123".encode()).hexdigest(),
-                "admin",
-                datetime.now().isoformat()
-            ])
-        return sheet
-    return None
-
-def get_all_users():
-    """Get all users from Google Sheets"""
-    sheet = init_users_sheet()
-    if sheet:
-        records = sheet.get_all_records()
-        users = {}
-        for record in records:
-            email = record.get('Email')
-            if email:
-                users[email] = {
-                    'name': record.get('Name', ''),
-                    'email': email,
-                    'username': record.get('Username', ''),
-                    'password': record.get('Password', ''),
-                    'role': record.get('Role', 'user'),
-                    'created_at': record.get('Created At', datetime.now().isoformat())
-                }
-        return users
-    return {}
-
-def save_user_to_sheet(email, name, username, password_hash, role):
-    """Save a new user to Google Sheets"""
-    sheet = init_users_sheet()
-    if sheet:
-        sheet.append_row([
-            email,
-            name,
-            username,
-            password_hash,
-            role,
-            datetime.now().isoformat()
-        ])
-        return True
-    return False
-
-# ============================================
-# AUTHENTICATION FUNCTIONS
-# ============================================
-
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-def verify_password(password, hashed):
-    return hash_password(password) == hashed
-
-def register_user(name, username, email, password):
-    # Get current users
-    users = get_all_users()
-    
-    # Check if email exists
-    if email in users:
-        return False, "Email already registered"
-    
-    # Check if username exists
-    for user_email, user_data in users.items():
-        if user_data['username'] == username:
-            return False, "Username already taken"
-    
-    # Validate
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return False, "Invalid email format"
-    
-    if len(password) < 6:
-        return False, "Password must be at least 6 characters"
-    
-    # Determine role (first user becomes admin)
-    role = "admin" if len(users) == 0 else "user"
-    
-    # Save to Google Sheets
-    password_hash = hash_password(password)
-    success = save_user_to_sheet(email, name, username, password_hash, role)
-    
-    if success:
-        return True, f"Registration successful! You are the {role}."
-    else:
-        return False, "Registration failed. Please try again."
-
-def login_user(email, password):
-    users = get_all_users()
-    
-    if email in users:
-        user = users[email]
-        if verify_password(password, user['password']):
-            st.session_state.logged_in = True
-            st.session_state.current_user = user
-            return True, f"Welcome back, {user['name']}!"
-    
-    return False, "Invalid email or password"
-
-def logout_user():
-    st.session_state.logged_in = False
-    st.session_state.current_user = None
-    st.session_state.active_tab = "login"
 
 # Configure page
 st.set_page_config(
@@ -417,12 +270,110 @@ st.markdown(f"""
         background-color: {SPAR_RED};
         color: white;
     }}
-    
-    .row-widget.stSelectbox, .row-widget.stNumberInput {{
-        margin-bottom: 0.3rem;
-    }}
     </style>
 """, unsafe_allow_html=True)
+
+# ============================================
+# USER STORAGE (File-based, no Google Sheets)
+# ============================================
+
+def get_users_file():
+    """Get the users file path"""
+    return Path("users_data.json")
+
+def get_all_users():
+    """Get all users from JSON file"""
+    users_file = get_users_file()
+    if users_file.exists():
+        try:
+            with open(users_file, 'r') as f:
+                return json.load(f)
+        except:
+            pass
+    return {}
+
+def save_user(email, name, username, password_hash, role):
+    """Save a new user to JSON file"""
+    users_file = get_users_file()
+    users = get_all_users()
+    
+    users[email] = {
+        'name': name,
+        'email': email,
+        'username': username,
+        'password': password_hash,
+        'role': role,
+        'created_at': datetime.now().isoformat()
+    }
+    
+    with open(users_file, 'w') as f:
+        json.dump(users, f, indent=2)
+    return True
+
+def init_default_admin():
+    """Initialize default admin if no users exist"""
+    users = get_all_users()
+    if len(users) == 0:
+        save_user(
+            "admin@tengai.com",
+            "Administrator",
+            "admin",
+            hash_password("Admin@123"),
+            "admin"
+        )
+
+# ============================================
+# AUTHENTICATION FUNCTIONS
+# ============================================
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password, hashed):
+    return hash_password(password) == hashed
+
+def register_user(name, username, email, password):
+    users = get_all_users()
+    
+    if email in users:
+        return False, "Email already registered"
+    
+    for user_email, user_data in users.items():
+        if user_data['username'] == username:
+            return False, "Username already taken"
+    
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return False, "Invalid email format"
+    
+    if len(password) < 6:
+        return False, "Password must be at least 6 characters"
+    
+    role = "admin" if len(users) == 0 else "user"
+    password_hash = hash_password(password)
+    
+    save_user(email, name, username, password_hash, role)
+    
+    return True, f"Registration successful! You are the {role}."
+
+def login_user(email, password):
+    users = get_all_users()
+    
+    if email in users:
+        user = users[email]
+        if verify_password(password, user['password']):
+            st.session_state.logged_in = True
+            st.session_state.current_user = user
+            return True, f"Welcome back, {user['name']}!"
+    
+    return False, "Invalid email or password"
+
+def logout_user():
+    st.session_state.logged_in = False
+    st.session_state.current_user = None
+    st.session_state.active_tab = "login"
+
+# Initialize default admin
+init_default_admin()
 
 # Initialize session state
 if 'logged_in' not in st.session_state:
