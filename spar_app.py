@@ -54,31 +54,33 @@ BORDER = "#E5E7EB"
 LIGHT_GREY = "#F9FAFB"
 DARK_GREY = "#6B7280"
 
-# Custom CSS - Clean box layout
+# Custom CSS - Compact box layout, higher on page
 st.markdown(f"""
     <style>
     /* Main app background */
     .stApp {{
-        background: linear-gradient(135deg, #E8F0FE 0%, #FFFFFF 100%);
+        background: linear-gradient(135deg, #F0F2F6 0%, #FFFFFF 100%);
     }}
     
-    /* Main container - centers the box */
+    /* Main container - centers horizontally, higher vertically */
     .main-container {{
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         min-height: 100vh;
-        padding: 1rem;
+        padding-top: 4rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
         background: transparent;
     }}
     
-    /* The main box - everything inside */
+    /* The main box - larger, compact inside */
     .main-box {{
         background: {WHITE};
         border-radius: 24px;
-        padding: 2rem 2rem 2rem 2rem;
+        padding: 1.5rem 2rem 1.8rem 2rem;
         width: 100%;
-        max-width: 400px;
+        max-width: 450px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
         border: 1px solid {BORDER};
         transition: all 0.3s ease;
@@ -86,20 +88,22 @@ st.markdown(f"""
     
     /* App name */
     .app-name {{
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: {SPAR_RED};
         text-align: center;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.5rem;
         letter-spacing: -0.5px;
     }}
     
-    /* Subtitle */
+    /* Subtitle - wrapped text */
     .subtitle {{
         color: {DARK_GREY};
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         text-align: center;
         margin-bottom: 1rem;
+        line-height: 1.4;
+        padding: 0 0.5rem;
     }}
     
     /* Version badge */
@@ -127,14 +131,14 @@ st.markdown(f"""
         display: inline-block;
     }}
     
-    /* Toggle buttons container */
+    /* Toggle buttons container - compact */
     .toggle-container {{
         display: flex;
         gap: 0.75rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
     }}
     
-    /* Form styling */
+    /* Form styling - compact */
     .stForm {{
         background: transparent;
     }}
@@ -142,7 +146,7 @@ st.markdown(f"""
     .stTextInput > div > div > input {{
         border-radius: 12px;
         border: 1px solid {BORDER};
-        padding: 0.6rem 0.9rem;
+        padding: 0.55rem 0.9rem;
         font-size: 0.85rem;
         background: {WHITE};
         transition: all 0.2s;
@@ -158,7 +162,7 @@ st.markdown(f"""
         background-color: {SPAR_RED};
         color: white;
         border: none;
-        padding: 0.6rem;
+        padding: 0.55rem;
         font-weight: 600;
         border-radius: 12px;
         width: 100%;
@@ -192,13 +196,18 @@ st.markdown(f"""
         color: white;
     }}
     
-    /* Alert messages */
+    /* Alert messages - compact */
     .stAlert {{
         border-radius: 12px;
         font-size: 0.75rem;
         padding: 0.5rem;
-        margin-top: 1rem;
+        margin-top: 0.8rem;
     }}
+    
+    /* Hide default Streamlit branding */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
     
     /* Main app styles after login */
     .app-header {{
@@ -345,17 +354,18 @@ def register_user(name, username, email, password):
     
     return True, f"Registration successful! You are the {role}."
 
-def login_user(email, password):
+def login_user(username_or_email, password):
     users = get_all_users()
     
-    if email in users:
-        user = users[email]
-        if verify_password(password, user['password']):
-            st.session_state.logged_in = True
-            st.session_state.current_user = user
-            return True, f"Welcome back, {user['name']}!"
+    # Check if input is email or username
+    for email, user in users.items():
+        if user['username'] == username_or_email or email == username_or_email:
+            if verify_password(password, user['password']):
+                st.session_state.logged_in = True
+                st.session_state.current_user = user
+                return True, f"Welcome back, {user['name']}!"
     
-    return False, "Invalid email or password"
+    return False, "Invalid username or password"
 
 def logout_user():
     st.session_state.logged_in = False
@@ -436,7 +446,7 @@ def check_connection():
         return False
 
 # ============================================
-# LOGIN/REGISTER SCREEN - Everything in one box
+# LOGIN/REGISTER SCREEN - Compact, higher on page
 # ============================================
 
 def login_register_screen():
@@ -444,13 +454,13 @@ def login_register_screen():
     <div class="main-container">
         <div class="main-box">
             <div class="app-name">Tengai</div>
-            <div class="subtitle">Sign in to continue.</div>
+            <div class="subtitle">Welcome to Tengai, Your AI-Rewards Integrated App</div>
             <div class="version-badge">
                 <div class="badge"><span class="dot"></span> Version 3.3.0 • Production</div>
             </div>
     """, unsafe_allow_html=True)
     
-    # Toggle buttons (Sign In / Create Account)
+    # Toggle buttons
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Sign In", use_container_width=True, 
@@ -467,14 +477,14 @@ def login_register_screen():
     
     if st.session_state.active_tab == "login":
         with st.form("login_form", clear_on_submit=False):
-            email = st.text_input("Email", placeholder="your@email.com")
+            username = st.text_input("Name", placeholder="Enter your username or email")
             password = st.text_input("Password", type="password", placeholder="Enter your password")
             
             submitted = st.form_submit_button("Sign In", use_container_width=True)
             
             if submitted:
-                if email and password:
-                    success, message = login_user(email, password)
+                if username and password:
+                    success, message = login_user(username, password)
                     if success:
                         st.success(message)
                         time.sleep(0.5)
@@ -482,7 +492,7 @@ def login_register_screen():
                     else:
                         st.error(message)
                 else:
-                    st.error("Please enter email and password")
+                    st.error("Please enter your name and password")
     else:
         with st.form("register_form", clear_on_submit=False):
             name = st.text_input("Full Name", placeholder="Enter your full name")
