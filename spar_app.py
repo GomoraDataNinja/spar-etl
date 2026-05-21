@@ -54,12 +54,12 @@ BORDER = "#E5E7EB"
 LIGHT_GREY = "#F9FAFB"
 DARK_GREY = "#6B7280"
 
-# Custom CSS - Clean compact layout
+# Custom CSS - EVERYTHING in ONE box
 st.markdown(f"""
     <style>
     /* Main app background */
     .stApp {{
-        background: linear-gradient(135deg, #F0F2F6 0%, #FFFFFF 100%);
+        background: linear-gradient(135deg, #E8F0FE 0%, #FFFFFF 100%);
     }}
     
     /* Main container - centers horizontally, higher vertically */
@@ -74,14 +74,14 @@ st.markdown(f"""
         background: transparent;
     }}
     
-    /* The main box */
+    /* ONE BOX for everything */
     .main-box {{
         background: {WHITE};
-        border-radius: 20px;
-        padding: 1.8rem 2rem 2rem 2rem;
+        border-radius: 24px;
+        padding: 2rem 2rem 2rem 2rem;
         width: 100%;
         max-width: 420px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
         border: 1px solid {BORDER};
     }}
     
@@ -91,23 +91,23 @@ st.markdown(f"""
         font-weight: 700;
         color: {SPAR_RED};
         text-align: center;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
         letter-spacing: -0.5px;
     }}
     
-    /* Subtitle - split into two lines */
+    /* Subtitle lines */
     .subtitle-line1 {{
         color: {DARK_GREY};
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         text-align: center;
         margin-bottom: 0.2rem;
     }}
     
     .subtitle-line2 {{
         color: {DARK_GREY};
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem;
     }}
     
     /* Version badge */
@@ -118,7 +118,7 @@ st.markdown(f"""
     
     .badge {{
         background: {LIGHT_GREY};
-        padding: 0.25rem 0.8rem;
+        padding: 0.2rem 0.8rem;
         border-radius: 30px;
         font-size: 0.7rem;
         color: {DARK_GREY};
@@ -135,54 +135,81 @@ st.markdown(f"""
         display: inline-block;
     }}
     
-    /* Toggle buttons */
-    .stButton > button {{
-        background-color: {SPAR_RED};
-        color: white;
-        border: none;
-        padding: 0.5rem;
+    /* Sign In title inside box */
+    .signin-title {{
+        font-size: 1rem;
         font-weight: 600;
-        border-radius: 10px;
-        width: 100%;
-        font-size: 0.85rem;
+        color: {SPAR_RED};
+        text-align: center;
+        margin-bottom: 1rem;
     }}
     
-    div[data-testid="column"]:has(button[kind="secondary"]) button {{
-        background-color: transparent;
+    /* Form field labels */
+    .field-label {{
+        font-size: 0.75rem;
+        font-weight: 500;
         color: {DARK_GREY};
-        border: 1px solid {BORDER};
+        margin-bottom: 0.2rem;
     }}
     
-    div[data-testid="column"]:has(button[kind="secondary"]) button:hover {{
-        background-color: {LIGHT_GREY};
-        border-color: {SPAR_RED};
+    .field-hint {{
+        font-size: 0.7rem;
+        color: {DARK_GREY};
+        margin-bottom: 0.3rem;
     }}
     
-    /* Form fields */
+    /* Form styling */
+    .stForm {{
+        background: transparent;
+    }}
+    
     .stTextInput > div > div > input {{
-        border-radius: 10px;
+        border-radius: 12px;
         border: 1px solid {BORDER};
-        padding: 0.5rem 0.8rem;
+        padding: 0.6rem 0.9rem;
         font-size: 0.85rem;
+        background: {WHITE};
+        transition: all 0.2s;
+        margin-bottom: 0.5rem;
     }}
     
     .stTextInput > div > div > input:focus {{
         border-color: {SPAR_RED};
-        box-shadow: 0 0 0 2px rgba(227, 0, 15, 0.1);
+        box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.1);
     }}
     
-    /* Alert messages */
-    .stAlert {{
-        border-radius: 10px;
-        font-size: 0.75rem;
-        padding: 0.5rem;
-        margin-top: 0.8rem;
+    /* Button styling */
+    .stButton > button {{
+        background-color: {SPAR_RED};
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        font-weight: 600;
+        border-radius: 12px;
+        width: 100%;
+        transition: all 0.2s ease;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }}
+    
+    .stButton > button:hover {{
+        background-color: {SPAR_DARK_RED};
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(227, 0, 15, 0.25);
     }}
     
     /* Hide default Streamlit branding */
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     header {{visibility: hidden;}}
+    
+    /* Alert messages */
+    .stAlert {{
+        border-radius: 12px;
+        font-size: 0.75rem;
+        padding: 0.5rem;
+        margin-top: 1rem;
+    }}
     
     /* App header after login */
     .app-header {{
@@ -403,7 +430,7 @@ def check_connection():
         return False
 
 # ============================================
-# LOGIN SCREEN
+# LOGIN SCREEN - EVERYTHING IN ONE BOX
 # ============================================
 
 def login_register_screen():
@@ -416,65 +443,30 @@ def login_register_screen():
             <div class="version-badge">
                 <div class="badge"><span class="dot"></span> Version 3.3.0 - Production</div>
             </div>
+            <div class="signin-title">Sign In</div>
     """, unsafe_allow_html=True)
     
-    # Toggle buttons
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Sign In", use_container_width=True, 
-                     type="primary" if st.session_state.active_tab == "login" else "secondary"):
-            st.session_state.active_tab = "login"
-            st.rerun()
-    with col2:
-        if st.button("Create Account", use_container_width=True,
-                     type="primary" if st.session_state.active_tab == "register" else "secondary"):
-            st.session_state.active_tab = "register"
-            st.rerun()
-    
-    st.markdown("<div style='margin: 0.8rem 0;'></div>", unsafe_allow_html=True)
-    
-    if st.session_state.active_tab == "login":
-        with st.form("login_form", clear_on_submit=False):
-            username = st.text_input("Name", placeholder="Enter your username or email")
-            password = st.text_input("Password", type="password", placeholder="Enter your password")
-            
-            submitted = st.form_submit_button("Sign In", use_container_width=True)
-            
-            if submitted:
-                if username and password:
-                    success, message = login_user(username, password)
-                    if success:
-                        st.success(message)
-                        time.sleep(0.5)
-                        st.rerun()
-                    else:
-                        st.error(message)
+    # Login Form inside the same box
+    with st.form("login_form", clear_on_submit=False):
+        st.markdown('<div class="field-label">Name</div>', unsafe_allow_html=True)
+        username = st.text_input("", placeholder="Enter your username or email", label_visibility="collapsed")
+        
+        st.markdown('<div class="field-label">Password</div>', unsafe_allow_html=True)
+        password = st.text_input("", type="password", placeholder="Enter your password", label_visibility="collapsed")
+        
+        submitted = st.form_submit_button("Sign In", use_container_width=True)
+        
+        if submitted:
+            if username and password:
+                success, message = login_user(username, password)
+                if success:
+                    st.success(message)
+                    time.sleep(0.5)
+                    st.rerun()
                 else:
-                    st.error("Please enter your name and password")
-    else:
-        with st.form("register_form", clear_on_submit=False):
-            name = st.text_input("Full Name", placeholder="Enter your full name")
-            username = st.text_input("Username", placeholder="Choose a username")
-            email = st.text_input("Email", placeholder="your@email.com")
-            password = st.text_input("Password", type="password", placeholder="Min 6 characters")
-            confirm_password = st.text_input("Confirm Password", type="password")
-            
-            submitted = st.form_submit_button("Create Account", use_container_width=True)
-            
-            if submitted:
-                if not all([name, username, email, password]):
-                    st.error("Please fill all fields")
-                elif password != confirm_password:
-                    st.error("Passwords do not match")
-                else:
-                    success, message = register_user(name, username, email, password)
-                    if success:
-                        st.success(message)
-                        st.session_state.active_tab = "login"
-                        time.sleep(0.5)
-                        st.rerun()
-                    else:
-                        st.error(message)
+                    st.error(message)
+            else:
+                st.error("Please enter your name and password")
     
     st.markdown('</div></div>', unsafe_allow_html=True)
 
