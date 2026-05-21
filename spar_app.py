@@ -54,7 +54,7 @@ BORDER = "#E5E7EB"
 LIGHT_GREY = "#F9FAFB"
 DARK_GREY = "#6B7280"
 
-# Custom CSS - Compact box layout, higher on page
+# Custom CSS - Clean compact layout
 st.markdown(f"""
     <style>
     /* Main app background */
@@ -68,22 +68,21 @@ st.markdown(f"""
         justify-content: center;
         align-items: flex-start;
         min-height: 100vh;
-        padding-top: 4rem;
+        padding-top: 3rem;
         padding-left: 1rem;
         padding-right: 1rem;
         background: transparent;
     }}
     
-    /* The main box - larger, compact inside */
+    /* The main box */
     .main-box {{
         background: {WHITE};
-        border-radius: 24px;
-        padding: 1.5rem 2rem 1.8rem 2rem;
+        border-radius: 20px;
+        padding: 1.8rem 2rem 2rem 2rem;
         width: 100%;
-        max-width: 450px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+        max-width: 420px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         border: 1px solid {BORDER};
-        transition: all 0.3s ease;
     }}
     
     /* App name */
@@ -92,18 +91,23 @@ st.markdown(f"""
         font-weight: 700;
         color: {SPAR_RED};
         text-align: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
         letter-spacing: -0.5px;
     }}
     
-    /* Subtitle - wrapped text */
-    .subtitle {{
+    /* Subtitle - split into two lines */
+    .subtitle-line1 {{
         color: {DARK_GREY};
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        text-align: center;
+        margin-bottom: 0.2rem;
+    }}
+    
+    .subtitle-line2 {{
+        color: {DARK_GREY};
+        font-size: 0.85rem;
         text-align: center;
         margin-bottom: 1rem;
-        line-height: 1.4;
-        padding: 0 0.5rem;
     }}
     
     /* Version badge */
@@ -131,52 +135,18 @@ st.markdown(f"""
         display: inline-block;
     }}
     
-    /* Toggle buttons container - compact */
-    .toggle-container {{
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1.25rem;
-    }}
-    
-    /* Form styling - compact */
-    .stForm {{
-        background: transparent;
-    }}
-    
-    .stTextInput > div > div > input {{
-        border-radius: 12px;
-        border: 1px solid {BORDER};
-        padding: 0.55rem 0.9rem;
-        font-size: 0.85rem;
-        background: {WHITE};
-        transition: all 0.2s;
-    }}
-    
-    .stTextInput > div > div > input:focus {{
-        border-color: {SPAR_RED};
-        box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.1);
-    }}
-    
-    /* Primary button */
+    /* Toggle buttons */
     .stButton > button {{
         background-color: {SPAR_RED};
         color: white;
         border: none;
-        padding: 0.55rem;
+        padding: 0.5rem;
         font-weight: 600;
-        border-radius: 12px;
+        border-radius: 10px;
         width: 100%;
-        transition: all 0.2s ease;
         font-size: 0.85rem;
     }}
     
-    .stButton > button:hover {{
-        background-color: {SPAR_DARK_RED};
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(227, 0, 15, 0.25);
-    }}
-    
-    /* Secondary button (inactive tab) */
     div[data-testid="column"]:has(button[kind="secondary"]) button {{
         background-color: transparent;
         color: {DARK_GREY};
@@ -185,20 +155,25 @@ st.markdown(f"""
     
     div[data-testid="column"]:has(button[kind="secondary"]) button:hover {{
         background-color: {LIGHT_GREY};
-        transform: none;
-        box-shadow: none;
         border-color: {SPAR_RED};
     }}
     
-    /* Active tab button */
-    div[data-testid="column"]:has(button[kind="primary"]) button {{
-        background-color: {SPAR_RED};
-        color: white;
+    /* Form fields */
+    .stTextInput > div > div > input {{
+        border-radius: 10px;
+        border: 1px solid {BORDER};
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
     }}
     
-    /* Alert messages - compact */
+    .stTextInput > div > div > input:focus {{
+        border-color: {SPAR_RED};
+        box-shadow: 0 0 0 2px rgba(227, 0, 15, 0.1);
+    }}
+    
+    /* Alert messages */
     .stAlert {{
-        border-radius: 12px;
+        border-radius: 10px;
         font-size: 0.75rem;
         padding: 0.5rem;
         margin-top: 0.8rem;
@@ -209,35 +184,30 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     header {{visibility: hidden;}}
     
-    /* Main app styles after login */
+    /* App header after login */
     .app-header {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         padding: 1rem 1.5rem;
         border-radius: 16px;
         margin-bottom: 1.5rem;
         color: white;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }}
     
     .app-header h1 {{
         margin: 0;
-        font-size: 1.3rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        font-size: 1.2rem;
     }}
     
     .app-header p {{
         margin: 0.2rem 0 0 0;
         opacity: 0.9;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }}
     
     .content-card {{
         background: white;
-        padding: 1rem 1.25rem;
+        padding: 1rem;
         border-radius: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         margin-bottom: 1rem;
         border: 1px solid {BORDER};
         border-left: 3px solid {SPAR_RED};
@@ -250,34 +220,32 @@ st.markdown(f"""
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }}
     
     .stTabs [data-baseweb="tab-list"] {{
         gap: 0.3rem;
-        background-color: white;
+        background: {LIGHT_GREY};
         padding: 0.3rem;
         border-radius: 12px;
-        border: 1px solid {BORDER};
         margin-bottom: 1rem;
     }}
     
     .stTabs [data-baseweb="tab"] {{
         border-radius: 8px;
         padding: 0.3rem 1rem;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }}
     
     .stTabs [aria-selected="true"] {{
-        background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
+        background: {SPAR_RED};
         color: white;
     }}
     </style>
 """, unsafe_allow_html=True)
 
 # ============================================
-# USER STORAGE (File-based)
+# USER STORAGE
 # ============================================
 
 def get_users_file():
@@ -321,10 +289,6 @@ def init_default_admin():
             "admin"
         )
 
-# ============================================
-# AUTHENTICATION FUNCTIONS
-# ============================================
-
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -357,7 +321,6 @@ def register_user(name, username, email, password):
 def login_user(username_or_email, password):
     users = get_all_users()
     
-    # Check if input is email or username
     for email, user in users.items():
         if user['username'] == username_or_email or email == username_or_email:
             if verify_password(password, user['password']):
@@ -372,10 +335,10 @@ def logout_user():
     st.session_state.current_user = None
     st.session_state.active_tab = "login"
 
-# Initialize default admin
+# Initialize
 init_default_admin()
 
-# Initialize session state
+# Session state
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'current_user' not in st.session_state:
@@ -387,10 +350,7 @@ if 'sales_history' not in st.session_state:
 if 'offline_queue' not in st.session_state:
     st.session_state.offline_queue = []
 
-# ============================================
-# HELPER FUNCTIONS
-# ============================================
-
+# Helper functions
 def generate_sale_id():
     return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
@@ -412,17 +372,15 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         
         html_content = f"""
         <html>
-        <body style="font-family: Arial, sans-serif;">
-            <h2 style="color: #E3000F;">New SPAR Sale Recorded!</h2>
+        <body>
+            <h2 style="color:#E3000F;">New SPAR Sale!</h2>
             <p><strong>Sale ID:</strong> {sale_id}</p>
             <p><strong>Customer:</strong> {customer_name}</p>
-            <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
             <p><strong>Product:</strong> {product}</p>
             <p><strong>Quantity:</strong> {quantity}</p>
             <p><strong>Total:</strong> ${total_sales:,.2f}</p>
             <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
             <p><strong>Recorded by:</strong> {st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'}</p>
-            <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </body>
         </html>
         """
@@ -434,8 +392,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         server.send_message(msg)
         server.quit()
         return True
-    except Exception as e:
-        print(f"Email error: {e}")
+    except:
         return False
 
 def check_connection():
@@ -446,7 +403,7 @@ def check_connection():
         return False
 
 # ============================================
-# LOGIN/REGISTER SCREEN - Compact, higher on page
+# LOGIN SCREEN
 # ============================================
 
 def login_register_screen():
@@ -454,9 +411,10 @@ def login_register_screen():
     <div class="main-container">
         <div class="main-box">
             <div class="app-name">Tengai</div>
-            <div class="subtitle">Welcome to Tengai, Your AI-Rewards Integrated App</div>
+            <div class="subtitle-line1">Welcome to Tengai, Your</div>
+            <div class="subtitle-line2">AI-Rewards Integrated App</div>
             <div class="version-badge">
-                <div class="badge"><span class="dot"></span> Version 3.3.0 • Production</div>
+                <div class="badge"><span class="dot"></span> Version 3.3.0 - Production</div>
             </div>
     """, unsafe_allow_html=True)
     
@@ -473,7 +431,7 @@ def login_register_screen():
             st.session_state.active_tab = "register"
             st.rerun()
     
-    st.markdown("<div style='margin-bottom: 1rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin: 0.8rem 0;'></div>", unsafe_allow_html=True)
     
     if st.session_state.active_tab == "login":
         with st.form("login_form", clear_on_submit=False):
@@ -521,7 +479,7 @@ def login_register_screen():
     st.markdown('</div></div>', unsafe_allow_html=True)
 
 # ============================================
-# MAIN APP CONTENT
+# MAIN APP
 # ============================================
 
 def main_app():
@@ -548,7 +506,6 @@ def main_app():
     
     tab1, tab2, tab3, tab4 = st.tabs(["📝 Record Sale", "🏆 Rewards Analysis", "📊 Dashboard", "⚙️ Settings"])
     
-    # TAB 1: Record Sale
     with tab1:
         col_left, col_right = st.columns([2, 1])
         
@@ -588,8 +545,8 @@ def main_app():
                 with col_h:
                     total_sales = quantity * unit_price
                     st.markdown(f"""
-                    <div style="background: #F8F9FA; padding: 0.5rem; border-radius: 10px; text-align: center;">
-                        <strong>💰 Total:</strong> <span style="font-size: 1.1rem; color: #E3000F;">${total_sales:,.2f}</span>
+                    <div style="background:#F8F9FA; padding:0.5rem; border-radius:10px; text-align:center;">
+                        💰 Total: <strong style="color:#E3000F;">${total_sales:,.2f}</strong>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -616,11 +573,10 @@ def main_app():
                             'total_sales': total_sales,
                             'rewards_earned': rewards_earned,
                             'timestamp': datetime.now().isoformat(),
-                            'date': datetime.now().strftime('%Y-%m-%d'),
                             'recorded_by': st.session_state.current_user['name']
                         }
                         
-                        success, message = send_to_webhook(data)
+                        success, _ = send_to_webhook(data)
                         send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                         
                         if success:
@@ -629,7 +585,7 @@ def main_app():
                                 st.info(f"📧 Receipt sent to {customer_email}")
                             st.balloons()
                         else:
-                            st.warning(f"⚠️ Sale recorded but ETL offline: {message}")
+                            st.warning(f"⚠️ Sale recorded but ETL offline")
                         
                         st.session_state.sales_history.insert(0, data)
             
@@ -638,22 +594,15 @@ def main_app():
         with col_right:
             st.markdown('<div class="content-card">', unsafe_allow_html=True)
             st.markdown("### 📊 Status")
-            
-            if check_connection():
-                st.success("✅ ETL Connected")
-            else:
-                st.warning("⚠️ ETL Offline")
+            st.success("✅ ETL Connected" if check_connection() else "⚠️ ETL Offline")
             
             if st.session_state.sales_history:
                 df = pd.DataFrame(st.session_state.sales_history)
                 st.metric("Session Sales", f"${df['total_sales'].sum():,.2f}")
                 st.metric("Transactions", len(df))
             
-            st.markdown("---")
-            st.caption("Data sent to your local ETL")
             st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 2: Rewards Analysis
     with tab2:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.title("🏆 Rewards Analysis")
@@ -664,7 +613,6 @@ def main_app():
             st.dataframe(df.head(), use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 3: Dashboard
     with tab3:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.title("Sales Dashboard")
@@ -672,24 +620,17 @@ def main_app():
         if st.session_state.sales_history:
             df = pd.DataFrame(st.session_state.sales_history)
             col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Total Sales", f"${df['total_sales'].sum():,.2f}")
-            with col2:
-                st.metric("Transactions", len(df))
-            with col3:
-                st.metric("Rewards Given", f"{df['rewards_earned'].sum():,.0f} pts")
+            col1.metric("Total Sales", f"${df['total_sales'].sum():,.2f}")
+            col2.metric("Transactions", len(df))
+            col3.metric("Rewards Given", f"{df['rewards_earned'].sum():,.0f} pts")
             
-            st.subheader("Recent Transactions")
-            st.dataframe(df[['sale_id', 'customer_name', 'product', 'total_sales']].head(10), 
-                        use_container_width=True, hide_index=True)
-            
+            st.dataframe(df[['sale_id', 'customer_name', 'product', 'total_sales']].head(10), use_container_width=True)
             csv = df.to_csv(index=False)
             st.download_button("📥 Download Data", csv, f"sales_{datetime.now().strftime('%Y%m%d')}.csv")
         else:
             st.info("No sales recorded yet")
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 4: Settings
     with tab4:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.title("⚙️ Settings")
@@ -704,57 +645,25 @@ def main_app():
             st.divider()
             st.subheader("👑 Admin Panel")
             
-            with st.expander("📋 Registered Users", expanded=False):
+            with st.expander("📋 Registered Users"):
                 users = get_all_users()
                 if users:
-                    users_list = []
-                    for email, user in users.items():
-                        users_list.append({
-                            'Name': user['name'],
-                            'Email': email,
-                            'Username': user['username'],
-                            'Role': user['role'],
-                            'Joined': user['created_at'][:10] if user['created_at'] else 'N/A'
-                        })
-                    st.dataframe(pd.DataFrame(users_list), use_container_width=True, hide_index=True)
-                else:
-                    st.info("No users found")
+                    users_list = [{'Name': u['name'], 'Email': e, 'Username': u['username'], 'Role': u['role']} 
+                                  for e, u in users.items()]
+                    st.dataframe(pd.DataFrame(users_list), use_container_width=True)
             
-            st.subheader("📁 Database Export")
-            users = get_all_users()
-            if users:
-                users_list = []
-                for email, user in users.items():
-                    users_list.append({
-                        'Name': user['name'],
-                        'Email': email,
-                        'Username': user['username'],
-                        'Role': user['role'],
-                        'Joined': user['created_at'][:19] if user['created_at'] else 'N/A'
-                    })
-                
-                users_df = pd.DataFrame(users_list)
-                st.info(f"Total Users: {len(users_df)}")
-                
-                csv = users_df.to_csv(index=False)
-                st.download_button(
-                    label="📥 Export Users to CSV",
-                    data=csv,
-                    file_name=f"tengai_users_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                    mime="text/csv"
-                )
-                
-                with st.expander("View Raw JSON Data"):
+            with st.expander("📁 Export Data"):
+                users = get_all_users()
+                if users:
+                    users_df = pd.DataFrame([{'Name': u['name'], 'Email': e, 'Username': u['username'], 'Role': u['role']} 
+                                            for e, u in users.items()])
+                    csv = users_df.to_csv(index=False)
+                    st.download_button("Download Users CSV", csv, "users.csv")
                     st.json(users)
-            else:
-                st.info("No users found")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ============================================
-# MAIN
-# ============================================
-
+# Run
 if st.session_state.logged_in:
     main_app()
 else:
