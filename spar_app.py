@@ -31,6 +31,11 @@ SENDER_PASSWORD = "picz cijg kgbw zoup"
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
+# WEBHOOK URL (Updated with your new tunnel)
+# ============================================
+WEBHOOK_URL = "https://philip-joshua-sound-gmc.trycloudflare.com/webhook"
+
+# ============================================
 # SPAR BRAND COLORS
 # ============================================
 SPAR_RED = "#E3000F"
@@ -427,22 +432,66 @@ def safe_currency_format(value):
         return "$0"
 
 # ============================================
-# HELPER FUNCTIONS
+# HELPER FUNCTIONS - FIXED WEBHOOK
 # ============================================
 def generate_sale_id():
     return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
 def send_to_webhook(data):
+    """Send sales data to local ETL via webhook"""
     try:
-        return True, "Data sent to ETL"
-    except:
+        response = requests.post(WEBHOOK_URL, json=data, timeout=10)
+        if response.status_code == 200:
+            return True, "Data sent to ETL"
+        return False, f"Server error: {response.status_code}"
+    except requests.exceptions.ConnectionError:
+        return False, "Cannot connect to ETL server (tunnel may be down)"
+    except requests.exceptions.Timeout:
+        return False, "Connection timeout - ETL server slow"
+    except Exception as e:
         return False, str(e)
 
 def send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email=None):
-    return True
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = ADMIN_EMAIL
+        msg['Subject'] = f"🛒 NEW SALE - {sale_id}"
+        
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif;">
+            <h2 style="color: #E3000F;">New SPAR Sale Recorded!</h2>
+            <p><strong>Sale ID:</strong> {sale_id}</p>
+            <p><strong>Customer:</strong> {customer_name}</p>
+            <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
+            <p><strong>Product:</strong> {product}</p>
+            <p><strong>Quantity:</strong> {quantity}</p>
+            <p><strong>Total:</strong> ${total_sales:,.2f}</p>
+            <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
+            <p><strong>Recorded by:</strong> {st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'}</p>
+            <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Email error: {e}")
+        return False
 
 def check_connection():
-    return True
+    try:
+        response = requests.get(WEBHOOK_URL.replace('/webhook', '/health'), timeout=5)
+        return response.status_code == 200
+    except:
+        return False
 
 # ============================================
 # LOGIN/REGISTER SCREEN
@@ -569,21 +618,48 @@ def main_app():
                 if submitted and customer_name:
                     sale_id = generate_sale_id()
                     data = {
-                        'sale_id': sale_id, 'customer_name': customer_name, 'customer_email': customer_email,
-                        'customer_id': customer_id, 'phone': phone, 'product': product,
-                        'quantity': quantity, 'unit_price': unit_price, 'total_sales': total_sales,
-                        'rewards_earned': rewards_earned, 'timestamp': datetime.now().isoformat(),
+                        'sale_id': sale_id,
+                        'customer_name': customer_name,
+                        'customer_email': customer_email,
+                        'customer_id': customer_id,
+                        'phone': phone,
+                        'product': product,
+                        'quantity': quantity,
+                        'unit_price': unit_price,
+                        'total_sales': total_sales,
+                        'rewards_earned': rewards_earned,
+                        'timestamp': datetime.now().isoformat(),
                         'recorded_by': st.session_state.current_user['name']
                     }
+                    
+                    # Send to webhook
+                    success, message = send_to_webhook(data)
+                    
+                    # Send email notification
+                    send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
+                    
+                    # Store in session
                     st.session_state.sales_history.insert(0, data)
-                    st.success(f"✅ Sale recorded! ID: {sale_id}")
-                    st.balloons()
+                    
+                    if success:
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
+                        st.info(f"📤 {message}")
+                        st.balloons()
+                    else:
+                        st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
             st.markdown('<div class="content-card">', unsafe_allow_html=True)
             st.markdown("### 📊 Session Status")
+            
+            # Check ETL connection
+            if check_connection():
+                st.success("✅ ETL Connected")
+            else:
+                st.warning("⚠️ ETL Offline - Data will be saved locally")
+            
             if st.session_state.sales_history:
                 df = pd.DataFrame(st.session_state.sales_history)
                 st.metric("Session Sales", f"${df['total_sales'].sum():,.2f}")
