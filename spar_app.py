@@ -33,7 +33,7 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL (Updated with your new tunnel)
 # ============================================
-WEBHOOK_URL = "https://cayman-attended-issn-simpson.trycloudflare.com "
+WEBHOOK_URL = "https://cayman-attended-issn-simpson.trycloudflare.com"
 
 # ============================================
 # SPAR BRAND COLORS
