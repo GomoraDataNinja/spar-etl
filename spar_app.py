@@ -33,7 +33,7 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL (Updated with your new tunnel)
 # ============================================
-WEBHOOK_URL = "https://philip-joshua-sound-gmc.trycloudflare.com/webhook"
+WEBHOOK_URL = "https://partially-casino-docs-bunny.trycloudflare.com"
 
 # ============================================
 # SPAR BRAND COLORS
