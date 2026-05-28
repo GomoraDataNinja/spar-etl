@@ -18,7 +18,7 @@ from pathlib import Path
 # APP CONFIGURATION
 # ============================================
 APP_NAME = "Tengai"
-APP_VERSION = "3.4.0"
+APP_VERSION = "3.5.0"
 DEPLOYMENT_MODE = "production"
 
 # ============================================
@@ -249,7 +249,7 @@ if 'rfm_data' not in st.session_state:
     st.session_state.rfm_data = None
 
 # ============================================
-# DATABASE QUERY FUNCTIONS (Safe version)
+# DATABASE QUERY FUNCTIONS
 # ============================================
 
 def check_connection():
@@ -289,9 +289,10 @@ def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end
         else:
             df['sale_date'] = datetime.now().date()
         
-        # Filter by operator
+        # Filter by operator - case insensitive
         if operator_name:
-            df = df[df['recorded_by'] == operator_name]
+            operator_name_clean = operator_name.strip().lower()
+            df = df[df['recorded_by'].astype(str).str.strip().str.lower() == operator_name_clean]
         
         # Filter by date
         if date_filter == 'today':
@@ -305,37 +306,6 @@ def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end
     except Exception as e:
         print(f"Error fetching sales: {e}")
         return []
-
-def get_operator_performance(start_date, end_date):
-    """Get performance metrics for all operators"""
-    sales = get_sales_from_db(start_date=start_date, end_date=end_date)
-    
-    if not sales:
-        return pd.DataFrame()
-    
-    df = pd.DataFrame(sales)
-    
-    if df.empty:
-        return pd.DataFrame()
-    
-    if 'recorded_by' not in df.columns:
-        df['recorded_by'] = 'Unknown'
-    
-    if 'total_sales' not in df.columns:
-        df['total_sales'] = 0
-    
-    performance = df.groupby('recorded_by').agg({
-        'sale_id': 'count',
-        'total_sales': 'sum'
-    }).rename(columns={
-        'sale_id': 'transactions',
-        'total_sales': 'revenue'
-    }).reset_index()
-    
-    performance['avg_transaction'] = performance['revenue'] / performance['transactions']
-    performance = performance.sort_values('revenue', ascending=False)
-    
-    return performance
 
 # ============================================
 # REWARDS ANALYSIS FUNCTIONS
@@ -490,6 +460,7 @@ def generate_sale_id():
 def send_to_webhook(data):
     """Send sales data to local ETL via webhook"""
     try:
+        print(f"Sending to webhook: recorded_by = {data.get('recorded_by')}")
         response = requests.post(WEBHOOK_URL, json=data, timeout=10)
         if response.status_code == 200:
             return True, "Data sent to ETL"
@@ -659,7 +630,7 @@ def operator_view():
                         'sale_year': now.year,
                         'sale_time': now.strftime('%H:%M:%S'),
                         'timestamp_utc': now.isoformat(),
-                        'recorded_by': user_name,
+                        'recorded_by': user_name,  # ← CRITICAL: Operator's name
                         'etl_processed': 0,
                         'etl_processed_at': None
                     }
@@ -719,7 +690,7 @@ def operator_view():
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
                     st.metric("Customers Served", customers)
                 
-                st.markdown("#### 📋 Sales Details")
+                st.markdown("#### 📋 Your Sales Today")
                 display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
@@ -766,7 +737,7 @@ def admin_view():
         "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
     ])
     
-    # TAB 1: Record Sale (similar to operator)
+    # TAB 1: Record Sale
     with tab1:
         col_left, col_right = st.columns([2, 1])
         with col_left:
@@ -830,7 +801,7 @@ def admin_view():
                         'sale_year': now.year,
                         'sale_time': now.strftime('%H:%M:%S'),
                         'timestamp_utc': now.isoformat(),
-                        'recorded_by': user_name,
+                        'recorded_by': user_name,  # ← CRITICAL: Admin's name
                         'etl_processed': 0,
                         'etl_processed_at': None
                     }
@@ -945,6 +916,16 @@ def admin_view():
                     fig.update_layout(height=400)
                     st.plotly_chart(fig, use_container_width=True)
                 
+                # Operator performance
+                if 'recorded_by' in df.columns:
+                    st.markdown("#### 👥 Operator Performance")
+                    operator_perf = df.groupby('recorded_by').agg({
+                        'sale_id': 'count',
+                        'total_sales': 'sum'
+                    }).rename(columns={'sale_id': 'Transactions', 'total_sales': 'Revenue'}).reset_index()
+                    operator_perf['Revenue'] = operator_perf['Revenue'].apply(lambda x: f"${x:,.2f}")
+                    st.dataframe(operator_perf, use_container_width=True)
+                
                 # Download button
                 st.markdown("---")
                 csv = df.to_csv(index=False)
@@ -962,7 +943,7 @@ def admin_view():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 4: Rewards Analysis (simplified)
+    # TAB 4: Rewards Analysis
     with tab4:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown("### 🏆 Rewards Intelligence Hub")
@@ -1035,32 +1016,52 @@ def admin_view():
                     success, message = register_user(new_name, new_username, new_email, new_password, role="user")
                     if success:
                         st.success(f"✅ {message}")
+                        st.info(f"Operator can login with username: {new_username}")
                     else:
                         st.error(f"❌ {message}")
         
         st.divider()
-        st.markdown("#### 👥 Existing Operators")
+        st.markdown("#### 👥 Existing Users")
         
         users = get_all_users()
         if users:
-            operators_list = []
+            users_list = []
             for email, u in users.items():
-                operators_list.append({
+                users_list.append({
                     'Name': u['name'],
                     'Email': email,
                     'Username': u['username'],
                     'Role': '👑 ADMIN' if u['role'] == 'admin' else '🛒 OPERATOR',
                     'Created': u.get('created_at', '')[:10]
                 })
-            st.dataframe(pd.DataFrame(operators_list), use_container_width=True)
+            st.dataframe(pd.DataFrame(users_list), use_container_width=True)
         
         st.divider()
         st.markdown("#### 📊 System Status")
         
         if check_connection():
             st.success("✅ ETL Server Connected")
+            st.success("✅ Database Connection Active")
         else:
-            st.error("❌ ETL Server Offline")
+            st.error("❌ ETL Server Offline - Check Cloudflare Tunnel")
+        
+        # Debug info - show what operators are in database
+        st.divider()
+        st.markdown("#### 🔍 Database Debug Info")
+        if check_connection():
+            all_sales = get_sales_from_db()
+            if all_sales:
+                df = pd.DataFrame(all_sales)
+                if 'recorded_by' in df.columns:
+                    st.markdown("**Operators found in database:**")
+                    operators_in_db = df['recorded_by'].unique().tolist()
+                    for op in operators_in_db:
+                        st.write(f"- '{op}'")
+                    
+                    st.markdown(f"**Your current logged-in name:** '{st.session_state.current_user['name']}'")
+                    
+                    if st.session_state.current_user['name'] not in operators_in_db:
+                        st.info("Note: Your admin name hasn't recorded any sales yet. Record a sale to see it here.")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1075,4 +1076,3 @@ if st.session_state.logged_in:
         operator_view()
 else:
     login_screen()
-    
