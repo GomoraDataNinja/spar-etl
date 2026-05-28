@@ -33,7 +33,7 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL (Updated with your new tunnel)
 # ============================================
-WEBHOOK_URL = "WEBHOOK_URL = "https://occupation-slope-baptist-const.trycloudflare.com/webhook""
+WEBHOOK_URL = "https://occupation-slope-baptist-const.trycloudflare.com/webhook"
 
 # ============================================
 # SPAR BRAND COLORS
