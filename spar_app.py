@@ -18,7 +18,7 @@ from pathlib import Path
 # APP CONFIGURATION
 # ============================================
 APP_NAME = "Tengai"
-APP_VERSION = "3.3.0"
+APP_VERSION = "3.4.0"
 DEPLOYMENT_MODE = "production"
 
 # ============================================
@@ -31,7 +31,7 @@ SENDER_PASSWORD = "picz cijg kgbw zoup"
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
-# WEBHOOK URL (Updated with your new tunnel)
+# WEBHOOK URL - UPDATE THIS DAILY WITH NEW TUNNEL URL
 # ============================================
 WEBHOOK_URL = "https://occupation-slope-baptist-const.trycloudflare.com/webhook"
 
@@ -52,7 +52,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS with centered headers
+# Custom CSS
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -65,7 +65,6 @@ st.markdown(f"""
         background: linear-gradient(135deg, #F0F2F6 0%, #FFFFFF 100%);
     }}
     
-    /* Centered Header */
     .app-header {{
         background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
         padding: 1.5rem 2rem;
@@ -91,7 +90,6 @@ st.markdown(f"""
         text-align: center;
     }}
     
-    /* Centered Tabs */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 0.5rem;
         background-color: {SPAR_GRAY};
@@ -114,7 +112,6 @@ st.markdown(f"""
         color: white;
     }}
     
-    /* Cards */
     .content-card {{
         background: white;
         padding: 1.5rem;
@@ -141,7 +138,6 @@ st.markdown(f"""
         margin-bottom: 5px;
     }}
     
-    /* Login box */
     .login-box {{
         background: white;
         border-radius: 32px;
@@ -179,6 +175,14 @@ st.markdown(f"""
         font-weight: 600;
     }}
     
+    .operator-card {{
+        background: linear-gradient(135deg, {SPAR_GREEN} 0%, {SPAR_LIGHT_GREEN} 100%);
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 0.5rem;
+    }}
+    
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     header {{visibility: hidden;}}
@@ -209,7 +213,8 @@ def save_user(email, name, username, password_hash, role):
         'username': username,
         'password': password_hash,
         'role': role,
-        'created_at': datetime.now().isoformat()
+        'created_at': datetime.now().isoformat(),
+        'created_by': st.session_state.current_user['name'] if st.session_state.get('current_user') else 'system'
     }
     with open(get_users_file(), 'w') as f:
         json.dump(users, f, indent=2)
@@ -217,7 +222,12 @@ def save_user(email, name, username, password_hash, role):
 
 def init_default_admin():
     users = get_all_users()
-    if len(users) == 0:
+    admin_exists = False
+    for email, user in users.items():
+        if user.get('role') == 'admin':
+            admin_exists = True
+            break
+    if not admin_exists:
         save_user("admin@tengai.com", "Administrator", "admin", hash_password("Admin@123"), "admin")
 
 def hash_password(password):
@@ -226,7 +236,8 @@ def hash_password(password):
 def verify_password(password, hashed):
     return hash_password(password) == hashed
 
-def register_user(name, username, email, password):
+def register_user(name, username, email, password, role="user"):
+    """Only called by admin to create operators"""
     users = get_all_users()
     if email in users:
         return False, "Email already registered"
@@ -237,10 +248,9 @@ def register_user(name, username, email, password):
         return False, "Invalid email format"
     if len(password) < 6:
         return False, "Password must be at least 6 characters"
-    role = "admin" if len(users) == 0 else "user"
     password_hash = hash_password(password)
     save_user(email, name, username, password_hash, role)
-    return True, f"Registration successful! You are the {role}."
+    return True, f"Operator {name} created successfully!"
 
 def login_user(username_or_email, password):
     users = get_all_users()
@@ -255,7 +265,6 @@ def login_user(username_or_email, password):
 def logout_user():
     st.session_state.logged_in = False
     st.session_state.current_user = None
-    st.session_state.active_tab = "login"
 
 # Initialize
 init_default_admin()
@@ -265,17 +274,87 @@ if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 if 'current_user' not in st.session_state:
     st.session_state.current_user = None
-if 'active_tab' not in st.session_state:
-    st.session_state.active_tab = "login"
 if 'sales_history' not in st.session_state:
     st.session_state.sales_history = []
 if 'rewards_df' not in st.session_state:
     st.session_state.rewards_df = None
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+if 'rfm_data' not in st.session_state:
+    st.session_state.rfm_data = None
 
 # ============================================
-# REWARDS ANALYSIS FUNCTIONS (from your code)
+# DATABASE QUERY FUNCTIONS (via Webhook)
+# ============================================
+
+def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end_date=None):
+    """Fetch sales from SQL Server via Flask receiver"""
+    try:
+        # Use the /recent endpoint to get data
+        url = WEBHOOK_URL.replace('/webhook', '/recent')
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code != 200:
+            return []
+        
+        sales = response.json()
+        
+        if not sales:
+            return []
+        
+        # Convert to DataFrame for filtering
+        df = pd.DataFrame(sales)
+        
+        # Ensure sale_date is date format
+        if 'sale_date' in df.columns:
+            df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
+        elif 'created_at' in df.columns:
+            df['sale_date'] = pd.to_datetime(df['created_at']).dt.date
+        
+        # Filter by operator (for non-admin users)
+        if operator_name:
+            df = df[df['recorded_by'] == operator_name]
+        
+        # Filter by date
+        if date_filter == 'today':
+            today = datetime.now().date()
+            df = df[df['sale_date'] == today]
+        elif start_date and end_date:
+            df = df[(df['sale_date'] >= start_date) & (df['sale_date'] <= end_date)]
+        
+        return df.to_dict('records')
+    
+    except Exception as e:
+        print(f"Error fetching sales: {e}")
+        return []
+
+def get_operator_performance(start_date, end_date):
+    """Get performance metrics for all operators (Admin only)"""
+    sales = get_sales_from_db(start_date=start_date, end_date=end_date)
+    
+    if not sales:
+        return pd.DataFrame()
+    
+    df = pd.DataFrame(sales)
+    
+    if df.empty or 'recorded_by' not in df.columns:
+        return pd.DataFrame()
+    
+    performance = df.groupby('recorded_by').agg({
+        'sale_id': 'count',
+        'total_sales': 'sum',
+        'customer_name': 'nunique'
+    }).rename(columns={
+        'sale_id': 'transactions',
+        'total_sales': 'revenue',
+        'customer_name': 'unique_customers'
+    }).reset_index()
+    
+    performance['avg_transaction'] = performance['revenue'] / performance['transactions']
+    performance = performance.sort_values('revenue', ascending=False)
+    
+    return performance
+
+# ============================================
+# REWARDS ANALYSIS FUNCTIONS
 # ============================================
 
 def calculate_age_group(birthdate):
@@ -432,10 +511,10 @@ def safe_currency_format(value):
         return "$0"
 
 # ============================================
-# HELPER FUNCTIONS - FIXED WEBHOOK
+# HELPER FUNCTIONS
 # ============================================
 def generate_sale_id():
-    return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}"
 
 def send_to_webhook(data):
     """Send sales data to local ETL via webhook"""
@@ -458,6 +537,8 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         msg['To'] = ADMIN_EMAIL
         msg['Subject'] = f"🛒 NEW SALE - {sale_id}"
         
+        recorded_by = st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'
+        
         html_content = f"""
         <html>
         <body style="font-family: Arial, sans-serif;">
@@ -469,7 +550,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
             <p><strong>Quantity:</strong> {quantity}</p>
             <p><strong>Total:</strong> ${total_sales:,.2f}</p>
             <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
-            <p><strong>Recorded by:</strong> {st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'}</p>
+            <p><strong>Recorded by:</strong> {recorded_by}</p>
             <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </body>
         </html>
@@ -488,7 +569,8 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
 
 def check_connection():
     try:
-        response = requests.get(WEBHOOK_URL.replace('/webhook', '/health'), timeout=5)
+        health_url = WEBHOOK_URL.replace('/webhook', '/health')
+        response = requests.get(health_url, timeout=5)
         return response.status_code == 200
     except:
         return False
@@ -496,71 +578,53 @@ def check_connection():
 # ============================================
 # LOGIN/REGISTER SCREEN
 # ============================================
-def login_register_screen():
+def login_screen():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.markdown('<div class="app-name">Tengai</div>', unsafe_allow_html=True)
         st.markdown('<p style="text-align: center; color: #666;">SPAR Sales & Rewards System</p>', unsafe_allow_html=True)
         
-        tab1, tab2 = st.tabs(["Sign In", "Create Account"])
+        with st.form("login_form"):
+            username = st.text_input("Username / Email", placeholder="Enter your username or email")
+            password = st.text_input("Password", type="password", placeholder="Enter your password")
+            submitted = st.form_submit_button("Sign In", use_container_width=True)
+            if submitted and username and password:
+                success, message = login_user(username, password)
+                if success:
+                    st.success(message)
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error(message)
         
-        with tab1:
-            with st.form("login_form"):
-                username = st.text_input("Username / Email", placeholder="Enter your username or email")
-                password = st.text_input("Password", type="password", placeholder="Enter your password")
-                submitted = st.form_submit_button("Sign In", use_container_width=True)
-                if submitted and username and password:
-                    success, message = login_user(username, password)
-                    if success:
-                        st.success(message)
-                        time.sleep(0.5)
-                        st.rerun()
-                    else:
-                        st.error(message)
-        
-        with tab2:
-            with st.form("register_form"):
-                name = st.text_input("Full Name", placeholder="Enter your full name")
-                username = st.text_input("Username", placeholder="Choose a username")
-                email = st.text_input("Email", placeholder="your@email.com")
-                password = st.text_input("Password", type="password", placeholder="Min 6 characters")
-                confirm = st.text_input("Confirm Password", type="password")
-                submitted = st.form_submit_button("Create Account", use_container_width=True)
-                if submitted:
-                    if not all([name, username, email, password]):
-                        st.error("Please fill all fields")
-                    elif password != confirm:
-                        st.error("Passwords do not match")
-                    else:
-                        success, message = register_user(name, username, email, password)
-                        if success:
-                            st.success(message)
-                            st.rerun()
-                        else:
-                            st.error(message)
-        
+        st.markdown('<p style="text-align: center; font-size: 0.7rem; color: #999; margin-top: 1rem;">Contact your administrator to get an account</p>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# MAIN APP
+# OPERATOR VIEW (2 Tabs)
 # ============================================
-def main_app():
-    # Centered Header
+def operator_view():
+    user_name = st.session_state.current_user['name']
+    
+    # Header
     st.markdown(f"""
     <div class="app-header">
-        <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
-        <p>Sales tracking • Rewards intelligence • Customer retention</p>
+        <h1>🛒 Tengai - SPAR Sales System</h1>
+        <p>Sales tracking • Customer management • Real-time recording</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # User info row
+    # User info
     col1, col2, col3 = st.columns([1, 2, 1])
     with col3:
         st.markdown(f"""
         <div style="display: flex; justify-content: flex-end;">
+            <div class="user-info" style="background: {SPAR_GREEN};">
+                🛒 TILL OPERATOR
+            </div>
             <div class="user-info">
-                👋 {st.session_state.current_user['name']} ({st.session_state.current_user['role'].upper()})
+                👋 {user_name}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -568,8 +632,8 @@ def main_app():
             logout_user()
             st.rerun()
     
-    # Main Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Record Sale", "🏆 Rewards Analysis", "📊 Customer Intelligence", "🎯 Action Center", "⚙️ Settings"])
+    # Operator Tabs
+    tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
     
     # TAB 1: Record Sale
     with tab1:
@@ -596,7 +660,7 @@ def main_app():
                 
                 col_e, col_f = st.columns(2)
                 with col_e:
-                    product = st.selectbox("Product", [
+                    product = st.selectbox("Product Category", [
                         "Fresh Produce", "Meat & Poultry", "Dairy", 
                         "Bakery", "Beverages", "Household", "Personal Care"
                     ])
@@ -616,34 +680,230 @@ def main_app():
                 submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
                 
                 if submitted and customer_name:
+                    now = datetime.now()
                     sale_id = generate_sale_id()
+                    
                     data = {
                         'sale_id': sale_id,
                         'customer_name': customer_name,
                         'customer_email': customer_email,
-                        'customer_id': customer_id,
-                        'phone': phone,
-                        'product': product,
+                        'customer_id': customer_id if customer_id else None,
+                        'phone': phone if phone else None,
+                        'product_category': product,
                         'quantity': quantity,
                         'unit_price': unit_price,
                         'total_sales': total_sales,
                         'rewards_earned': rewards_earned,
-                        'timestamp': datetime.now().isoformat(),
-                        'recorded_by': st.session_state.current_user['name']
+                        'sale_date': now.strftime('%Y-%m-%d'),
+                        'sale_month': now.strftime('%b').upper(),
+                        'sale_year': now.year,
+                        'sale_time': now.strftime('%H:%M:%S'),
+                        'timestamp_utc': now.isoformat(),
+                        'recorded_by': user_name,
+                        'etl_processed': 0,
+                        'etl_processed_at': None
                     }
                     
-                    # Send to webhook
                     success, message = send_to_webhook(data)
-                    
-                    # Send email notification
                     send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
-                    
-                    # Store in session
                     st.session_state.sales_history.insert(0, data)
                     
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.info(f"📤 {message}")
+                        st.balloons()
+                    else:
+                        st.warning(f"⚠️ Sale recorded locally but not sent to ETL: {message}")
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with col_right:
+            st.markdown('<div class="content-card">', unsafe_allow_html=True)
+            st.markdown("### 📊 Today's Stats")
+            
+            today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
+            
+            if today_sales:
+                df_today = pd.DataFrame(today_sales)
+                total_revenue = df_today['total_sales'].sum()
+                st.metric("💰 Today's Revenue", f"${total_revenue:,.2f}")
+                st.metric("📝 Today's Transactions", len(df_today))
+                if 'rewards_earned' in df_today.columns:
+                    st.metric("⭐ Points Given", f"{df_today['rewards_earned'].sum():,.0f}")
+            else:
+                st.info("No sales recorded yet today")
+            
+            # Check ETL connection
+            if check_connection():
+                st.success("✅ ETL Connected")
+            else:
+                st.warning("⚠️ ETL Offline - Data saved locally")
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+    
+    # TAB 2: My Sales Today
+    with tab2:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.markdown(f"### 📊 My Sales Today - {user_name}")
+        
+        today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
+        
+        if today_sales:
+            df = pd.DataFrame(today_sales)
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Transactions", len(df))
+            with col2:
+                st.metric("Total Revenue", f"${df['total_sales'].sum():,.2f}")
+            with col3:
+                avg_sale = df['total_sales'].mean()
+                st.metric("Average Sale", f"${avg_sale:.2f}")
+            with col4:
+                st.metric("Customers Served", df['customer_name'].nunique())
+            
+            st.markdown("#### 📋 Sales Details")
+            display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
+            display_df = df[display_cols].copy()
+            display_df = display_df.rename(columns={
+                'sale_id': 'Receipt #',
+                'customer_name': 'Customer',
+                'product_category': 'Product',
+                'quantity': 'Qty',
+                'total_sales': 'Amount',
+                'sale_time': 'Time'
+            })
+            st.dataframe(display_df, use_container_width=True, height=400)
+            
+            # Top products
+            if len(df) > 0:
+                st.markdown("#### 🏆 Top Products Today")
+                top_products = df.groupby('product_category')['quantity'].sum().sort_values(ascending=False).head(5)
+                if not top_products.empty:
+                    fig = px.bar(x=top_products.values, y=top_products.index, orientation='h',
+                                title="Top Selling Products", color_discrete_sequence=[SPAR_GREEN])
+                    fig.update_layout(height=300)
+                    st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("No sales recorded today. Start selling! 🛒")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ============================================
+# ADMIN VIEW (5 Tabs)
+# ============================================
+def admin_view():
+    user_name = st.session_state.current_user['name']
+    
+    # Header
+    st.markdown(f"""
+    <div class="app-header">
+        <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
+        <p>Sales tracking • Rewards intelligence • Customer retention</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # User info
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col3:
+        st.markdown(f"""
+        <div style="display: flex; justify-content: flex-end;">
+            <div class="user-info" style="background: {SPAR_RED};">
+                👑 ADMIN
+            </div>
+            <div class="user-info">
+                👋 {user_name}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Sign Out", key="signout"):
+            logout_user()
+            st.rerun()
+    
+    # Admin Tabs
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "📝 Record Sale", 
+        "📊 Today's Sales", 
+        "📈 Sales Reports", 
+        "🏆 Rewards Analysis", 
+        "⚙️ Admin Panel"
+    ])
+    
+    # TAB 1: Record Sale (Same as operator but with admin recording)
+    with tab1:
+        col_left, col_right = st.columns([2, 1])
+        with col_left:
+            st.markdown('<div class="content-card">', unsafe_allow_html=True)
+            st.markdown("### 📋 New Purchase")
+            
+            with st.form(key="sales_form_admin", clear_on_submit=True):
+                col_a, col_b = st.columns(2)
+                with col_a:
+                    customer_name = st.text_input("Customer Name *", placeholder="Enter full name")
+                with col_b:
+                    customer_email = st.text_input("Email Address", placeholder="customer@example.com")
+                
+                col_c, col_d = st.columns(2)
+                with col_c:
+                    customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional")
+                with col_d:
+                    phone = st.text_input("Phone Number", placeholder="Optional")
+                
+                st.markdown("---")
+                st.markdown("#### 🛍️ Purchase Details")
+                
+                col_e, col_f = st.columns(2)
+                with col_e:
+                    product = st.selectbox("Product Category", [
+                        "Fresh Produce", "Meat & Poultry", "Dairy", 
+                        "Bakery", "Beverages", "Household", "Personal Care"
+                    ])
+                with col_f:
+                    quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
+                
+                col_g, col_h = st.columns(2)
+                with col_g:
+                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f")
+                with col_h:
+                    total_sales = quantity * unit_price
+                    st.metric("Total Amount", f"${total_sales:,.2f}")
+                
+                rewards_earned = total_sales * 0.02
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+                
+                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
+                
+                if submitted and customer_name:
+                    now = datetime.now()
+                    sale_id = generate_sale_id()
+                    
+                    data = {
+                        'sale_id': sale_id,
+                        'customer_name': customer_name,
+                        'customer_email': customer_email,
+                        'customer_id': customer_id if customer_id else None,
+                        'phone': phone if phone else None,
+                        'product_category': product,
+                        'quantity': quantity,
+                        'unit_price': unit_price,
+                        'total_sales': total_sales,
+                        'rewards_earned': rewards_earned,
+                        'sale_date': now.strftime('%Y-%m-%d'),
+                        'sale_month': now.strftime('%b').upper(),
+                        'sale_year': now.year,
+                        'sale_time': now.strftime('%H:%M:%S'),
+                        'timestamp_utc': now.isoformat(),
+                        'recorded_by': user_name,
+                        'etl_processed': 0,
+                        'etl_processed_at': None
+                    }
+                    
+                    success, message = send_to_webhook(data)
+                    send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
+                    st.session_state.sales_history.insert(0, data)
+                    
+                    if success:
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                     else:
                         st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
@@ -652,25 +912,134 @@ def main_app():
         
         with col_right:
             st.markdown('<div class="content-card">', unsafe_allow_html=True)
-            st.markdown("### 📊 Session Status")
+            st.markdown("### 📊 System Status")
             
-            # Check ETL connection
             if check_connection():
                 st.success("✅ ETL Connected")
+                st.info("📤 Data is being sent to SQL Server")
             else:
-                st.warning("⚠️ ETL Offline - Data will be saved locally")
+                st.warning("⚠️ ETL Offline - Tunnel may be down")
             
             if st.session_state.sales_history:
                 df = pd.DataFrame(st.session_state.sales_history)
                 st.metric("Session Sales", f"${df['total_sales'].sum():,.2f}")
                 st.metric("Transactions", len(df))
-                st.metric("Rewards Given", f"{df['rewards_earned'].sum():,.0f} pts")
-            else:
-                st.info("No sales recorded yet")
+            
             st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 2: Rewards Analysis (Upload CSV)
+    # TAB 2: Today's All Sales
     with tab2:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.markdown("### 📊 Today's All Sales (All Operators)")
+        
+        today_sales = get_sales_from_db(date_filter='today')
+        
+        if today_sales:
+            df = pd.DataFrame(today_sales)
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Transactions", len(df))
+            with col2:
+                st.metric("Total Revenue", f"${df['total_sales'].sum():,.2f}")
+            with col3:
+                avg_sale = df['total_sales'].mean()
+                st.metric("Average Sale", f"${avg_sale:.2f}")
+            with col4:
+                st.metric("Active Operators", df['recorded_by'].nunique())
+            
+            st.markdown("#### 📋 Today's Sales Details")
+            display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
+            display_df = df[display_cols].copy()
+            display_df = display_df.rename(columns={
+                'sale_id': 'Receipt #',
+                'recorded_by': 'Operator',
+                'customer_name': 'Customer',
+                'product_category': 'Product',
+                'quantity': 'Qty',
+                'total_sales': 'Amount',
+                'sale_time': 'Time'
+            })
+            st.dataframe(display_df, use_container_width=True, height=400)
+            
+            # Operator breakdown
+            st.markdown("#### 👥 Operator Performance Today")
+            operator_today = df.groupby('recorded_by').agg({
+                'sale_id': 'count',
+                'total_sales': 'sum'
+            }).rename(columns={'sale_id': 'Transactions', 'total_sales': 'Revenue'}).reset_index()
+            operator_today['Revenue'] = operator_today['Revenue'].apply(lambda x: f"${x:,.2f}")
+            st.dataframe(operator_today, use_container_width=True)
+        else:
+            st.info("No sales recorded today")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # TAB 3: Sales Reports with Download
+    with tab3:
+        st.markdown('<div class="content-card">', unsafe_allow_html=True)
+        st.markdown("### 📈 Sales Reports & Analytics")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            start_date = st.date_input("Start Date", datetime.now() - timedelta(days=30))
+        with col2:
+            end_date = st.date_input("End Date", datetime.now())
+        
+        if st.button("🔄 Refresh Report", use_container_width=False):
+            st.rerun()
+        
+        sales_data = get_sales_from_db(start_date=start_date, end_date=end_date)
+        
+        if sales_data:
+            df = pd.DataFrame(sales_data)
+            
+            # Summary metrics
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Sales", f"${df['total_sales'].sum():,.2f}")
+            with col2:
+                st.metric("Transactions", len(df))
+            with col3:
+                st.metric("Unique Customers", df['customer_name'].nunique())
+            with col4:
+                st.metric("Avg Transaction", f"${df['total_sales'].mean():.2f}")
+            
+            # Daily sales trend
+            st.markdown("#### 📅 Daily Sales Trend")
+            df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
+            daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
+            fig = px.line(daily_sales, x='sale_date', y='total_sales', 
+                          title="Sales Over Time", markers=True,
+                          color_discrete_sequence=[SPAR_GREEN])
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Operator performance
+            st.markdown("#### 👥 Operator Performance Report")
+            performance = get_operator_performance(start_date, end_date)
+            if not performance.empty:
+                performance['revenue'] = performance['revenue'].apply(lambda x: f"${x:,.2f}")
+                performance['avg_transaction'] = performance['avg_transaction'].apply(lambda x: f"${x:.2f}")
+                st.dataframe(performance, use_container_width=True)
+            
+            # Download button (Admin only)
+            st.markdown("---")
+            csv = df.to_csv(index=False)
+            st.download_button(
+                label="📥 Download Full Report (CSV)",
+                data=csv,
+                file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+        else:
+            st.info(f"No sales found between {start_date} and {end_date}")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # TAB 4: Rewards Analysis
+    with tab4:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown("### 🏆 Rewards Intelligence Hub")
         st.markdown("Upload your customer transaction data to unlock powerful insights")
@@ -685,7 +1054,6 @@ def main_app():
                 st.session_state.rewards_df = df
                 st.success(f"✅ Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
                 
-                # Quick metrics
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.metric("Total Revenue", safe_currency_format(df['basket_value'].sum()))
@@ -696,7 +1064,6 @@ def main_app():
                 with col4:
                     st.metric("Avg Basket", safe_currency_format(df['basket_value'].mean()))
                 
-                # Process RFM and segments
                 rfm = calculate_rfm(df)
                 rfm = segment_customers(rfm)
                 rfm = calculate_clv(rfm)
@@ -704,45 +1071,22 @@ def main_app():
                 rfm = generate_actions(rfm)
                 rfm = rfm.reset_index()
                 
-                # Store in session for other tabs
                 st.session_state.rfm_data = rfm
-                st.session_state.raw_data = df
-                
-                # Segment Distribution Chart
-                st.markdown("---")
-                st.markdown("#### 📊 Customer Segment Distribution")
                 
                 seg_counts = rfm['segment'].value_counts().reset_index()
                 seg_counts.columns = ['Segment', 'Count']
                 fig = px.pie(seg_counts, values='Count', names='Segment', 
                              color_discrete_sequence=[SPAR_GREEN, SPAR_RED, '#FFA07A', '#D3D3D3', '#90EE90'],
                              hole=0.3)
-                fig.update_layout(height=400, title="Customer Segments")
+                fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
                 
                 # CLV Distribution
                 st.markdown("#### 💰 Customer Lifetime Value Distribution")
-                col1, col2 = st.columns(2)
-                with col1:
-                    fig = px.histogram(rfm, x='clv', nbins=30, title="CLV Distribution",
-                                      color_discrete_sequence=[SPAR_GREEN])
-                    fig.update_layout(height=350)
-                    st.plotly_chart(fig, use_container_width=True)
-                with col2:
-                    clv_by_segment = rfm.groupby('segment')['clv'].mean().reset_index()
-                    fig = px.bar(clv_by_segment, x='segment', y='clv', title="Avg CLV by Segment",
-                                color_discrete_sequence=[SPAR_RED])
-                    fig.update_layout(height=350)
-                    st.plotly_chart(fig, use_container_width=True)
-                
-                # Age Group Analysis
-                if 'age_group' in rfm.columns:
-                    st.markdown("#### 👥 Age Group Analysis")
-                    age_counts = rfm['age_group'].value_counts().reset_index()
-                    age_counts.columns = ['Age Group', 'Count']
-                    fig = px.bar(age_counts, x='Age Group', y='Count', title="Customers by Age",
-                                color_discrete_sequence=[SPAR_GREEN])
-                    st.plotly_chart(fig, use_container_width=True)
+                fig = px.histogram(rfm, x='clv', nbins=30, title="CLV Distribution",
+                                  color_discrete_sequence=[SPAR_GREEN])
+                fig.update_layout(height=350)
+                st.plotly_chart(fig, use_container_width=True)
                 
                 # Churn Risk
                 st.markdown("#### 📉 Churn Risk Analysis")
@@ -754,152 +1098,78 @@ def main_app():
                                                'Medium': '#FFA500', 'High': SPAR_RED})
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # Export buttons
-                st.markdown("---")
-                col1, col2 = st.columns(2)
-                with col1:
-                    csv = rfm[['member_number', 'segment', 'clv_segment', 'churn_risk', 'recency', 'frequency', 'monetary', 'priority']].to_csv(index=False)
-                    st.download_button("📥 Download Full Analysis", csv, "rewards_analysis.csv", use_container_width=True)
-                with col2:
-                    high_priority = rfm[rfm['priority'] == 'High'][['member_number', 'monetary', 'segment', 'recency']]
-                    if not high_priority.empty:
-                        high_csv = high_priority.to_csv(index=False)
-                        st.download_button("🚨 Download High Priority List", high_csv, "high_priority_customers.csv", use_container_width=True)
-                
+                # Export
+                csv = rfm[['member_number', 'segment', 'clv_segment', 'churn_risk', 'recency', 'frequency', 'monetary']].to_csv(index=False)
+                st.download_button("📥 Download Rewards Analysis", csv, "rewards_analysis.csv", use_container_width=True)
             else:
-                st.error("No valid data found. Please check your file format.")
+                st.error("No valid data found")
         else:
             st.info("📂 Please upload a CSV file with columns: Member Number, Redemption Date, Basket Value")
-            with st.expander("📖 View sample data format"):
-                sample_df = pd.DataFrame({
-                    'Member Number': ['M001234', 'M001234', 'M005678'],
-                    'Redemption Date': ['2026-04-01', '2026-03-15', '2026-04-05'],
-                    'Basket Value': [45.50, 32.00, 89.99],
-                    'Birthday': ['1990-05-15', '1990-05-15', '1985-12-20']
-                })
-                st.dataframe(sample_df)
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 3: Customer Intelligence Dashboard
-    with tab3:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 Customer Intelligence Dashboard")
-        
-        if hasattr(st.session_state, 'rfm_data') and st.session_state.rfm_data is not None:
-            rfm = st.session_state.rfm_data
-            
-            # Key metrics
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Total Customers", f"{len(rfm):,}")
-            with col2:
-                st.metric("Avg CLV", safe_currency_format(rfm['clv'].mean()))
-            with col3:
-                active_rate = len(rfm[rfm['recency'] <= 30]) / len(rfm) * 100
-                st.metric("Active Rate (30d)", f"{active_rate:.1f}%")
-            with col4:
-                retention_rate = len(rfm[rfm['frequency'] > 1]) / len(rfm) * 100
-                st.metric("Retention Rate", f"{retention_rate:.1f}%")
-            
-            # Alerts
-            alerts = generate_alerts(rfm)
-            if alerts:
-                st.markdown("#### 🚨 Alerts")
-                for alert in alerts:
-                    if "WARNING" in alert:
-                        st.warning(alert)
-                    elif "ALERT" in alert:
-                        st.error(alert)
-                    else:
-                        st.info(alert)
-            
-            # Customer data table
-            st.markdown("#### 📋 Customer Details")
-            display_cols = ['member_number', 'segment', 'clv_segment', 'churn_risk', 
-                           'recency', 'frequency', 'monetary', 'priority']
-            display_df = rfm[display_cols].copy()
-            display_df['monetary'] = display_df['monetary'].apply(lambda x: safe_currency_format(x))
-            display_df['recency'] = display_df['recency'].apply(lambda x: f"{int(x)} days")
-            st.dataframe(display_df, use_container_width=True, height=400)
-            
-        else:
-            st.info("📂 Please upload a rewards CSV file in the 'Rewards Analysis' tab first to see customer intelligence.")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # TAB 4: Action Center
-    with tab4:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### 🎯 Action Center - Recommended Customer Outreach")
-        
-        if hasattr(st.session_state, 'rfm_data') and st.session_state.rfm_data is not None:
-            rfm = st.session_state.rfm_data
-            
-            high_priority = rfm[rfm['priority'] == 'High'].head(15)
-            medium_priority = rfm[rfm['priority'] == 'Medium'].head(10)
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown(f"#### 🔴 High Priority ({len(rfm[rfm['priority']=='High'])} customers)")
-                for idx, row in high_priority.iterrows():
-                    st.markdown(f"""
-                    <div style="background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_DARK_RED} 100%); 
-                                padding: 12px; border-radius: 12px; margin-bottom: 10px; color: white;">
-                        <strong>{row['recommended_action']}</strong><br>
-                        👤 Member: {row['member_number']} | 💰 {safe_currency_format(row['monetary'])} | 
-                        ⏰ {int(row['recency'])} days ago | {row['segment']}
-                    </div>
-                    """, unsafe_allow_html=True)
-                if high_priority.empty:
-                    st.info("No high priority actions")
-            
-            with col2:
-                st.markdown(f"#### 🟡 Medium Priority ({len(rfm[rfm['priority']=='Medium'])} customers)")
-                for idx, row in medium_priority.iterrows():
-                    st.markdown(f"""
-                    <div style="background: linear-gradient(135deg, {SPAR_GREEN} 0%, {SPAR_LIGHT_GREEN} 100%); 
-                                padding: 12px; border-radius: 12px; margin-bottom: 10px; color: white;">
-                        <strong>{row['recommended_action']}</strong><br>
-                        👤 Member: {row['member_number']} | 💰 {safe_currency_format(row['monetary'])} | {row['segment']}
-                    </div>
-                    """, unsafe_allow_html=True)
-                if medium_priority.empty:
-                    st.info("No medium priority actions")
-            
-            # Export actions
-            st.markdown("---")
-            col1, col2 = st.columns(2)
-            with col1:
-                action_export = rfm[rfm['priority'] == 'High'][['member_number', 'recommended_action', 'monetary', 'recency', 'segment']]
-                if not action_export.empty:
-                    csv = action_export.to_csv(index=False)
-                    st.download_button("📥 Export High Priority Actions", csv, "high_priority_actions.csv", use_container_width=True)
-        else:
-            st.info("📂 Please upload a rewards CSV file in the 'Rewards Analysis' tab first to see recommended actions.")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # TAB 5: Settings
+    # TAB 5: Admin Panel - Create Operators
     with tab5:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### ⚙️ Settings")
+        st.markdown("### 👑 Admin Control Panel")
         
-        st.markdown("#### 👤 My Profile")
-        st.write(f"**Name:** {st.session_state.current_user['name']}")
-        st.write(f"**Email:** {st.session_state.current_user['email']}")
-        st.write(f"**Username:** {st.session_state.current_user['username']}")
-        st.write(f"**Role:** {st.session_state.current_user['role'].capitalize()}")
+        st.markdown("#### ➕ Create New Operator Account")
+        st.info("Operators can only record sales and view their own sales. They cannot download reports or access admin features.")
         
-        if st.session_state.current_user['role'] == 'admin':
-            st.divider()
-            st.markdown("#### 👑 Admin Panel")
-            users = get_all_users()
-            if users:
-                users_list = [{'Name': u['name'], 'Email': e, 'Username': u['username'], 'Role': u['role']} 
-                              for e, u in users.items()]
-                st.dataframe(pd.DataFrame(users_list), use_container_width=True)
+        with st.form("create_operator_form"):
+            col1, col2 = st.columns(2)
+            with col1:
+                new_name = st.text_input("Full Name *", placeholder="Operator's full name")
+                new_username = st.text_input("Username *", placeholder="operator_username")
+            with col2:
+                new_email = st.text_input("Email *", placeholder="operator@store.com")
+                new_password = st.text_input("Password *", type="password", placeholder="Min 6 characters")
+            
+            submitted = st.form_submit_button("👤 Create Operator", use_container_width=True)
+            
+            if submitted:
+                if not all([new_name, new_username, new_email, new_password]):
+                    st.error("Please fill all fields")
+                elif len(new_password) < 6:
+                    st.error("Password must be at least 6 characters")
+                else:
+                    success, message = register_user(new_name, new_username, new_email, new_password, role="user")
+                    if success:
+                        st.success(f"✅ {message}")
+                        st.info(f"Operator can now login with username: {new_username}")
+                    else:
+                        st.error(f"❌ {message}")
+        
+        st.divider()
+        st.markdown("#### 👥 Existing Operators")
+        
+        users = get_all_users()
+        if users:
+            operators_list = []
+            for email, u in users.items():
+                operators_list.append({
+                    'Name': u['name'],
+                    'Email': email,
+                    'Username': u['username'],
+                    'Role': '👑 ADMIN' if u['role'] == 'admin' else '🛒 OPERATOR',
+                    'Created By': u.get('created_by', 'system'),
+                    'Created': u.get('created_at', '')[:10]
+                })
+            df_users = pd.DataFrame(operators_list)
+            st.dataframe(df_users, use_container_width=True)
+        
+        st.divider()
+        st.markdown("#### 📊 System Status")
+        
+        if check_connection():
+            st.success("✅ ETL Server Connected")
+            st.success("✅ Database Connection Active")
+        else:
+            st.error("❌ ETL Server Offline - Check Cloudflare Tunnel")
+        
+        # Get total sales count
+        all_sales = get_sales_from_db()
+        st.metric("Total Sales in Database", len(all_sales))
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -907,6 +1177,10 @@ def main_app():
 # MAIN
 # ============================================
 if st.session_state.logged_in:
-    main_app()
+    user_role = st.session_state.current_user.get('role', 'user')
+    if user_role == 'admin':
+        admin_view()
+    else:
+        operator_view()
 else:
-    login_register_screen()
+    login_screen()
