@@ -122,22 +122,6 @@ st.markdown(f"""
         box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }}
     
-    .metric-card {{
-        background: linear-gradient(135deg, white 0%, {SPAR_GRAY} 100%);
-        padding: 1.2rem;
-        border-radius: 16px;
-        text-align: center;
-        box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
-        border-top: 3px solid {SPAR_RED};
-    }}
-    
-    .big-number {{
-        font-weight: 800;
-        font-size: 28px;
-        color: {SPAR_RED};
-        margin-bottom: 5px;
-    }}
-    
     .login-box {{
         background: white;
         border-radius: 32px;
@@ -165,22 +149,6 @@ st.markdown(f"""
         gap: 0.5rem;
         font-size: 0.75rem;
         color: white;
-    }}
-    
-    .btn-primary > button {{
-        background-color: {SPAR_RED};
-        color: white;
-        border: none;
-        border-radius: 40px;
-        font-weight: 600;
-    }}
-    
-    .operator-card {{
-        background: linear-gradient(135deg, {SPAR_GREEN} 0%, {SPAR_LIGHT_GREEN} 100%);
-        padding: 0.5rem 1rem;
-        border-radius: 12px;
-        color: white;
-        margin-bottom: 0.5rem;
     }}
     
     #MainMenu {{visibility: hidden;}}
@@ -214,7 +182,7 @@ def save_user(email, name, username, password_hash, role):
         'password': password_hash,
         'role': role,
         'created_at': datetime.now().isoformat(),
-        'created_by': st.session_state.current_user['name'] if st.session_state.get('current_user') else 'system'
+        'created_by': st.session_state.get('current_user', {}).get('name', 'system') if st.session_state.get('current_user') else 'system'
     }
     with open(get_users_file(), 'w') as f:
         json.dump(users, f, indent=2)
@@ -237,7 +205,6 @@ def verify_password(password, hashed):
     return hash_password(password) == hashed
 
 def register_user(name, username, email, password, role="user"):
-    """Only called by admin to create operators"""
     users = get_all_users()
     if email in users:
         return False, "Email already registered"
@@ -282,13 +249,21 @@ if 'rfm_data' not in st.session_state:
     st.session_state.rfm_data = None
 
 # ============================================
-# DATABASE QUERY FUNCTIONS (via Webhook)
+# DATABASE QUERY FUNCTIONS (Safe version)
 # ============================================
+
+def check_connection():
+    """Check if ETL server is reachable"""
+    try:
+        health_url = WEBHOOK_URL.replace('/webhook', '/health')
+        response = requests.get(health_url, timeout=5)
+        return response.status_code == 200
+    except:
+        return False
 
 def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end_date=None):
     """Fetch sales from SQL Server via Flask receiver"""
     try:
-        # Use the /recent endpoint to get data
         url = WEBHOOK_URL.replace('/webhook', '/recent')
         response = requests.get(url, timeout=10)
         
@@ -300,16 +275,21 @@ def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end
         if not sales:
             return []
         
-        # Convert to DataFrame for filtering
         df = pd.DataFrame(sales)
         
-        # Ensure sale_date is date format
-        if 'sale_date' in df.columns:
-            df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
-        elif 'created_at' in df.columns:
-            df['sale_date'] = pd.to_datetime(df['created_at']).dt.date
+        # Ensure recorded_by exists
+        if 'recorded_by' not in df.columns:
+            df['recorded_by'] = 'Unknown'
         
-        # Filter by operator (for non-admin users)
+        # Ensure sale_date exists
+        if 'sale_date' not in df.columns and 'created_at' in df.columns:
+            df['sale_date'] = pd.to_datetime(df['created_at']).dt.date
+        elif 'sale_date' in df.columns:
+            df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
+        else:
+            df['sale_date'] = datetime.now().date()
+        
+        # Filter by operator
         if operator_name:
             df = df[df['recorded_by'] == operator_name]
         
@@ -327,7 +307,7 @@ def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end
         return []
 
 def get_operator_performance(start_date, end_date):
-    """Get performance metrics for all operators (Admin only)"""
+    """Get performance metrics for all operators"""
     sales = get_sales_from_db(start_date=start_date, end_date=end_date)
     
     if not sales:
@@ -335,17 +315,21 @@ def get_operator_performance(start_date, end_date):
     
     df = pd.DataFrame(sales)
     
-    if df.empty or 'recorded_by' not in df.columns:
+    if df.empty:
         return pd.DataFrame()
+    
+    if 'recorded_by' not in df.columns:
+        df['recorded_by'] = 'Unknown'
+    
+    if 'total_sales' not in df.columns:
+        df['total_sales'] = 0
     
     performance = df.groupby('recorded_by').agg({
         'sale_id': 'count',
-        'total_sales': 'sum',
-        'customer_name': 'nunique'
+        'total_sales': 'sum'
     }).rename(columns={
         'sale_id': 'transactions',
-        'total_sales': 'revenue',
-        'customer_name': 'unique_customers'
+        'total_sales': 'revenue'
     }).reset_index()
     
     performance['avg_transaction'] = performance['revenue'] / performance['transactions']
@@ -489,19 +473,6 @@ def generate_actions(rfm):
     rfm['priority'] = priorities
     return rfm
 
-def generate_alerts(rfm):
-    alerts = []
-    at_risk = len(rfm[rfm['segment'] == '⚠️ At Risk'])
-    warming = len(rfm[rfm['segment'] == '⚠️ Warming'])
-    if at_risk > 30:
-        alerts.append(f"⚠️ WARNING: {at_risk} customers at risk + {warming} warming up! Immediate action recommended!")
-    elif warming > 50:
-        alerts.append(f"⚠️ HEADS UP: {warming} customers showing early warning signs")
-    churned = len(rfm[rfm['segment'] == '💔 Churned'])
-    if churned > 100:
-        alerts.append(f"💔 ALERT: {churned} customers have churned. Re-engagement campaign needed!")
-    return alerts
-
 def safe_currency_format(value):
     try:
         if pd.isna(value) or value is None:
@@ -567,16 +538,8 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         print(f"Email error: {e}")
         return False
 
-def check_connection():
-    try:
-        health_url = WEBHOOK_URL.replace('/webhook', '/health')
-        response = requests.get(health_url, timeout=5)
-        return response.status_code == 200
-    except:
-        return False
-
 # ============================================
-# LOGIN/REGISTER SCREEN
+# LOGIN SCREEN
 # ============================================
 def login_screen():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -602,12 +565,11 @@ def login_screen():
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# OPERATOR VIEW (2 Tabs)
+# OPERATOR VIEW
 # ============================================
 def operator_view():
     user_name = st.session_state.current_user['name']
     
-    # Header
     st.markdown(f"""
     <div class="app-header">
         <h1>🛒 Tengai - SPAR Sales System</h1>
@@ -615,7 +577,6 @@ def operator_view():
     </div>
     """, unsafe_allow_html=True)
     
-    # User info
     col1, col2, col3 = st.columns([1, 2, 1])
     with col3:
         st.markdown(f"""
@@ -632,7 +593,6 @@ def operator_view():
             logout_user()
             st.rerun()
     
-    # Operator Tabs
     tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
     
     # TAB 1: Record Sale
@@ -710,10 +670,9 @@ def operator_view():
                     
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
-                        st.info(f"📤 {message}")
                         st.balloons()
                     else:
-                        st.warning(f"⚠️ Sale recorded locally but not sent to ETL: {message}")
+                        st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
@@ -721,20 +680,15 @@ def operator_view():
             st.markdown('<div class="content-card">', unsafe_allow_html=True)
             st.markdown("### 📊 Today's Stats")
             
-            today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
-            
-            if today_sales:
-                df_today = pd.DataFrame(today_sales)
-                total_revenue = df_today['total_sales'].sum()
-                st.metric("💰 Today's Revenue", f"${total_revenue:,.2f}")
-                st.metric("📝 Today's Transactions", len(df_today))
-                if 'rewards_earned' in df_today.columns:
-                    st.metric("⭐ Points Given", f"{df_today['rewards_earned'].sum():,.0f}")
-            else:
-                st.info("No sales recorded yet today")
-            
-            # Check ETL connection
             if check_connection():
+                today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
+                if today_sales:
+                    df_today = pd.DataFrame(today_sales)
+                    total_revenue = df_today['total_sales'].sum() if 'total_sales' in df_today.columns else 0
+                    st.metric("💰 Today's Revenue", f"${total_revenue:,.2f}")
+                    st.metric("📝 Today's Transactions", len(df_today))
+                else:
+                    st.info("No sales recorded yet today")
                 st.success("✅ ETL Connected")
             else:
                 st.warning("⚠️ ETL Offline - Data saved locally")
@@ -746,56 +700,45 @@ def operator_view():
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown(f"### 📊 My Sales Today - {user_name}")
         
-        today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
-        
-        if today_sales:
-            df = pd.DataFrame(today_sales)
+        if check_connection():
+            today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
             
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Total Transactions", len(df))
-            with col2:
-                st.metric("Total Revenue", f"${df['total_sales'].sum():,.2f}")
-            with col3:
-                avg_sale = df['total_sales'].mean()
-                st.metric("Average Sale", f"${avg_sale:.2f}")
-            with col4:
-                st.metric("Customers Served", df['customer_name'].nunique())
-            
-            st.markdown("#### 📋 Sales Details")
-            display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
-            display_df = df[display_cols].copy()
-            display_df = display_df.rename(columns={
-                'sale_id': 'Receipt #',
-                'customer_name': 'Customer',
-                'product_category': 'Product',
-                'quantity': 'Qty',
-                'total_sales': 'Amount',
-                'sale_time': 'Time'
-            })
-            st.dataframe(display_df, use_container_width=True, height=400)
-            
-            # Top products
-            if len(df) > 0:
-                st.markdown("#### 🏆 Top Products Today")
-                top_products = df.groupby('product_category')['quantity'].sum().sort_values(ascending=False).head(5)
-                if not top_products.empty:
-                    fig = px.bar(x=top_products.values, y=top_products.index, orientation='h',
-                                title="Top Selling Products", color_discrete_sequence=[SPAR_GREEN])
-                    fig.update_layout(height=300)
-                    st.plotly_chart(fig, use_container_width=True)
+            if today_sales:
+                df = pd.DataFrame(today_sales)
+                
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Total Transactions", len(df))
+                with col2:
+                    total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
+                    st.metric("Total Revenue", f"${total_revenue:,.2f}")
+                with col3:
+                    avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
+                    st.metric("Average Sale", f"${avg_sale:.2f}")
+                with col4:
+                    customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
+                    st.metric("Customers Served", customers)
+                
+                st.markdown("#### 📋 Sales Details")
+                display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
+                available_cols = [c for c in display_cols if c in df.columns]
+                if available_cols:
+                    st.dataframe(df[available_cols], use_container_width=True, height=400)
+                else:
+                    st.info("No data to display")
+            else:
+                st.info("No sales recorded today. Start selling! 🛒")
         else:
-            st.info("No sales recorded today. Start selling! 🛒")
+            st.warning("⚠️ Cannot connect to ETL server. Please check your tunnel connection.")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW (5 Tabs)
+# ADMIN VIEW
 # ============================================
 def admin_view():
     user_name = st.session_state.current_user['name']
     
-    # Header
     st.markdown(f"""
     <div class="app-header">
         <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
@@ -803,7 +746,6 @@ def admin_view():
     </div>
     """, unsafe_allow_html=True)
     
-    # User info
     col1, col2, col3 = st.columns([1, 2, 1])
     with col3:
         st.markdown(f"""
@@ -820,16 +762,11 @@ def admin_view():
             logout_user()
             st.rerun()
     
-    # Admin Tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📝 Record Sale", 
-        "📊 Today's Sales", 
-        "📈 Sales Reports", 
-        "🏆 Rewards Analysis", 
-        "⚙️ Admin Panel"
+        "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
     ])
     
-    # TAB 1: Record Sale (Same as operator but with admin recording)
+    # TAB 1: Record Sale (similar to operator)
     with tab1:
         col_left, col_right = st.columns([2, 1])
         with col_left:
@@ -900,7 +837,6 @@ def admin_view():
                     
                     success, message = send_to_webhook(data)
                     send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
-                    st.session_state.sales_history.insert(0, data)
                     
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
@@ -920,11 +856,6 @@ def admin_view():
             else:
                 st.warning("⚠️ ETL Offline - Tunnel may be down")
             
-            if st.session_state.sales_history:
-                df = pd.DataFrame(st.session_state.sales_history)
-                st.metric("Session Sales", f"${df['total_sales'].sum():,.2f}")
-                st.metric("Transactions", len(df))
-            
             st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 2: Today's All Sales
@@ -932,50 +863,48 @@ def admin_view():
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown("### 📊 Today's All Sales (All Operators)")
         
-        today_sales = get_sales_from_db(date_filter='today')
-        
-        if today_sales:
-            df = pd.DataFrame(today_sales)
+        if check_connection():
+            today_sales = get_sales_from_db(date_filter='today')
             
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Total Transactions", len(df))
-            with col2:
-                st.metric("Total Revenue", f"${df['total_sales'].sum():,.2f}")
-            with col3:
-                avg_sale = df['total_sales'].mean()
-                st.metric("Average Sale", f"${avg_sale:.2f}")
-            with col4:
-                st.metric("Active Operators", df['recorded_by'].nunique())
-            
-            st.markdown("#### 📋 Today's Sales Details")
-            display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
-            display_df = df[display_cols].copy()
-            display_df = display_df.rename(columns={
-                'sale_id': 'Receipt #',
-                'recorded_by': 'Operator',
-                'customer_name': 'Customer',
-                'product_category': 'Product',
-                'quantity': 'Qty',
-                'total_sales': 'Amount',
-                'sale_time': 'Time'
-            })
-            st.dataframe(display_df, use_container_width=True, height=400)
-            
-            # Operator breakdown
-            st.markdown("#### 👥 Operator Performance Today")
-            operator_today = df.groupby('recorded_by').agg({
-                'sale_id': 'count',
-                'total_sales': 'sum'
-            }).rename(columns={'sale_id': 'Transactions', 'total_sales': 'Revenue'}).reset_index()
-            operator_today['Revenue'] = operator_today['Revenue'].apply(lambda x: f"${x:,.2f}")
-            st.dataframe(operator_today, use_container_width=True)
+            if today_sales:
+                df = pd.DataFrame(today_sales)
+                
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Total Transactions", len(df))
+                with col2:
+                    total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
+                    st.metric("Total Revenue", f"${total_revenue:,.2f}")
+                with col3:
+                    avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
+                    st.metric("Average Sale", f"${avg_sale:.2f}")
+                with col4:
+                    operators = df['recorded_by'].nunique() if 'recorded_by' in df.columns else 0
+                    st.metric("Active Operators", operators)
+                
+                st.markdown("#### 📋 Today's Sales Details")
+                display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
+                available_cols = [c for c in display_cols if c in df.columns]
+                if available_cols:
+                    st.dataframe(df[available_cols], use_container_width=True, height=400)
+                
+                # Operator breakdown
+                if 'recorded_by' in df.columns and 'total_sales' in df.columns:
+                    st.markdown("#### 👥 Operator Performance Today")
+                    operator_today = df.groupby('recorded_by').agg({
+                        'sale_id': 'count',
+                        'total_sales': 'sum'
+                    }).rename(columns={'sale_id': 'Transactions', 'total_sales': 'Revenue'}).reset_index()
+                    operator_today['Revenue'] = operator_today['Revenue'].apply(lambda x: f"${x:,.2f}")
+                    st.dataframe(operator_today, use_container_width=True)
+            else:
+                st.info("No sales recorded today")
         else:
-            st.info("No sales recorded today")
+            st.warning("⚠️ ETL Server not connected")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 3: Sales Reports with Download
+    # TAB 3: Sales Reports
     with tab3:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown("### 📈 Sales Reports & Analytics")
@@ -986,59 +915,54 @@ def admin_view():
         with col2:
             end_date = st.date_input("End Date", datetime.now())
         
-        if st.button("🔄 Refresh Report", use_container_width=False):
-            st.rerun()
-        
-        sales_data = get_sales_from_db(start_date=start_date, end_date=end_date)
-        
-        if sales_data:
-            df = pd.DataFrame(sales_data)
+        if check_connection():
+            sales_data = get_sales_from_db(start_date=start_date, end_date=end_date)
             
-            # Summary metrics
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Total Sales", f"${df['total_sales'].sum():,.2f}")
-            with col2:
-                st.metric("Transactions", len(df))
-            with col3:
-                st.metric("Unique Customers", df['customer_name'].nunique())
-            with col4:
-                st.metric("Avg Transaction", f"${df['total_sales'].mean():.2f}")
-            
-            # Daily sales trend
-            st.markdown("#### 📅 Daily Sales Trend")
-            df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
-            daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
-            fig = px.line(daily_sales, x='sale_date', y='total_sales', 
-                          title="Sales Over Time", markers=True,
-                          color_discrete_sequence=[SPAR_GREEN])
-            fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Operator performance
-            st.markdown("#### 👥 Operator Performance Report")
-            performance = get_operator_performance(start_date, end_date)
-            if not performance.empty:
-                performance['revenue'] = performance['revenue'].apply(lambda x: f"${x:,.2f}")
-                performance['avg_transaction'] = performance['avg_transaction'].apply(lambda x: f"${x:.2f}")
-                st.dataframe(performance, use_container_width=True)
-            
-            # Download button (Admin only)
-            st.markdown("---")
-            csv = df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download Full Report (CSV)",
-                data=csv,
-                file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+            if sales_data:
+                df = pd.DataFrame(sales_data)
+                
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
+                    st.metric("Total Sales", f"${total_revenue:,.2f}")
+                with col2:
+                    st.metric("Transactions", len(df))
+                with col3:
+                    customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
+                    st.metric("Unique Customers", customers)
+                with col4:
+                    avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
+                    st.metric("Avg Transaction", f"${avg_sale:.2f}")
+                
+                # Daily sales trend
+                if 'sale_date' in df.columns and 'total_sales' in df.columns:
+                    st.markdown("#### 📅 Daily Sales Trend")
+                    df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
+                    daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
+                    fig = px.line(daily_sales, x='sale_date', y='total_sales', 
+                                  title="Sales Over Time", markers=True,
+                                  color_discrete_sequence=[SPAR_GREEN])
+                    fig.update_layout(height=400)
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                # Download button
+                st.markdown("---")
+                csv = df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Full Report (CSV)",
+                    data=csv,
+                    file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+            else:
+                st.info(f"No sales found between {start_date} and {end_date}")
         else:
-            st.info(f"No sales found between {start_date} and {end_date}")
+            st.warning("⚠️ Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 4: Rewards Analysis
+    # TAB 4: Rewards Analysis (simplified)
     with tab4:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown("### 🏆 Rewards Intelligence Hub")
@@ -1051,7 +975,6 @@ def admin_view():
             df = clean_rewards_data(df)
             
             if not df.empty:
-                st.session_state.rewards_df = df
                 st.success(f"✅ Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
                 
                 col1, col2, col3, col4 = st.columns(4)
@@ -1071,8 +994,6 @@ def admin_view():
                 rfm = generate_actions(rfm)
                 rfm = rfm.reset_index()
                 
-                st.session_state.rfm_data = rfm
-                
                 seg_counts = rfm['segment'].value_counts().reset_index()
                 seg_counts.columns = ['Segment', 'Count']
                 fig = px.pie(seg_counts, values='Count', names='Segment', 
@@ -1080,41 +1001,19 @@ def admin_view():
                              hole=0.3)
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
-                
-                # CLV Distribution
-                st.markdown("#### 💰 Customer Lifetime Value Distribution")
-                fig = px.histogram(rfm, x='clv', nbins=30, title="CLV Distribution",
-                                  color_discrete_sequence=[SPAR_GREEN])
-                fig.update_layout(height=350)
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Churn Risk
-                st.markdown("#### 📉 Churn Risk Analysis")
-                churn_dist = rfm['churn_risk'].value_counts().reset_index()
-                churn_dist.columns = ['Risk Level', 'Count']
-                fig = px.bar(churn_dist, x='Risk Level', y='Count', title="Churn Risk Distribution",
-                            color='Risk Level',
-                            color_discrete_map={'Very Low': SPAR_GREEN, 'Low': '#90EE90', 
-                                               'Medium': '#FFA500', 'High': SPAR_RED})
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Export
-                csv = rfm[['member_number', 'segment', 'clv_segment', 'churn_risk', 'recency', 'frequency', 'monetary']].to_csv(index=False)
-                st.download_button("📥 Download Rewards Analysis", csv, "rewards_analysis.csv", use_container_width=True)
             else:
                 st.error("No valid data found")
         else:
-            st.info("📂 Please upload a CSV file with columns: Member Number, Redemption Date, Basket Value")
+            st.info("📂 Please upload a CSV file")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 5: Admin Panel - Create Operators
+    # TAB 5: Admin Panel
     with tab5:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.markdown("### 👑 Admin Control Panel")
         
         st.markdown("#### ➕ Create New Operator Account")
-        st.info("Operators can only record sales and view their own sales. They cannot download reports or access admin features.")
         
         with st.form("create_operator_form"):
             col1, col2 = st.columns(2)
@@ -1136,7 +1035,6 @@ def admin_view():
                     success, message = register_user(new_name, new_username, new_email, new_password, role="user")
                     if success:
                         st.success(f"✅ {message}")
-                        st.info(f"Operator can now login with username: {new_username}")
                     else:
                         st.error(f"❌ {message}")
         
@@ -1152,24 +1050,17 @@ def admin_view():
                     'Email': email,
                     'Username': u['username'],
                     'Role': '👑 ADMIN' if u['role'] == 'admin' else '🛒 OPERATOR',
-                    'Created By': u.get('created_by', 'system'),
                     'Created': u.get('created_at', '')[:10]
                 })
-            df_users = pd.DataFrame(operators_list)
-            st.dataframe(df_users, use_container_width=True)
+            st.dataframe(pd.DataFrame(operators_list), use_container_width=True)
         
         st.divider()
         st.markdown("#### 📊 System Status")
         
         if check_connection():
             st.success("✅ ETL Server Connected")
-            st.success("✅ Database Connection Active")
         else:
-            st.error("❌ ETL Server Offline - Check Cloudflare Tunnel")
-        
-        # Get total sales count
-        all_sales = get_sales_from_db()
-        st.metric("Total Sales in Database", len(all_sales))
+            st.error("❌ ETL Server Offline")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1184,3 +1075,4 @@ if st.session_state.logged_in:
         operator_view()
 else:
     login_screen()
+    
