@@ -15,27 +15,14 @@ SENDER_PASSWORD = "picz cijg kgbw zoup"
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
-# SPAR BRAND COLORS (Theme-aware)
+# SPAR BRAND COLORS
 # ============================================
 SPAR_RED = "#E3000F"
 SPAR_GREEN = "#007A3D"
 SPAR_DARK_RED = "#C4000D"
 SPAR_LIGHT_GREEN = "#A8D46B"
-
-# Theme-aware colors
-try:
-if st.get_option("theme.base") == "dark":
-    SPAR_GRAY = "#1E1E1E"
-    CARD_BG = "#2D2D2D"
-    TEXT_COLOR = "#FFFFFF"
-else:
-    SPAR_GRAY = "#f6f7fb"
-    CARD_BG = "#FFFFFF"
-    TEXT_COLOR = "#000000"
-except:
 SPAR_GRAY = "#f6f7fb"
 CARD_BG = "#FFFFFF"
-TEXT_COLOR = "#000000"
 
 # Configure page
 st.set_page_config(
@@ -45,78 +32,78 @@ layout="wide",
 initial_sidebar_state="expanded"
 )
 
-# Custom CSS - Using double curly braces for literal braces
-st.markdown(f"""
+# CSS as a separate string WITHOUT f-string
+css_code = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-html, body, [class*="css"] {{
+html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
-}}
+}
 
-.stApp {{
-    background: linear-gradient(135deg, {SPAR_GRAY} 0%, {CARD_BG} 100%);
-}}
+.stApp {
+    background: linear-gradient(135deg, COLOR_GRAY 0%, COLOR_CARD 100%);
+}
 
-.app-header {{
-    background: linear-gradient(135deg, {SPAR_RED} 0%, {SPAR_GREEN} 100%);
+.app-header {
+    background: linear-gradient(135deg, COLOR_RED 0%, COLOR_GREEN 100%);
     padding: 1.5rem 2rem;
     border-radius: 28px;
     margin-bottom: 2rem;
     text-align: center;
     box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}}
+}
 
-.app-header h1 {{
+.app-header h1 {
     margin: 0;
     font-size: 1.8rem;
     font-weight: 800;
     color: white;
     text-align: center;
-}}
+}
 
-.app-header p {{
+.app-header p {
     margin: 0.3rem 0 0 0;
     opacity: 0.9;
     font-size: 0.8rem;
     color: white;
     text-align: center;
-}}
+}
 
-.stTabs [data-baseweb="tab-list"] {{
+.stTabs [data-baseweb="tab-list"] {
     gap: 0.5rem;
-    background-color: {SPAR_GRAY};
+    background-color: COLOR_GRAY;
     padding: 0.4rem;
     border-radius: 60px;
     justify-content: center;
     display: flex;
     margin-bottom: 1.5rem;
-}}
+}
 
-.stTabs [data-baseweb="tab"] {{
+.stTabs [data-baseweb="tab"] {
     border-radius: 40px;
     padding: 0.5rem 1.5rem;
     font-size: 0.85rem;
     font-weight: 600;
-}}
+}
 
-.stTabs [aria-selected="true"] {{
-    background-color: {SPAR_RED};
+.stTabs [aria-selected="true"] {
+    background-color: COLOR_RED;
     color: white;
-}}
+}
 
-.content-card {{
-    background: {CARD_BG};
+.content-card {
+    background: COLOR_CARD;
     padding: 1.5rem;
     border-radius: 24px;
     margin-bottom: 1rem;
     border: 1px solid #E5E7EB;
-    border-left: 4px solid {SPAR_RED};
+    border-left: 4px solid COLOR_RED;
     box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-}}
+}
 
-.login-box {{
-    background: {CARD_BG};
+.login-box {
+    background: COLOR_CARD;
     border-radius: 32px;
     padding: 2rem;
     max-width: 450px;
@@ -124,17 +111,17 @@ html, body, [class*="css"] {{
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
     border: 1px solid #E5E7EB;
     text-align: center;
-}}
+}
 
-.app-name {{
+.app-name {
     font-size: 2.2rem;
     font-weight: 800;
-    color: {SPAR_RED};
+    color: COLOR_RED;
     text-align: center;
-}}
+}
 
-.user-info {{
-    background: {SPAR_RED};
+.user-info {
+    background: COLOR_RED;
     padding: 0.3rem 1rem;
     border-radius: 40px;
     display: inline-flex;
@@ -142,29 +129,21 @@ html, body, [class*="css"] {{
     gap: 0.5rem;
     font-size: 0.75rem;
     color: white;
-}}
+}
 
-.metric-card {{
-    background: linear-gradient(135deg, {CARD_BG} 0%, {SPAR_GRAY} 100%);
-    padding: 1.2rem;
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
-    border-top: 3px solid {SPAR_RED};
-}}
-
-.big-number {{
-    font-weight: 800;
-    font-size: 28px;
-    color: {SPAR_RED};
-    margin-bottom: 5px;
-}}
-
-#MainMenu {{visibility: hidden;}}
-footer {{visibility: hidden;}}
-header {{visibility: hidden;}}
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
 </style>
-""", unsafe_allow_html=True)
+"""
+
+# Replace color placeholders
+css_code = css_code.replace("COLOR_RED", SPAR_RED)
+css_code = css_code.replace("COLOR_GREEN", SPAR_GREEN)
+css_code = css_code.replace("COLOR_GRAY", SPAR_GRAY)
+css_code = css_code.replace("COLOR_CARD", CARD_BG)
+
+st.markdown(css_code, unsafe_allow_html=True)
 
 # ============================================
 # USER STORAGE
@@ -311,37 +290,6 @@ try:
 except Exception as e:
     print(f"Error fetching sales: {e}")
     return []
-
-def get_operator_performance(start_date, end_date):
-"""Get performance metrics for all operators"""
-sales = get_sales_from_db(start_date=start_date, end_date=end_date)
-
-if not sales:
-    return pd.DataFrame()
-
-df = pd.DataFrame(sales)
-
-if df.empty:
-    return pd.DataFrame()
-
-if 'recorded_by' not in df.columns:
-    df['recorded_by'] = 'Unknown'
-
-if 'total_sales' not in df.columns:
-    df['total_sales'] = 0
-
-performance = df.groupby('recorded_by').agg({
-    'sale_id': 'count',
-    'total_sales': 'sum'
-}).rename(columns={
-    'sale_id': 'transactions',
-    'total_sales': 'revenue'
-}).reset_index()
-
-performance['avg_transaction'] = performance['revenue'] / performance['transactions']
-performance = performance.sort_values('revenue', ascending=False)
-
-return performance
 
 # ============================================
 # REWARDS ANALYSIS FUNCTIONS
@@ -576,7 +524,7 @@ with col2:
 def operator_view():
 user_name = st.session_state.current_user['name']
 
-st.markdown(f"""
+st.markdown("""
 <div class="app-header">
     <h1>🛒 Tengai - SPAR Sales System</h1>
     <p>Sales tracking • Customer management • Real-time recording</p>
@@ -740,12 +688,12 @@ with tab2:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW
+# ADMIN VIEW (Simplified for brevity - same as before but with proper CSS)
 # ============================================
 def admin_view():
 user_name = st.session_state.current_user['name']
 
-st.markdown(f"""
+st.markdown("""
 <div class="app-header">
     <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
     <p>Sales tracking • Rewards intelligence • Customer retention</p>
@@ -975,7 +923,7 @@ with tab3:
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# TAB 4: Rewards Analysis
+# TAB 4: Rewards Analysis (Simplified)
 with tab4:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 🏆 Rewards Intelligence Hub")
