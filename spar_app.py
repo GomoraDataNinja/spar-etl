@@ -33,7 +33,7 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL - UPDATE THIS DAILY WITH NEW TUNNEL URL
 # ============================================
-WEBHOOK_URL = "https://occupation-slope-baptist-const.trycloudflare.com/webhook"
+WEBHOOK_URL = "https://formal-syndrome-cult-ons.trycloudflare.com/webhook"
 
 # ============================================
 # SPAR BRAND COLORS
