@@ -33,7 +33,11 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL - UPDATE THIS DAILY WITH NEW TUNNEL URL
 # ============================================
-WEBHOOK_URL = "https://formal-syndrome-cult-ons.trycloudflare.com/webhook"
+# WEBHOOK_URL = "https://formal-syndrome-cult-ons.trycloudflare.com/webhook"
+import os
+
+# Read URL from secrets, fallback to a default
+WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://default.trycloudflare.com/webhook")
 
 # ============================================
 # SPAR BRAND COLORS
