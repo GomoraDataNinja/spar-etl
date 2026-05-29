@@ -151,7 +151,7 @@ SPAR_PRODUCTS = {
 }
 
 # ============================================
-# CSS STYLING - WITH VISIBLE DROPDOWNS
+# CSS STYLING - COMPLETE FIX FOR VISIBILITY
 # ============================================
 st.markdown("""
 <style>
@@ -216,6 +216,10 @@ st.markdown("""
         margin-bottom: 1.25rem;
     }
     
+    /* ============================================
+       CRITICAL FIX - MAKE DROPDOWNS FULLY VISIBLE
+    ============================================ */
+    
     /* Make all labels visible and black */
     .stTextInput > label,
     .stSelectbox > label,
@@ -228,27 +232,38 @@ st.markdown("""
         text-align: left !important;
     }
     
-    /* Make selectbox input field black and visible */
+    /* Make selectbox input field container */
     .stSelectbox > div > div {
         background: white !important;
         border: 1px solid #dadce0 !important;
         border-radius: 8px !important;
-        padding: 0.6rem 0.75rem !important;
-        color: #202124 !important;
-        font-weight: 500 !important;
+        min-height: 38px !important;
     }
     
-    /* Make the selected value text BLACK and BOLD */
+    /* Make the selected value text BLACK, BOLD, and VISIBLE */
     .stSelectbox > div > div > div {
         color: #202124 !important;
         font-weight: 600 !important;
         font-size: 0.85rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
     
-    /* Make dropdown menu items visible */
+    /* Make the selected value span visible */
+    .stSelectbox [data-baseweb="select"] span {
+        color: #202124 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Fix for the select value text specifically */
     div[data-baseweb="select"] > div {
         color: #202124 !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Dropdown arrow color */
+    .stSelectbox svg {
+        fill: #5f6368 !important;
     }
     
     /* Dropdown menu container */
@@ -257,6 +272,7 @@ st.markdown("""
         border: 1px solid #dadce0 !important;
         border-radius: 8px !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        z-index: 999999 !important;
     }
     
     /* Dropdown options text */
@@ -264,12 +280,20 @@ st.markdown("""
         color: #202124 !important;
         font-weight: 500 !important;
         padding: 0.5rem 1rem !important;
+        background: white !important;
     }
     
     /* Dropdown options on hover */
     div[data-baseweb="select"] li:hover {
         background: #f1f3f4 !important;
         color: #1a73e8 !important;
+    }
+    
+    /* Selected option highlight */
+    div[data-baseweb="select"] li[aria-selected="true"] {
+        background: #e8f0fe !important;
+        color: #1a73e8 !important;
+        font-weight: 600 !important;
     }
     
     /* Make all text inputs visible */
@@ -483,6 +507,11 @@ st.markdown("""
     /* Make sure selectbox dropdown arrow is visible */
     .stSelectbox > div > div > div:last-child {
         color: #5f6368 !important;
+    }
+    
+    /* Additional fix for select value text */
+    .stSelectbox [data-testid="stMarkdownContainer"] {
+        color: #202124 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1170,10 +1199,7 @@ def admin_view():
                 st.markdown("---")
                 st.markdown("#### Purchase Details")
                 
-                # Product Category Selector
                 product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
-                
-                # Product Selector
                 products = SPAR_PRODUCTS.get(product_category, [])
                 product = st.selectbox("Product", products)
                 
