@@ -324,6 +324,10 @@ try:
     
     recorded_by = st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'
     
+    # Format the total sales value
+    formatted_total = f"${total_sales:,.2f}"
+    formatted_rewards = f"{rewards_earned:.0f}"
+    
     html_content = f"""
     <html>
     <body style="font-family: Arial, sans-serif;">
@@ -333,8 +337,8 @@ try:
         <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
         <p><strong>Product:</strong> {product}</p>
         <p><strong>Quantity:</strong> {quantity}</p>
-        <p><strong>Total:</strong> ${total_sales:,.2f}</p>
-        <p><strong>Rewards:</strong> {rewards_earned:.0f} points</p>
+        <p><strong>Total:</strong> {formatted_total}</p>
+        <p><strong>Rewards:</strong> {formatted_rewards} points</p>
         <p><strong>Recorded by:</strong> {recorded_by}</p>
         <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
     </body>
