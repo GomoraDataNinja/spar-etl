@@ -17,18 +17,22 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # SPAR BRAND COLORS (Theme-aware)
 # ============================================
-# These adapt to light/dark mode
 SPAR_RED = "#E3000F"
 SPAR_GREEN = "#007A3D"
 SPAR_DARK_RED = "#C4000D"
 SPAR_LIGHT_GREEN = "#A8D46B"
 
 # Theme-aware colors
+try:
 if st.get_option("theme.base") == "dark":
-SPAR_GRAY = "#1E1E1E"
-CARD_BG = "#2D2D2D"
-TEXT_COLOR = "#FFFFFF"
+    SPAR_GRAY = "#1E1E1E"
+    CARD_BG = "#2D2D2D"
+    TEXT_COLOR = "#FFFFFF"
 else:
+    SPAR_GRAY = "#f6f7fb"
+    CARD_BG = "#FFFFFF"
+    TEXT_COLOR = "#000000"
+except:
 SPAR_GRAY = "#f6f7fb"
 CARD_BG = "#FFFFFF"
 TEXT_COLOR = "#000000"
@@ -41,8 +45,8 @@ layout="wide",
 initial_sidebar_state="expanded"
 )
 
-# Custom CSS with theme awareness
-st.markdown(f"""
+# Custom CSS with proper f-string formatting
+css_code = f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -140,11 +144,29 @@ html, body, [class*="css"] {{
     color: white;
 }}
 
+.metric-card {{
+    background: linear-gradient(135deg, {CARD_BG} 0%, {SPAR_GRAY} 100%);
+    padding: 1.2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
+    border-top: 3px solid {SPAR_RED};
+}}
+
+.big-number {{
+    font-weight: 800;
+    font-size: 28px;
+    color: {SPAR_RED};
+    margin-bottom: 5px;
+}}
+
 #MainMenu {{visibility: hidden;}}
 footer {{visibility: hidden;}}
 header {{visibility: hidden;}}
 </style>
-""", unsafe_allow_html=True)
+"""
+
+st.markdown(css_code, unsafe_allow_html=True)
 
 # ============================================
 # USER STORAGE
@@ -291,6 +313,37 @@ try:
 except Exception as e:
     print(f"Error fetching sales: {e}")
     return []
+
+def get_operator_performance(start_date, end_date):
+"""Get performance metrics for all operators"""
+sales = get_sales_from_db(start_date=start_date, end_date=end_date)
+
+if not sales:
+    return pd.DataFrame()
+
+df = pd.DataFrame(sales)
+
+if df.empty:
+    return pd.DataFrame()
+
+if 'recorded_by' not in df.columns:
+    df['recorded_by'] = 'Unknown'
+
+if 'total_sales' not in df.columns:
+    df['total_sales'] = 0
+
+performance = df.groupby('recorded_by').agg({
+    'sale_id': 'count',
+    'total_sales': 'sum'
+}).rename(columns={
+    'sale_id': 'transactions',
+    'total_sales': 'revenue'
+}).reset_index()
+
+performance['avg_transaction'] = performance['revenue'] / performance['transactions']
+performance = performance.sort_values('revenue', ascending=False)
+
+return performance
 
 # ============================================
 # REWARDS ANALYSIS FUNCTIONS
