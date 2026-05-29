@@ -24,6 +24,133 @@ st.set_page_config(
 )
 
 # ============================================
+# PRODUCT DATA - SPAR PRODUCTS BY CATEGORY
+# ============================================
+SPAR_PRODUCTS = {
+    "Fresh Produce": [
+        "Apples - Golden Delicious",
+        "Apples - Granny Smith",
+        "Bananas - Fresh",
+        "Oranges - Navel",
+        "Avocados - Hass",
+        "Tomatoes - Vine Ripened",
+        "Potatoes - White",
+        "Onions - Brown",
+        "Carrots - Fresh",
+        "Lettuce - Iceberg",
+        "Broccoli - Fresh",
+        "Cauliflower - Fresh",
+        "Spinach - Baby Leaves",
+        "Strawberries - Fresh",
+        "Grapes - Red Seedless",
+        "Lemons - Fresh",
+        "Limes - Fresh",
+        "Mangoes - Fresh",
+        "Pineapples - Whole",
+        "Watermelon - Fresh Cut"
+    ],
+    "Meat and Poultry": [
+        "Beef - Steak (Rump)",
+        "Beef - Mince (Lean)",
+        "Chicken - Whole",
+        "Chicken - Breast Fillets",
+        "Chicken - Thighs",
+        "Pork - Chops",
+        "Pork - Ribs",
+        "Lamb - Chops",
+        "Lamb - Leg Roast",
+        "Boerewors - Classic",
+        "Sausages - Pork",
+        "Bacon - Streaky",
+        "Ham - Sliced",
+        "Turkey - Breast",
+        "Droëwors - Original"
+    ],
+    "Dairy": [
+        "Milk - Fresh Full Cream",
+        "Milk - Low Fat",
+        "Milk - Lactose Free",
+        "Cheddar Cheese - Block",
+        "Gouda Cheese - Block",
+        "Cream Cheese - Plain",
+        "Butter - Salted",
+        "Yogurt - Plain",
+        "Yogurt - Greek Style",
+        "Sour Cream",
+        "Cream - Fresh",
+        "Cottage Cheese",
+        "Mozzarella Cheese",
+        "Feta Cheese",
+        "Long Life Milk"
+    ],
+    "Bakery": [
+        "Brown Bread - Fresh",
+        "White Bread - Fresh",
+        "Whole Wheat Bread",
+        "Rolls - Sesame",
+        "Croissants - Butter",
+        "Muffins - Blueberry",
+        "Muffins - Chocolate Chip",
+        "Cupcakes - Vanilla",
+        "Doughnuts - Glazed",
+        "Pies - Steak",
+        "Pies - Chicken",
+        "Scones - Plain",
+        "Baguette - Fresh",
+        "Ciabatta - Fresh",
+        "Rye Bread"
+    ],
+    "Beverages": [
+        "Coca Cola - 2L",
+        "Coca Cola - Can",
+        "Fanta Orange - 2L",
+        "Sprite - 2L",
+        "Water - Still 500ml",
+        "Water - Sparkling",
+        "Juice - Orange",
+        "Juice - Apple",
+        "Juice - Mixed Fruit",
+        "Coffee - Instant",
+        "Tea - Rooibos",
+        "Tea - English Breakfast",
+        "Energy Drink - Red Bull",
+        "Iced Tea - Lemon"
+    ],
+    "Household": [
+        "Toilet Paper - 12 Pack",
+        "Paper Towels - 3 Pack",
+        "Dishwashing Liquid",
+        "Laundry Detergent - 2kg",
+        "Fabric Softener",
+        "All Purpose Cleaner",
+        "Bathroom Cleaner",
+        "Glass Cleaner",
+        "Garbage Bags - Large",
+        "Sponges - Pack of 4",
+        "Rubber Gloves",
+        "Mop Refill",
+        "Broom - Household"
+    ],
+    "Personal Care": [
+        "Shampoo - Regular",
+        "Conditioner - Regular",
+        "Body Wash - Fragrance",
+        "Soap - Bar",
+        "Deodorant - Roll On",
+        "Toothpaste - 100ml",
+        "Toothbrush - Soft",
+        "Facial Cleanser",
+        "Moisturizer - Face",
+        "Sunscreen - SPF 30",
+        "Hair Gel",
+        "Razor - Disposable",
+        "Shaving Cream",
+        "Cotton Balls - 100 Pack",
+        "Tissues - Pocket Pack"
+    ]
+}
+
+# ============================================
 # CLEAN LOGIN CSS - TIGHT & COMPACT
 # ============================================
 st.markdown("""
@@ -94,7 +221,8 @@ st.markdown("""
     }
     
     /* Form Styling - Tight */
-    .stTextInput > div > div > input {
+    .stTextInput > div > div > input,
+    .stSelectbox > div > div {
         border-radius: 8px;
         border: 1px solid #dadce0;
         padding: 0.6rem 0.75rem;
@@ -104,7 +232,8 @@ st.markdown("""
         margin-bottom: 0;
     }
     
-    .stTextInput > div > div > input:focus {
+    .stTextInput > div > div > input:focus,
+    .stSelectbox > div > div:focus-within {
         border-color: #1a73e8;
         box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
     }
@@ -177,6 +306,27 @@ st.markdown("""
     
     div[data-testid="stForm"] > div {
         gap: 0.5rem;
+    }
+    
+    /* Selectbox styling */
+    .stSelectbox > label {
+        font-size: 0.7rem !important;
+        color: #5f6368 !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    /* Number input styling */
+    .stNumberInput > label {
+        font-size: 0.7rem !important;
+        color: #5f6368 !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .stNumberInput > div > div > input {
+        border-radius: 8px;
+        border: 1px solid #dadce0;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -324,22 +474,18 @@ def login_screen():
     
     # Login Form
     with st.form("login_form"):
-        # Username field (hidden label)
-        st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
+        username = st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
+        password = st.text_input("Password", type="password", placeholder="Organisation password", key="password")
         
-        # Password field with visible label
-        st.text_input("Password", type="password", placeholder="Organisation password", key="password")
-        
-        # Centered button
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             submitted = st.form_submit_button("Sign In", use_container_width=False)
         
         if submitted:
-            username = st.session_state.get('username', '')
-            password = st.session_state.get('password', '')
-            if username and password:
-                success, message = login_user(username, password)
+            username_val = st.session_state.get('username', '')
+            password_val = st.session_state.get('password', '')
+            if username_val and password_val:
+                success, message = login_user(username_val, password_val)
                 if success:
                     st.success(message)
                     time.sleep(0.5)
@@ -778,16 +924,34 @@ def main_app_interface():
         }
         
         /* Form inputs */
-        .stTextInput > div > div > input, .stSelectbox > div > div, .stNumberInput > div > div > input {
+        .stTextInput > div > div > input,
+        .stSelectbox > div > div,
+        .stNumberInput > div > div > input {
             border-radius: 8px;
             border: 1px solid #dadce0;
             padding: 0.5rem 0.75rem;
             font-size: 0.8rem;
         }
         
-        .stTextInput > div > div > input:focus {
+        .stTextInput > div > div > input:focus,
+        .stSelectbox > div > div:focus-within {
             border-color: #1a73e8;
             box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+        }
+        
+        /* Selectbox label */
+        .stSelectbox > label {
+            font-size: 0.7rem !important;
+            color: #5f6368 !important;
+            font-weight: 500 !important;
+            margin-bottom: 0.25rem !important;
+        }
+        
+        .stNumberInput > label {
+            font-size: 0.7rem !important;
+            color: #5f6368 !important;
+            font-weight: 500 !important;
+            margin-bottom: 0.25rem !important;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -863,21 +1027,21 @@ def operator_view():
                 st.markdown("---")
                 st.markdown("#### Purchase Details")
                 
+                # Product Category Selector
+                product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
+                
+                # Product Selector - dynamically shows products based on selected category
+                products = SPAR_PRODUCTS.get(product_category, [])
+                product = st.selectbox("Product", products)
+                
                 col_e, col_f = st.columns(2)
                 with col_e:
-                    product = st.selectbox("Product Category", [
-                        "Fresh Produce", "Meat and Poultry", "Dairy", 
-                        "Bakery", "Beverages", "Household", "Personal Care"
-                    ])
-                with col_f:
                     quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
-                
-                col_g, col_h = st.columns(2)
-                with col_g:
+                with col_f:
                     unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f")
-                with col_h:
-                    total_sales = quantity * unit_price
-                    st.metric("Total Amount", f"${total_sales:,.2f}")
+                
+                total_sales = quantity * unit_price
+                st.metric("Total Amount", f"${total_sales:,.2f}")
                 
                 rewards_earned = total_sales * 0.02
                 st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
@@ -894,7 +1058,8 @@ def operator_view():
                         'customer_email': customer_email,
                         'customer_id': customer_id if customer_id else None,
                         'phone': phone if phone else None,
-                        'product_category': product,
+                        'product_category': product_category,
+                        'product': product,
                         'quantity': quantity,
                         'unit_price': unit_price,
                         'total_sales': total_sales,
@@ -995,7 +1160,7 @@ def operator_view():
                     """, unsafe_allow_html=True)
                 
                 st.markdown("#### Your Sales Today")
-                display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
+                display_cols = ['sale_id', 'customer_name', 'product', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=300)
@@ -1040,21 +1205,21 @@ def admin_view():
                 st.markdown("---")
                 st.markdown("#### Purchase Details")
                 
+                # Product Category Selector
+                product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
+                
+                # Product Selector - dynamically shows products based on selected category
+                products = SPAR_PRODUCTS.get(product_category, [])
+                product = st.selectbox("Product", products)
+                
                 col_e, col_f = st.columns(2)
                 with col_e:
-                    product = st.selectbox("Product Category", [
-                        "Fresh Produce", "Meat and Poultry", "Dairy", 
-                        "Bakery", "Beverages", "Household", "Personal Care"
-                    ])
-                with col_f:
                     quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
-                
-                col_g, col_h = st.columns(2)
-                with col_g:
+                with col_f:
                     unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f")
-                with col_h:
-                    total_sales = quantity * unit_price
-                    st.metric("Total Amount", f"${total_sales:,.2f}")
+                
+                total_sales = quantity * unit_price
+                st.metric("Total Amount", f"${total_sales:,.2f}")
                 
                 rewards_earned = total_sales * 0.02
                 st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
@@ -1071,7 +1236,8 @@ def admin_view():
                         'customer_email': customer_email,
                         'customer_id': customer_id if customer_id else None,
                         'phone': phone if phone else None,
-                        'product_category': product,
+                        'product_category': product_category,
+                        'product': product,
                         'quantity': quantity,
                         'unit_price': unit_price,
                         'total_sales': total_sales,
@@ -1155,7 +1321,7 @@ def admin_view():
                     """, unsafe_allow_html=True)
                 
                 st.markdown("#### Today's Sales Details")
-                display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
+                display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=300)
