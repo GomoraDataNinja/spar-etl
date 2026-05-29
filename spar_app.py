@@ -1,5 +1,5 @@
 3. Replace the URL with your actual Cloudflare tunnel URL
-4. Click **Save**
+4. Click Save
 """)
 st.stop()
 
@@ -363,7 +363,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     st.markdown('<div class="app-name">Tengai</div>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; margin-bottom: 2rem;">SPAR Sales & Rewards System</p>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; margin-bottom: 2rem;">SPAR Sales and Rewards System</p>', unsafe_allow_html=True)
     
     with st.form("login_form"):
         username = st.text_input("Username / Email", placeholder="Enter your username or email")
@@ -390,7 +390,7 @@ user_name = st.session_state.current_user['name']
 st.markdown("""
 <div class="app-header">
     <h1>Tengai - SPAR Sales System</h1>
-    <p>Sales tracking  Customer management  Real-time recording</p>
+    <p>Sales tracking | Customer management | Real-time recording</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -438,7 +438,7 @@ with tab1:
             col_e, col_f = st.columns(2)
             with col_e:
                 product = st.selectbox("Product Category", [
-                    "Fresh Produce", "Meat & Poultry", "Dairy", 
+                    "Fresh Produce", "Meat and Poultry", "Dairy", 
                     "Bakery", "Beverages", "Household", "Personal Care"
                 ])
             with col_f:
@@ -558,8 +558,8 @@ user_name = st.session_state.current_user['name']
 
 st.markdown("""
 <div class="app-header">
-    <h1>Tengai - SPAR Sales & Rewards System</h1>
-    <p>Sales tracking • Rewards intelligence • Customer retention</p>
+    <h1>Tengai - SPAR Sales and Rewards System</h1>
+    <p>Sales tracking | Rewards intelligence | Customer retention</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -609,7 +609,7 @@ with tab1:
             col_e, col_f = st.columns(2)
             with col_e:
                 product = st.selectbox("Product Category", [
-                    "Fresh Produce", "Meat & Poultry", "Dairy", 
+                    "Fresh Produce", "Meat and Poultry", "Dairy", 
                     "Bakery", "Beverages", "Household", "Personal Care"
                 ])
             with col_f:
@@ -724,7 +724,7 @@ with tab2:
 # TAB 3: Sales Reports
 with tab3:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown("### Sales Reports & Analytics")
+    st.markdown("### Sales Reports and Analytics")
     
     col1, col2 = st.columns(2)
     with col1:
