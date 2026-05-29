@@ -42,7 +42,7 @@ st.markdown("""
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    /* Main app background */
+    /* Main app background - Clean gradient */
     .stApp {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
@@ -58,15 +58,14 @@ st.markdown("""
     .login-centered {
         display: flex;
         justify-content: center;
-        align-items: flex-start;
+        align-items: center;
         min-height: 100vh;
-        padding-top: 8rem;
     }
     
-    /* Single Login Card */
+    /* Single Login Card - Clean and simple */
     .login-card-single {
         background: white;
-        border-radius: 28px;
+        border-radius: 32px;
         padding: 2.5rem;
         max-width: 400px;
         width: 100%;
@@ -75,7 +74,7 @@ st.markdown("""
     }
     
     .login-logo {
-        font-size: 3rem;
+        font-size: 3.5rem;
         margin-bottom: 0.75rem;
     }
     
@@ -86,36 +85,13 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.5rem;
     }
     
     .login-subtitle {
         font-size: 0.8rem;
-        color: #64748b;
+        color: #94a3b8;
         margin-bottom: 1.5rem;
-    }
-    
-    /* Features list */
-    .features-list {
-        text-align: center;
-        margin: 1.5rem 0;
-        padding: 0;
-    }
-    
-    .feature-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.6rem;
-        margin-bottom: 0.6rem;
-        font-size: 0.8rem;
-        color: #334155;
-    }
-    
-    .feature-check {
-        color: #10b981;
-        font-weight: 700;
-        font-size: 1rem;
     }
     
     /* Form Styling */
@@ -142,9 +118,10 @@ st.markdown("""
     .stButton {
         display: flex;
         justify-content: center;
+        margin-top: 0.5rem;
     }
     
-    /* Button Styling - NOT full width, centered */
+    /* Button Styling - Small and centered */
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -324,7 +301,7 @@ APP_NAME = "Tengai"
 APP_VERSION = "3.5.0"
 
 # ============================================
-# LOGIN SCREEN - Centered Single Box
+# LOGIN SCREEN - Clean Simple Box
 # ============================================
 def login_screen():
     st.markdown("""
@@ -333,23 +310,6 @@ def login_screen():
             <div class="login-logo">🛒</div>
             <div class="login-title">Tengai</div>
             <div class="login-subtitle">SPAR Sales & Rewards System</div>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <span class="feature-check">✓</span>
-                    <span>Real-time sales tracking</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-check">✓</span>
-                    <span>Rewards intelligence</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-check">✓</span>
-                    <span>Customer insights</span>
-                </div>
-            </div>
-            
-            <hr class="divider">
     """, unsafe_allow_html=True)
     
     # Login Form
@@ -357,7 +317,7 @@ def login_screen():
         username = st.text_input("Username or Email", placeholder="Enter your username or email", label_visibility="collapsed")
         password = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
         
-        # Create a centered column for the button
+        # Centered button
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             submitted = st.form_submit_button("Sign In", use_container_width=False)
