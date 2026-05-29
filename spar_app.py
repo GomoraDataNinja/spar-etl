@@ -13,6 +13,264 @@ from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+# ============================================
+# PAGE CONFIGURATION
+# ============================================
+st.set_page_config(
+    page_title="Tengai - SPAR Sales & Rewards",
+    page_icon="🛒",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# ============================================
+# GOOGLE-INSPIRED CUSTOM CSS
+# ============================================
+st.markdown("""
+<style>
+    /* Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+    
+    /* Global Styles */
+    * {
+        font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    /* Main background */
+    .stApp {
+        background: #ffffff;
+    }
+    
+    /* Header Section - Google Style */
+    .main-header {
+        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        padding: 2rem 3rem;
+        border-radius: 0 0 24px 24px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .main-header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: white;
+        letter-spacing: -0.5px;
+    }
+    
+    .main-header p {
+        margin: 0.5rem 0 0 0;
+        font-size: 1rem;
+        color: rgba(255,255,255,0.9);
+        font-weight: 400;
+    }
+    
+    /* User Info Bar */
+    .user-bar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 1rem;
+        background: #f8f9fa;
+        border-radius: 48px;
+        display: inline-flex;
+        float: right;
+    }
+    
+    .user-badge {
+        background: #1a73e8;
+        padding: 0.4rem 1.2rem;
+        border-radius: 32px;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .user-name {
+        color: #5f6368;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    /* Tabs - Google Material Style */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 32px;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 28px;
+        padding: 0.5rem 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #5f6368;
+        background: transparent;
+        border: none;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #1a73e8;
+        color: white;
+    }
+    
+    /* Cards - Google Material Design */
+    .google-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: box-shadow 0.2s ease;
+    }
+    
+    .google-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #202124;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Metric Cards */
+    .metric-google {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid #e8eaed;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1a73e8;
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-label {
+        font-size: 0.8rem;
+        color: #5f6368;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Login Box */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        border: 1px solid #e8eaed;
+        text-align: center;
+    }
+    
+    .login-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .login-title {
+        font-size: 1.75rem;
+        font-weight: 500;
+        color: #202124;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-subtitle {
+        color: #5f6368;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 24px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+    
+    .stButton > button:hover {
+        background-color: #1557b0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    /* Form inputs */
+    .stTextInput > div > div > input {
+        border-radius: 8px;
+        border: 1px solid #dadce0;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+    }
+    
+    /* DataFrames */
+    .stDataFrame {
+        border-radius: 12px;
+        border: 1px solid #e8eaed;
+    }
+    
+    /* Success/Error messages */
+    .stAlert {
+        border-radius: 12px;
+        border: none;
+    }
+    
+    /* Hide default menu */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Divider */
+    hr {
+        margin: 1.5rem 0;
+        border: none;
+        border-top: 1px solid #e8eaed;
+    }
+    
+    /* Info box */
+    .info-box {
+        background: #e8f0fe;
+        padding: 1rem;
+        border-radius: 12px;
+        color: #174ea6;
+        font-size: 0.85rem;
+        margin: 1rem 0;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # ============================================
 # EMAIL CONFIGURATION
@@ -24,156 +282,25 @@ SENDER_PASSWORD = "picz cijg kgbw zoup"
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 
 # ============================================
-# SPAR BRAND COLORS
-# ============================================
-SPAR_RED = "#E3000F"
-SPAR_GREEN = "#007A3D"
-SPAR_DARK_RED = "#C4000D"
-SPAR_LIGHT_GREEN = "#A8D46B"
-SPAR_GRAY = "#f6f7fb"
-CARD_BG = "#FFFFFF"
-
-# Configure page
-st.set_page_config(
-    page_title="Tengai - SPAR Sales and Rewards System",
-    page_icon=":shopping_trolley:",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# ============================================
-# CSS STYLING
-# ============================================
-css_code = """
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-
-.stApp {
-    background: linear-gradient(135deg, COLOR_GRAY 0%%, COLOR_CARD 100%%);
-}
-
-.app-header {
-    background: linear-gradient(135deg, COLOR_RED 0%%, COLOR_GREEN 100%%);
-    padding: 1.5rem 2rem;
-    border-radius: 28px;
-    margin-bottom: 2rem;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
-
-.app-header h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: white;
-    text-align: center;
-}
-
-.app-header p {
-    margin: 0.3rem 0 0 0;
-    opacity: 0.9;
-    font-size: 0.8rem;
-    color: white;
-    text-align: center;
-}
-
-.stTabs [data-baseweb="tab-list"] {
-    gap: 0.5rem;
-    background-color: COLOR_GRAY;
-    padding: 0.4rem;
-    border-radius: 60px;
-    justify-content: center;
-    display: flex;
-    margin-bottom: 1.5rem;
-}
-
-.stTabs [data-baseweb="tab"] {
-    border-radius: 40px;
-    padding: 0.5rem 1.5rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.stTabs [aria-selected="true"] {
-    background-color: COLOR_RED;
-    color: white;
-}
-
-.content-card {
-    background: COLOR_CARD;
-    padding: 1.5rem;
-    border-radius: 24px;
-    margin-bottom: 1rem;
-    border: 1px solid #E5E7EB;
-    border-left: 4px solid COLOR_RED;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-}
-
-.login-box {
-    background: COLOR_CARD;
-    border-radius: 32px;
-    padding: 2rem;
-    max-width: 450px;
-    margin: 0 auto;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border: 1px solid #E5E7EB;
-    text-align: center;
-}
-
-.app-name {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: COLOR_RED;
-    text-align: center;
-    margin-bottom: 0.5rem;
-}
-
-.user-info {
-    background: COLOR_RED;
-    padding: 0.3rem 1rem;
-    border-radius: 40px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: white;
-}
-
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-</style>
-"""
-
-# Replace color placeholders
-css_code = css_code.replace("COLOR_RED", SPAR_RED)
-css_code = css_code.replace("COLOR_GREEN", SPAR_GREEN)
-css_code = css_code.replace("COLOR_GRAY", SPAR_GRAY)
-css_code = css_code.replace("COLOR_CARD", CARD_BG)
-
-st.markdown(css_code, unsafe_allow_html=True)
-
-# ============================================
 # CHECK SECRETS
 # ============================================
 if 'WEBHOOK_URL' not in st.secrets:
-    st.error("""
-    ### Configuration Required
-    
-    Please set up your Cloudflare tunnel URL in Streamlit Secrets:
-    
-    1. Go to Settings -> Secrets
-    2. Add the following:
-    
-    WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"
-    
-    3. Replace the URL with your actual Cloudflare tunnel URL
-    4. Click Save
-    """)
+    st.markdown("""
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-icon">🔧</div>
+            <div class="login-title">Configuration Required</div>
+            <div class="login-subtitle">Please set up your Cloudflare tunnel URL in Streamlit Secrets</div>
+            <div class="info-box">
+                <strong>How to configure:</strong><br><br>
+                1. Go to Settings → Secrets<br>
+                2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
+                3. Replace with your actual tunnel URL<br>
+                4. Click Save and Restart
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     st.stop()
 
 WEBHOOK_URL = st.secrets['WEBHOOK_URL']
@@ -274,7 +401,6 @@ if 'rfm_data' not in st.session_state:
 # ============================================
 
 def check_connection():
-    """Check if ETL server is reachable"""
     try:
         health_url = WEBHOOK_URL.replace('/webhook', '/health')
         response = requests.get(health_url, timeout=5)
@@ -283,7 +409,6 @@ def check_connection():
         return False
 
 def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end_date=None):
-    """Fetch sales from SQL Server via Flask receiver"""
     try:
         url = WEBHOOK_URL.replace('/webhook', '/recent')
         response = requests.get(url, timeout=10)
@@ -319,7 +444,6 @@ def get_sales_from_db(operator_name=None, date_filter=None, start_date=None, end
             df = df[(df['sale_date'] >= start_date) & (df['sale_date'] <= end_date)]
         
         return df.to_dict('records')
-
     except Exception as e:
         print(f"Error fetching sales: {e}")
         return []
@@ -345,41 +469,41 @@ def calculate_age_group(birthdate):
 def clean_rewards_data(df):
     df = df.copy()
     df.columns = df.columns.str.lower().str.replace(" ", "_")
-
+    
     if 'member_number' not in df.columns:
         for col in ['member no', 'member', 'customer_id', 'customer']:
             if col in df.columns:
                 df.rename(columns={col: 'member_number'}, inplace=True)
                 break
-
+    
     if 'redemption_date' not in df.columns:
         for col in ['date', 'transaction_date', 'created_date']:
             if col in df.columns:
                 df.rename(columns={col: 'redemption_date'}, inplace=True)
                 break
-
+    
     if 'redeeming_basket_value' in df.columns:
         df.rename(columns={'redeeming_basket_value': 'basket_value'}, inplace=True)
-
+    
     if 'basket_value' not in df.columns and 'amount' in df.columns:
         df.rename(columns={'amount': 'basket_value'}, inplace=True)
-
+    
     if 'birthday' in df.columns:
         df['birthday'] = pd.to_datetime(df['birthday'], errors='coerce')
         df['age_group'] = df['birthday'].apply(calculate_age_group)
     else:
         df['age_group'] = "Unknown"
-
+    
     df['redemption_date'] = pd.to_datetime(df['redemption_date'], errors='coerce')
     df['basket_value'] = pd.to_numeric(df['basket_value'], errors='coerce')
     df['year'] = df['redemption_date'].dt.year
     df['month'] = df['redemption_date'].dt.month
     df['day'] = df['redemption_date'].dt.day
-
+    
     df = df[df['basket_value'] > 0]
     df = df[df['member_number'].notna()]
     df = df[df['redemption_date'].notna()]
-
+    
     return df
 
 @st.cache_data
@@ -475,7 +599,6 @@ def generate_sale_id():
     return f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]}"
 
 def send_to_webhook(data):
-    """Send sales data to local ETL via webhook"""
     try:
         response = requests.post(WEBHOOK_URL, json=data, timeout=10)
         if response.status_code == 200:
@@ -493,7 +616,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         msg = MIMEMultipart()
         msg['From'] = SENDER_EMAIL
         msg['To'] = ADMIN_EMAIL
-        msg['Subject'] = f"NEW SALE - {sale_id}"
+        msg['Subject'] = f"🛒 NEW SALE - {sale_id}"
         
         recorded_by = st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'
         
@@ -502,8 +625,8 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         
         html_content = f"""
         <html>
-        <body style="font-family: Arial, sans-serif;">
-            <h2 style="color: #E3000F;">New SPAR Sale Recorded!</h2>
+        <body style="font-family: 'Google Sans', Arial, sans-serif;">
+            <h2 style="color: #1a73e8;">New SPAR Sale Recorded!</h2>
             <p><strong>Sale ID:</strong> {sale_id}</p>
             <p><strong>Customer:</strong> {customer_name}</p>
             <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
@@ -532,65 +655,107 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
 # LOGIN SCREEN
 # ============================================
 def login_screen():
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
-        st.markdown('<div class="app-name">Tengai</div>', unsafe_allow_html=True)
-        st.markdown('<p style="text-align: center; margin-bottom: 2rem;">SPAR Sales and Rewards System</p>', unsafe_allow_html=True)
-        
-        with st.form("login_form"):
-            username = st.text_input("Username / Email", placeholder="Enter your username or email")
-            password = st.text_input("Password", type="password", placeholder="Enter your password")
-            submitted = st.form_submit_button("Sign In", use_container_width=True)
-            if submitted and username and password:
-                success, message = login_user(username, password)
-                if success:
-                    st.success(message)
-                    time.sleep(0.5)
-                    st.rerun()
-                else:
-                    st.error(message)
-        
-        st.markdown('<p style="text-align: center; font-size: 0.7rem; margin-top: 1rem;">Contact your administrator to get an account</p>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-icon">🛒</div>
+            <div class="login-title">Tengai</div>
+            <div class="login-subtitle">SPAR Sales & Rewards System</div>
+    """, unsafe_allow_html=True)
+    
+    with st.form("login_form"):
+        username = st.text_input("Username / Email", placeholder="Enter your username or email")
+        password = st.text_input("Password", type="password", placeholder="Enter your password")
+        submitted = st.form_submit_button("Sign In", use_container_width=True)
+        if submitted and username and password:
+            success, message = login_user(username, password)
+            if success:
+                st.success(message)
+                time.sleep(0.5)
+                st.rerun()
+            else:
+                st.error(message)
+    
+    st.markdown("""
+            <p style="text-align: center; font-size: 0.7rem; margin-top: 1rem; color: #5f6368;">
+                Contact your administrator to get an account
+            </p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================
+# LOGIN SCREEN
+# ============================================
+def login_screen():
+    st.markdown("""
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-icon">🛒</div>
+            <div class="login-title">Tengai</div>
+            <div class="login-subtitle">SPAR Sales & Rewards System</div>
+    """, unsafe_allow_html=True)
+    
+    with st.form("login_form"):
+        username = st.text_input("Username / Email", placeholder="Enter your username or email")
+        password = st.text_input("Password", type="password", placeholder="Enter your password")
+        submitted = st.form_submit_button("Sign In", use_container_width=True)
+        if submitted and username and password:
+            success, message = login_user(username, password)
+            if success:
+                st.success(message)
+                time.sleep(0.5)
+                st.rerun()
+            else:
+                st.error(message)
+    
+    st.markdown("""
+            <p style="text-align: center; font-size: 0.7rem; margin-top: 1rem; color: #5f6368;">
+                Contact your administrator to get an account
+            </p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================
 # OPERATOR VIEW
 # ============================================
 def operator_view():
     user_name = st.session_state.current_user['name']
-
-    st.markdown("""
-    <div class="app-header">
-        <h1>Tengai - SPAR Sales System</h1>
-        <p>Sales tracking | Customer management | Real-time recording</p>
+    user_role = st.session_state.current_user['role']
+    
+    # Header
+    st.markdown(f"""
+    <div class="main-header">
+        <h1>🛒 Tengai</h1>
+        <p>SPAR Sales & Rewards System</p>
     </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    # User bar
+    col1, col2, col3 = st.columns([3, 1, 1])
     with col3:
         st.markdown(f"""
-        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-            <div class="user-info" style="background: {SPAR_GREEN};">
-                TILL OPERATOR
-            </div>
-            <div class="user-info">
-                Hello {user_name}
-            </div>
+        <div class="user-bar">
+            <span class="user-badge">TILL OPERATOR</span>
+            <span class="user-name">👋 {user_name}</span>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Sign Out", key="signout"):
-            logout_user()
-            st.rerun()
-
-    tab1, tab2 = st.tabs(["Record Sale", "My Sales Today"])
-
+    
+    if st.button("Sign Out", key="signout"):
+        logout_user()
+        st.rerun()
+    
+    # Tabs
+    tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
+    
     # TAB 1: Record Sale
     with tab1:
         col_left, col_right = st.columns([2, 1])
+        
         with col_left:
-            st.markdown('<div class="content-card">', unsafe_allow_html=True)
-            st.markdown("### New Purchase")
+            st.markdown('<div class="google-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">📋 New Purchase</div>', unsafe_allow_html=True)
             
             with st.form(key="sales_form", clear_on_submit=True):
                 col_a, col_b = st.columns(2)
@@ -606,7 +771,7 @@ def operator_view():
                     phone = st.text_input("Phone Number", placeholder="Optional")
                 
                 st.markdown("---")
-                st.markdown("#### Purchase Details")
+                st.markdown("#### 🛍️ Purchase Details")
                 
                 col_e, col_f = st.columns(2)
                 with col_e:
@@ -625,9 +790,9 @@ def operator_view():
                     st.metric("Total Amount", f"${total_sales:,.2f}")
                 
                 rewards_earned = total_sales * 0.02
-                st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
-                submitted = st.form_submit_button("Record Sale", use_container_width=True)
+                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
                 
                 if submitted and customer_name:
                     now = datetime.now()
@@ -659,36 +824,46 @@ def operator_view():
                     st.session_state.sales_history.insert(0, data)
                     
                     if success:
-                        st.success(f"Sale recorded! ID: {sale_id}")
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                     else:
-                        st.warning(f"Sale recorded but not sent to ETL: {message}")
+                        st.warning(f"⚠️ {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
-            st.markdown('<div class="content-card">', unsafe_allow_html=True)
-            st.markdown("### Today's Stats")
+            st.markdown('<div class="google-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">📊 Today\'s Stats</div>', unsafe_allow_html=True)
             
             if check_connection():
+                st.success("✅ ETL Connected")
                 today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
                 if today_sales:
                     df_today = pd.DataFrame(today_sales)
                     total_revenue = df_today['total_sales'].sum() if 'total_sales' in df_today.columns else 0
-                    st.metric("Today's Revenue", f"${total_revenue:,.2f}")
-                    st.metric("Today's Transactions", len(df_today))
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${total_revenue:,.2f}</div>
+                        <div class="metric-label">Today's Revenue</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{len(df_today)}</div>
+                        <div class="metric-label">Transactions</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 else:
                     st.info("No sales recorded yet today")
-                st.success("ETL Connected")
             else:
-                st.warning("ETL Offline - Tunnel may be down")
+                st.warning("⚠️ ETL Offline - Tunnel may be down")
             
             st.markdown('</div>', unsafe_allow_html=True)
-
+    
     # TAB 2: My Sales Today
     with tab2:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown(f"### My Sales Today - {user_name}")
+        st.markdown('<div class="google-card">', unsafe_allow_html=True)
+        st.markdown(f'<div class="card-title">📊 My Sales Today - {user_name}</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
@@ -696,30 +871,49 @@ def operator_view():
             if today_sales:
                 df = pd.DataFrame(today_sales)
                 
+                # Metrics row
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
-                    st.metric("Total Transactions", len(df))
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{len(df)}</div>
+                        <div class="metric-label">Transactions</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col2:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-                    st.metric("Total Revenue", f"${total_revenue:,.2f}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${total_revenue:,.2f}</div>
+                        <div class="metric-label">Revenue</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col3:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
-                    st.metric("Average Sale", f"${avg_sale:.2f}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${avg_sale:.2f}</div>
+                        <div class="metric-label">Average Sale</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col4:
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
-                    st.metric("Customers Served", customers)
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{customers}</div>
+                        <div class="metric-label">Customers Served</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
-                st.markdown("#### Your Sales Today")
+                st.markdown("#### 📋 Your Sales Today")
                 display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=400)
-                else:
-                    st.info("No data to display")
             else:
-                st.info("No sales recorded today. Start selling!")
+                st.info("No sales recorded today. Start selling! 🛒")
         else:
-            st.warning("Cannot connect to ETL server. Please check your tunnel connection.")
+            st.warning("⚠️ Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -728,40 +922,41 @@ def operator_view():
 # ============================================
 def admin_view():
     user_name = st.session_state.current_user['name']
-
-    st.markdown("""
-    <div class="app-header">
-        <h1>Tengai - SPAR Sales and Rewards System</h1>
-        <p>Sales tracking | Rewards intelligence | Customer retention</p>
+    user_role = st.session_state.current_user['role']
+    
+    # Header    st.markdown(f"""
+    <div class="main-header">
+        <h1>🛒 Tengai</h1>
+        <p>SPAR Sales & Rewards System | Admin Dashboard</p>
     </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    # User bar
+    col1, col2, col3 = st.columns([3, 1, 1])
     with col3:
         st.markdown(f"""
-        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-            <div class="user-info" style="background: {SPAR_RED};">
-                ADMIN
-            </div>
-            <div class="user-info">
-                Hello {user_name}
-            </div>
+        <div class="user-bar">
+            <span class="user-badge">ADMIN</span>
+            <span class="user-name">👋 {user_name}</span>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Sign Out", key="signout"):
-            logout_user()
-            st.rerun()
-
+    
+    if st.button("Sign Out", key="signout"):
+        logout_user()
+        st.rerun()
+    
+    # Tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Record Sale", "Today's Sales", "Sales Reports", "Rewards Analysis", "Admin Panel"
+        "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
     ])
-
+    
     # TAB 1: Record Sale
     with tab1:
         col_left, col_right = st.columns([2, 1])
+        
         with col_left:
-            st.markdown('<div class="content-card">', unsafe_allow_html=True)
-            st.markdown("### New Purchase")
+            st.markdown('<div class="google-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">📋 New Purchase</div>', unsafe_allow_html=True)
             
             with st.form(key="sales_form_admin", clear_on_submit=True):
                 col_a, col_b = st.columns(2)
@@ -777,7 +972,7 @@ def admin_view():
                     phone = st.text_input("Phone Number", placeholder="Optional")
                 
                 st.markdown("---")
-                st.markdown("#### Purchase Details")
+                st.markdown("#### 🛍️ Purchase Details")
                 
                 col_e, col_f = st.columns(2)
                 with col_e:
@@ -796,9 +991,9 @@ def admin_view():
                     st.metric("Total Amount", f"${total_sales:,.2f}")
                 
                 rewards_earned = total_sales * 0.02
-                st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
-                submitted = st.form_submit_button("Record Sale", use_container_width=True)
+                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
                 
                 if submitted and customer_name:
                     now = datetime.now()
@@ -829,30 +1024,36 @@ def admin_view():
                     send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                     
                     if success:
-                        st.success(f"Sale recorded! ID: {sale_id}")
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                     else:
-                        st.warning(f"Sale recorded but not sent to ETL: {message}")
+                        st.warning(f"⚠️ {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
-            st.markdown('<div class="content-card">', unsafe_allow_html=True)
-            st.markdown("### System Status")
+            st.markdown('<div class="google-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-title">📊 System Status</div>', unsafe_allow_html=True)
             
             if check_connection():
-                st.success("ETL Connected")
-                st.info("Data is being sent to SQL Server")
+                st.success("✅ ETL Connected")
+                st.info("📤 Data is being sent to SQL Server")
+                st.markdown(f"""
+                <div class="info-box">
+                    <strong>Current Webhook URL:</strong><br>
+                    <code>{WEBHOOK_URL[:60]}...</code>
+                </div>
+                """, unsafe_allow_html=True)
             else:
-                st.warning("ETL Offline - Tunnel may be down")
-                st.info("Update your WEBHOOK_URL in Settings -> Secrets")
+                st.warning("⚠️ ETL Offline - Tunnel may be down")
+                st.info("💡 Update your WEBHOOK_URL in Settings → Secrets")
             
             st.markdown('</div>', unsafe_allow_html=True)
-
+    
     # TAB 2: Today's All Sales
     with tab2:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### Today's All Sales (All Operators)")
+        st.markdown('<div class="google-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">📊 Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(date_filter='today')
@@ -862,25 +1063,45 @@ def admin_view():
                 
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
-                    st.metric("Total Transactions", len(df))
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{len(df)}</div>
+                        <div class="metric-label">Transactions</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col2:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-                    st.metric("Total Revenue", f"${total_revenue:,.2f}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${total_revenue:,.2f}</div>
+                        <div class="metric-label">Revenue</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col3:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
-                    st.metric("Average Sale", f"${avg_sale:.2f}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${avg_sale:.2f}</div>
+                        <div class="metric-label">Average Sale</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col4:
                     operators = df['recorded_by'].nunique() if 'recorded_by' in df.columns else 0
-                    st.metric("Active Operators", operators)
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{operators}</div>
+                        <div class="metric-label">Active Operators</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
-                st.markdown("#### Today's Sales Details")
+                st.markdown("#### 📋 Today's Sales Details")
                 display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=400)
                 
                 if 'recorded_by' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### Operator Performance Today")
+                    st.markdown("#### 👥 Operator Performance Today")
                     operator_today = df.groupby('recorded_by').agg({
                         'sale_id': 'count',
                         'total_sales': 'sum'
@@ -890,14 +1111,14 @@ def admin_view():
             else:
                 st.info("No sales recorded today")
         else:
-            st.warning("ETL Server not connected")
+            st.warning("⚠️ ETL Server not connected")
         
         st.markdown('</div>', unsafe_allow_html=True)
-
+    
     # TAB 3: Sales Reports
     with tab3:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### Sales Reports and Analytics")
+        st.markdown('<div class="google-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">📈 Sales Reports & Analytics</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -905,37 +1126,63 @@ def admin_view():
         with col2:
             end_date = st.date_input("End Date", datetime.now())
         
+        if st.button("🔄 Generate Report", use_container_width=False):
+            st.rerun()
+        
         if check_connection():
             sales_data = get_sales_from_db(start_date=start_date, end_date=end_date)
             
             if sales_data:
                 df = pd.DataFrame(sales_data)
                 
+                # Summary metrics
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-                    st.metric("Total Sales", f"${total_revenue:,.2f}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${total_revenue:,.2f}</div>
+                        <div class="metric-label">Total Sales</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col2:
-                    st.metric("Transactions", len(df))
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{len(df)}</div>
+                        <div class="metric-label">Transactions</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col3:
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
-                    st.metric("Unique Customers", customers)
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{customers}</div>
+                        <div class="metric-label">Unique Customers</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col4:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
-                    st.metric("Avg Transaction", f"${avg_sale:.2f}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">${avg_sale:.2f}</div>
+                        <div class="metric-label">Avg Transaction</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
+                # Daily sales trend
                 if 'sale_date' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### Daily Sales Trend")
+                    st.markdown("#### 📅 Daily Sales Trend")
                     df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
                     daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
                     fig = px.line(daily_sales, x='sale_date', y='total_sales', 
                                   title="Sales Over Time", markers=True,
-                                  color_discrete_sequence=[SPAR_GREEN])
-                    fig.update_layout(height=400)
+                                  color_discrete_sequence=['#1a73e8'])
+                    fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
                     st.plotly_chart(fig, use_container_width=True)
                 
+                # Operator performance
                 if 'recorded_by' in df.columns:
-                    st.markdown("#### Operator Performance")
+                    st.markdown("#### 👥 Operator Performance")
                     operator_perf = df.groupby('recorded_by').agg({
                         'sale_id': 'count',
                         'total_sales': 'sum'
@@ -943,10 +1190,11 @@ def admin_view():
                     operator_perf['Revenue'] = operator_perf['Revenue'].apply(lambda x: f"${x:,.2f}")
                     st.dataframe(operator_perf, use_container_width=True)
                 
+                # Download button
                 st.markdown("---")
                 csv = df.to_csv(index=False)
                 st.download_button(
-                    label="Download Full Report (CSV)",
+                    label="📥 Download Full Report (CSV)",
                     data=csv,
                     file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
                     mime="text/csv",
@@ -955,14 +1203,14 @@ def admin_view():
             else:
                 st.info(f"No sales found between {start_date} and {end_date}")
         else:
-            st.warning("Cannot connect to ETL server")
+            st.warning("⚠️ Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
-
+    
     # TAB 4: Rewards Analysis
     with tab4:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### Rewards Intelligence Hub")
+        st.markdown('<div class="google-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🏆 Rewards Intelligence Hub</div>', unsafe_allow_html=True)
         st.markdown("Upload your customer transaction data to unlock powerful insights")
         
         uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="rewards_upload")
@@ -972,17 +1220,37 @@ def admin_view():
             df = clean_rewards_data(df)
             
             if not df.empty:
-                st.success(f"Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
+                st.success(f"✅ Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
                 
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
-                    st.metric("Total Revenue", safe_currency_format(df['basket_value'].sum()))
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{safe_currency_format(df['basket_value'].sum())}</div>
+                        <div class="metric-label">Total Revenue</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col2:
-                    st.metric("Total Transactions", f"{len(df):,}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{len(df):,}</div>
+                        <div class="metric-label">Transactions</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col3:
-                    st.metric("Unique Customers", f"{df['member_number'].nunique():,}")
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{df['member_number'].nunique():,}</div>
+                        <div class="metric-label">Unique Customers</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 with col4:
-                    st.metric("Avg Basket", safe_currency_format(df['basket_value'].mean()))
+                    st.markdown(f"""
+                    <div class="metric-google">
+                        <div class="metric-value">{safe_currency_format(df['basket_value'].mean())}</div>
+                        <div class="metric-label">Avg Basket</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 rfm = calculate_rfm(df)
                 rfm = segment_customers(rfm)
@@ -994,12 +1262,12 @@ def admin_view():
                 seg_counts = rfm['segment'].value_counts().reset_index()
                 seg_counts.columns = ['Segment', 'Count']
                 fig = px.pie(seg_counts, values='Count', names='Segment', 
-                             color_discrete_sequence=[SPAR_GREEN, SPAR_RED, '#FFA07A', '#D3D3D3', '#90EE90'],
+                             color_discrete_sequence=['#1a73e8', '#e8710a', '#fbbc04', '#34a853', '#e8eaed'],
                              hole=0.3)
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
                 
-                st.markdown("#### High Priority Customers (At Risk / Warming)")
+                st.markdown("#### 🚨 High Priority Customers (At Risk / Warming)")
                 high_priority = rfm[rfm['priority'] == 'High'].head(10)
                 if not high_priority.empty:
                     display_cols = ['member_number', 'segment', 'recency', 'frequency', 'monetary', 'churn_risk', 'recommended_action']
@@ -1007,16 +1275,16 @@ def admin_view():
             else:
                 st.error("No valid data found")
         else:
-            st.info("Please upload a CSV file with columns: member_number, redemption_date, basket_value (or amount)")
+            st.info("📂 Upload a CSV file with columns: member_number, redemption_date, basket_value")
         
         st.markdown('</div>', unsafe_allow_html=True)
-
+    
     # TAB 5: Admin Panel
     with tab5:
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### Admin Control Panel")
+        st.markdown('<div class="google-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">👑 Admin Control Panel</div>', unsafe_allow_html=True)
         
-        st.markdown("#### Create New Operator Account")
+        st.markdown("#### ➕ Create New Operator Account")
         
         with st.form("create_operator_form"):
             col1, col2 = st.columns(2)
@@ -1027,7 +1295,7 @@ def admin_view():
                 new_email = st.text_input("Email *", placeholder="operator@store.com")
                 new_password = st.text_input("Password *", type="password", placeholder="Min 6 characters")
             
-            submitted = st.form_submit_button("Create Operator", use_container_width=True)
+            submitted = st.form_submit_button("👤 Create Operator", use_container_width=True)
             
             if submitted:
                 if not all([new_name, new_username, new_email, new_password]):
@@ -1037,13 +1305,13 @@ def admin_view():
                 else:
                     success, message = register_user(new_name, new_username, new_email, new_password, role="user")
                     if success:
-                        st.success(f"{message}")
-                        st.info(f"Operator can login with username: {new_username}")
+                        st.success(f"✅ {message}")
+                        st.info(f"🔐 Operator can login with username: **{new_username}**")
                     else:
-                        st.error(f"{message}")
+                        st.error(f"❌ {message}")
         
-        st.divider()
-        st.markdown("#### Existing Users")
+        st.markdown("---")
+        st.markdown("#### 👥 Existing Users")
         
         users = get_all_users()
         if users:
@@ -1053,23 +1321,28 @@ def admin_view():
                     'Name': u['name'],
                     'Email': email,
                     'Username': u['username'],
-                    'Role': 'ADMIN' if u['role'] == 'admin' else 'OPERATOR',
+                    'Role': '👑 ADMIN' if u['role'] == 'admin' else '🛒 OPERATOR',
                     'Created': u.get('created_at', '')[:10]
                 })
             st.dataframe(pd.DataFrame(users_list), use_container_width=True)
         
-        st.divider()
-        st.markdown("#### System Status")
+        st.markdown("---")
+        st.markdown("#### 📊 System Status")
         
         if check_connection():
-            st.success("ETL Server Connected")
-            st.success("Database Connection Active")
+            st.success("✅ ETL Server Connected")
+            st.success("✅ Database Connection Active")
         else:
-            st.error("ETL Server Offline")
-            st.info("To fix this:\n1. Make sure your local Flask receiver is running\n2. Make sure Cloudflare tunnel is active\n3. Update the WEBHOOK_URL in Settings -> Secrets")
+            st.error("❌ ETL Server Offline")
+            st.info("""
+            **To fix this:**
+            1. Make sure your local Flask receiver is running
+            2. Make sure Cloudflare tunnel is active
+            3. Update the WEBHOOK_URL in Settings → Secrets
+            """)
         
-        st.divider()
-        st.markdown("#### Current Configuration")
+        st.markdown("---")
+        st.markdown("#### 🔧 Current Configuration")
         st.code(f"WEBHOOK_URL = {WEBHOOK_URL}", language="python")
         
         st.markdown('</div>', unsafe_allow_html=True)
@@ -1085,3 +1358,4 @@ if st.session_state.logged_in:
         operator_view()
 else:
     login_screen()
+    
