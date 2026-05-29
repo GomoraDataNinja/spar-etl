@@ -33,7 +33,7 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 # WEBHOOK URL - UPDATE THIS DAILY WITH NEW TUNNEL URL
 # ============================================
-# WEBHOOK_URL = "https://formal-syndrome-cult-ons.trycloudflare.com/webhook"
+WEBHOOK_URL = "https://among-examinations-wet-cable.trycloudflare.com/webhook"
 import os
 
 # Add this debug code
