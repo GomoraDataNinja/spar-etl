@@ -24,11 +24,11 @@ st.set_page_config(
 )
 
 # ============================================
-# MODERN CENTERED SAAS-STYLE CSS
+# MODERN LOGIN-STYLE CSS
 # ============================================
 st.markdown("""
 <style>
-    /* Import modern fonts */
+    /* Import fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
     
     /* Global reset */
@@ -44,313 +44,157 @@ st.markdown("""
     
     /* Main app background */
     .stApp {
-        background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
-    }
-    
-    /* Centered Header - Like NanoSite */
-    .hero-section {
-        text-align: center;
-        padding: 3rem 2rem 2rem 2rem;
-        max-width: 900px;
-        margin: 0 auto;
-    }
-    
-    .hero-badge {
-        display: inline-block;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.25rem 1rem;
-        border-radius: 40px;
-        margin-bottom: 1.5rem;
-        letter-spacing: 0.5px;
     }
     
-    .hero-title {
-        font-size: 3.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 1rem;
-        line-height: 1.2;
-        letter-spacing: -0.02em;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.2rem;
-        color: #64748b;
-        margin-bottom: 2rem;
-        line-height: 1.5;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .feature-grid {
+    /* Modern Login Container - Split Screen Style */
+    .login-container-modern {
         display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+    
+    /* Left Side - Branding Area */
+    .login-branding {
+        flex: 1;
+        background: linear-gradient(135deg, rgba(102,126,234,0.95) 0%, rgba(118,75,162,0.95) 100%);
+        display: flex;
+        flex-direction: column;
         justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-        margin: 2rem 0;
-    }
-    
-    .feature-item {
-        text-align: center;
-        padding: 1rem;
-        min-width: 200px;
-    }
-    
-    .feature-icon {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .feature-text {
-        font-size: 0.9rem;
-        color: #334155;
-        font-weight: 500;
-    }
-    
-    .disclaimer {
-        text-align: center;
-        font-size: 0.7rem;
-        color: #94a3b8;
-        margin-top: 2rem;
-        padding: 1rem;
-        border-top: 1px solid #e2e8f0;
-    }
-    
-    /* Modern Navigation Bar */
-    .nav-bar {
-        display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 1rem 2rem;
-        background: white;
-        border-radius: 60px;
-        margin: 1rem 2rem 2rem 2rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        border: 1px solid #eef2f6;
+        padding: 3rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
     }
     
-    .logo-area {
+    .login-branding::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .brand-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .brand-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .brand-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+        text-align: center;
+        max-width: 300px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .brand-features {
+        margin-top: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .brand-feature {
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
     }
     
-    .logo-icon {
-        font-size: 1.8rem;
-    }
-    
-    .logo-text {
-        font-size: 1.25rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .user-area {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    .role-badge {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 0.4rem 1.2rem;
-        border-radius: 40px;
-        color: white;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-    }
-    
-    .user-name-badge {
-        background: #f0f2f5;
-        padding: 0.4rem 1.2rem;
-        border-radius: 40px;
-        color: #1a1a2e;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-    
-    /* Modern Cards - Centered */
-    .modern-card {
+    /* Right Side - Login Form Area */
+    .login-form-area {
+        flex: 1;
         background: white;
-        border-radius: 24px;
-        padding: 1.75rem;
-        margin-bottom: 1.25rem;
-        border: 1px solid #eef2f6;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
     }
     
-    .modern-card:hover {
-        box-shadow: 0 8px 30px rgba(102,126,234,0.08);
-        transform: translateY(-2px);
+    .login-form-card {
+        max-width: 380px;
+        width: 100%;
     }
     
-    .card-header {
-        font-size: 1.25rem;
+    .login-welcome {
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+    
+    .login-welcome h2 {
+        font-size: 1.75rem;
         font-weight: 600;
         color: #1a1a2e;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-bottom: 2px solid #f0f2f5;
-        padding-bottom: 0.75rem;
-    }
-    
-    /* Metric Cards - Centered */
-    .metric-modern {
-        background: white;
-        border-radius: 20px;
-        padding: 1.25rem;
-        text-align: center;
-        border: 1px solid #eef2f6;
-        transition: all 0.3s ease;
-    }
-    
-    .metric-modern:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(102,126,234,0.1);
-        border-color: #667eea;
-    }
-    
-    .metric-value-modern {
-        font-size: 2rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
         margin-bottom: 0.5rem;
     }
     
-    .metric-label-modern {
-        font-size: 0.75rem;
+    .login-welcome p {
         color: #64748b;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Centered Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 0.5rem;
-        background-color: white;
-        padding: 0.5rem;
-        border-radius: 60px;
-        margin-bottom: 1.5rem;
-        border: 1px solid #eef2f6;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        justify-content: center;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 40px;
-        padding: 0.6rem 1.8rem;
         font-size: 0.85rem;
-        font-weight: 500;
-        color: #64748b;
-        background: transparent;
-        border: none;
+    }
+    
+    .version-info {
+        margin-top: 2rem;
+        text-align: left;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1.5rem;
+    }
+    
+    /* Form Styling */
+    .stTextInput > div > div > input {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        background: #f8fafc;
         transition: all 0.2s ease;
     }
     
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+    .stTextInput > div > div > input:focus {
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
     }
     
-    /* Centered Buttons */
+    .stTextInput > div > div > input::placeholder {
+        color: #94a3b8;
+    }
+    
+    /* Button Styling */
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 40px;
-        padding: 0.6rem 1.5rem;
-        font-weight: 500;
-        font-size: 0.85rem;
+        border-radius: 12px;
+        padding: 0.8rem;
+        font-weight: 600;
+        font-size: 0.9rem;
         transition: all 0.2s ease;
         width: 100%;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102,126,234,0.4);
-    }
-    
-    /* Form inputs - Centered */
-    .stTextInput > div > div > input, 
-    .stSelectbox > div > div, 
-    .stNumberInput > div > div > input {
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-    }
-    
-    .stTextInput > div > div > input:focus, 
-    .stSelectbox > div > div:focus-within {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-    }
-    
-    /* Centered Login Container */
-    .login-modern {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 85vh;
-        background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
-    }
-    
-    .login-card-modern {
-        background: white;
-        border-radius: 32px;
-        padding: 2.5rem;
-        max-width: 450px;
-        width: 100%;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        border: 1px solid #eef2f6;
-        text-align: center;
-    }
-    
-    .login-icon-modern {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .login-title-modern {
-        font-size: 2rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.5rem;
-    }
-    
-    .login-subtitle-modern {
-        color: #64748b;
-        font-size: 0.85rem;
-        margin-bottom: 2rem;
-    }
-    
-    /* Dataframes */
-    .stDataFrame {
-        border-radius: 16px;
-        border: 1px solid #eef2f6;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102,126,234,0.4);
     }
     
     /* Hide default elements */
@@ -358,41 +202,17 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Success/Error/Warning alerts */
+    /* Remove default Streamlit padding */
+    .block-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+    
+    /* Success/Error messages */
     .stAlert {
-        border-radius: 16px;
+        border-radius: 12px;
         border: none;
-    }
-    
-    /* Divider */
-    hr {
-        margin: 1.5rem 0;
-        border: none;
-        border-top: 1px solid #eef2f6;
-    }
-    
-    /* Info box */
-    .info-box-modern {
-        background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
-        padding: 1rem 1.25rem;
-        border-radius: 16px;
-        color: #667eea;
-        font-size: 0.85rem;
-        margin: 1rem 0;
-        border-left: 4px solid #667eea;
-    }
-    
-    /* Grid layout for forms */
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-    
-    @media (max-width: 768px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
+        margin-bottom: 1rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -411,17 +231,20 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 if 'WEBHOOK_URL' not in st.secrets:
     st.markdown("""
-    <div class="login-modern">
-        <div class="login-card-modern">
-            <div class="login-icon-modern">🔧</div>
-            <div class="login-title-modern">Configuration Required</div>
-            <div class="login-subtitle-modern">Please set up your Cloudflare tunnel URL</div>
-            <div class="info-box-modern">
-                <strong>📋 How to configure:</strong><br><br>
-                1. Go to Settings → Secrets<br>
-                2. Add: <code style="background:#f0f2f5;padding:2px 6px;border-radius:6px;">WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
-                3. Replace with your actual tunnel URL<br>
-                4. Click Save and Restart
+    <div style="display: flex; min-height: 100vh;">
+        <div style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+        <div style="flex: 1; background: white; display: flex; justify-content: center; align-items: center;">
+            <div style="max-width: 400px; padding: 2rem; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
+                <h2 style="color: #1a1a2e;">Configuration Required</h2>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Please set up your Cloudflare tunnel URL</p>
+                <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left;">
+                    <strong>How to configure:</strong><br><br>
+                    1. Go to Settings → Secrets<br>
+                    2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
+                    3. Replace with your actual tunnel URL<br>
+                    4. Click Save and Restart
+                </div>
             </div>
         </div>
     </div>
@@ -777,21 +600,50 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         return False
 
 # ============================================
-# LOGIN SCREEN
+# LOGIN SCREEN - Modern Split Design
 # ============================================
 def login_screen():
-    st.markdown("""
-    <div class="login-modern">
-        <div class="login-card-modern">
-            <div class="login-icon-modern">🛒</div>
-            <div class="login-title-modern">Tengai</div>
-            <div class="login-subtitle-modern">SPAR Sales & Rewards System</div>
-    """, unsafe_allow_html=True)
+    # Use HTML for the split layout
+    login_html = f"""
+    <div class="login-container-modern">
+        <!-- Left Side - Branding -->
+        <div class="login-branding">
+            <div class="brand-icon">🛒</div>
+            <div class="brand-title">Tengai</div>
+            <div class="brand-subtitle">SPAR Sales & Rewards System</div>
+            <div class="brand-features">
+                <div class="brand-feature">
+                    <span>✓</span>
+                    <span>Real-time sales tracking</span>
+                </div>
+                <div class="brand-feature">
+                    <span>✓</span>
+                    <span>Rewards intelligence</span>
+                </div>
+                <div class="brand-feature">
+                    <span>✓</span>
+                    <span>Customer insights</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side - Login Form -->
+        <div class="login-form-area">
+            <div class="login-form-card">
+                <div class="login-welcome">
+                    <h2>Sign in to continue</h2>
+                    <p>Enter your credentials to access the system</p>
+                </div>
+    """
     
+    st.markdown(login_html, unsafe_allow_html=True)
+    
+    # Login Form
     with st.form("login_form"):
-        username = st.text_input("Username / Email", placeholder="Enter your username or email")
+        username = st.text_input("Username or Email", placeholder="Enter your username or email")
         password = st.text_input("Password", type="password", placeholder="Enter your password")
         submitted = st.form_submit_button("Sign In", use_container_width=True)
+        
         if submitted and username and password:
             success, message = login_user(username, password)
             if success:
@@ -801,52 +653,245 @@ def login_screen():
             else:
                 st.error(message)
     
-    st.markdown("""
-            <p style="text-align: center; font-size: 0.7rem; margin-top: 1.5rem; color: #94a3b8;">
-                Contact your administrator to get an account
-            </p>
+    # Version info
+    st.markdown(f"""
+                <div class="version-info">
+                    <p>Version {APP_VERSION} • Production</p>
+                    <p style="margin-top: 0.5rem;">Contact your administrator to get an account</p>
+                </div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 # ============================================
-# OPERATOR VIEW
+# APP CONSTANTS
 # ============================================
-def operator_view():
+APP_NAME = "Tengai"
+APP_VERSION = "3.5.0"
+
+# ============================================
+# MAIN APP INTERFACE (After Login)
+# ============================================
+def main_app_interface():
     user_name = st.session_state.current_user['name']
+    user_role = st.session_state.current_user['role']
+    is_admin = (user_role == 'admin')
     
-    # Modern Hero Section - Centered like NanoSite
+    # Custom CSS for main app interface
     st.markdown("""
-    <div class="hero-section">
-        <div class="hero-badge">✨ SPAR OFFICIAL PARTNER</div>
-        <div class="hero-title">Easy to Use Sales & Rewards System</div>
-        <div class="hero-subtitle">Record sales, track rewards, and manage customer loyalty - all in one place</div>
-        <div class="feature-grid">
-            <div class="feature-item">
-                <div class="feature-icon">📝</div>
-                <div class="feature-text">Record sales in seconds</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">⭐</div>
-                <div class="feature-text">Track rewards points</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">📊</div>
-                <div class="feature-text">View daily performance</div>
-            </div>
-        </div>
-    </div>
+    <style>
+        /* Reset for main app */
+        .stApp {
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+        }
+        
+        .block-container {
+            padding: 2rem !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+        }
+        
+        /* Modern Header */
+        .modern-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 3rem;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+        
+        .modern-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modern-header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border-radius: 60px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f6;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .role-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .user-name-badge {
+            background: #f0f2f5;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            color: #1a1a2e;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        /* Modern Cards */
+        .modern-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .modern-card:hover {
+            box-shadow: 0 8px 30px rgba(102,126,234,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 0.75rem;
+        }
+        
+        /* Metric Cards */
+        .metric-modern {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #eef2f6;
+        }
+        
+        .metric-value-modern {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label-modern {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Tabs */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 0.5rem;
+            background-color: white;
+            padding: 0.5rem;
+            border-radius: 60px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #eef2f6;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 40px;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+        
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        /* Buttons */
+        .stButton > button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+        
+        /* Form inputs */
+        .stTextInput > div > div > input, .stSelectbox > div > div, .stNumberInput > div > div > input {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 0.6rem 1rem;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+    </style>
     """, unsafe_allow_html=True)
+    
+    # Header
+    if is_admin:
+        st.markdown("""
+        <div class="modern-header">
+            <h1>🛒 Admin Dashboard</h1>
+            <p>Complete control over sales, operators, and rewards analytics</p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="modern-header">
+            <h1>🛒 Operator Dashboard</h1>
+            <p>Record sales, track rewards, and view your daily performance</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Navigation Bar
     st.markdown(f"""
     <div class="nav-bar">
         <div class="logo-area">
-            <span class="logo-icon">🛒</span>
+            <span style="font-size: 1.5rem;">🛒</span>
             <span class="logo-text">Tengai</span>
         </div>
         <div class="user-area">
-            <span class="role-badge">TILL OPERATOR</span>
+            <span class="role-badge">{user_role.upper()}</span>
             <span class="user-name-badge">👋 {user_name}</span>
         </div>
     </div>
@@ -856,7 +901,17 @@ def operator_view():
         logout_user()
         st.rerun()
     
-    # Tabs
+    if is_admin:
+        admin_view()
+    else:
+        operator_view()
+
+# ============================================
+# OPERATOR VIEW
+# ============================================
+def operator_view():
+    user_name = st.session_state.current_user['name']
+    
     tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
     
     # TAB 1: Record Sale
@@ -1025,13 +1080,6 @@ def operator_view():
             st.warning("⚠️ Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Disclaimer
-    st.markdown("""
-    <div class="disclaimer">
-        * Our tool is intended for retail business use only. We are not liable for any consequences resulting from users' violation of any laws or infringement of others' rights.
-    </div>
-    """, unsafe_allow_html=True)
 
 # ============================================
 # ADMIN VIEW
@@ -1039,48 +1087,6 @@ def operator_view():
 def admin_view():
     user_name = st.session_state.current_user['name']
     
-    # Modern Hero Section - Centered
-    st.markdown("""
-    <div class="hero-section">
-        <div class="hero-badge">✨ ADMIN DASHBOARD</div>
-        <div class="hero-title">Complete Control & Analytics</div>
-        <div class="hero-subtitle">Manage operators, track sales, and analyze customer rewards from one central hub</div>
-        <div class="feature-grid">
-            <div class="feature-item">
-                <div class="feature-icon">📊</div>
-                <div class="feature-text">Sales Analytics</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">👥</div>
-                <div class="feature-text">Operator Management</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">🏆</div>
-                <div class="feature-text">Rewards Intelligence</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Navigation Bar
-    st.markdown(f"""
-    <div class="nav-bar">
-        <div class="logo-area">
-            <span class="logo-icon">🛒</span>
-            <span class="logo-text">Tengai</span>
-        </div>
-        <div class="user-area">
-            <span class="role-badge">ADMIN</span>
-            <span class="user-name-badge">👋 {user_name}</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("Sign Out", key="signout"):
-        logout_user()
-        st.rerun()
-    
-    # Tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
     ])
@@ -1423,22 +1429,11 @@ def admin_view():
         st.code(f"WEBHOOK_URL = {WEBHOOK_URL}", language="python")
         
         st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Disclaimer
-    st.markdown("""
-    <div class="disclaimer">
-        * Our tool is intended for retail business use only. We are not liable for any consequences resulting from users' violation of any laws or infringement of others' rights.
-    </div>
-    """, unsafe_allow_html=True)
 
 # ============================================
 # MAIN
 # ============================================
 if st.session_state.logged_in:
-    user_role = st.session_state.current_user.get('role', 'user')
-    if user_role == 'admin':
-        admin_view()
-    else:
-        operator_view()
+    main_app_interface()
 else:
     login_screen()
