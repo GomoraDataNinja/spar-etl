@@ -45,8 +45,8 @@ layout="wide",
 initial_sidebar_state="expanded"
 )
 
-# Custom CSS with proper f-string formatting
-css_code = f"""
+# Custom CSS - Using double curly braces for literal braces
+st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -164,9 +164,7 @@ html, body, [class*="css"] {{
 footer {{visibility: hidden;}}
 header {{visibility: hidden;}}
 </style>
-"""
-
-st.markdown(css_code, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ============================================
 # USER STORAGE
@@ -863,7 +861,7 @@ with tab1:
             st.info("📤 Data is being sent to SQL Server")
         else:
             st.warning("⚠️ ETL Offline - Tunnel may be down")
-            st.info("💡 Update your WEBHOOK_URL in Settings → Secrets")
+            st.info("💡 Update your WEBHOOK_URL in Settings -> Secrets")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1082,7 +1080,7 @@ with tab5:
         **To fix this:**
         1. Make sure your local Flask receiver is running
         2. Make sure Cloudflare tunnel is active
-        3. Update the WEBHOOK_URL in Settings → Secrets
+        3. Update the WEBHOOK_URL in Settings -> Secrets
         """)
     
     st.divider()
