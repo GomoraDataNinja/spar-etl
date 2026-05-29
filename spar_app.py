@@ -25,15 +25,20 @@ DEPLOYMENT_MODE = "production"
 # ============================================
 # WEBHOOK URL - Read from Streamlit Secrets
 # ============================================
-# This reads the URL you set in Streamlit Cloud Secrets
-if 'WEBHOOK_URL' in st.secrets:
-    WEBHOOK_URL = st.secrets['WEBHOOK_URL']
-else:
-    # Fallback for local testing (won't be used in cloud)
-    WEBHOOK_URL = "https://among-examinations-wet-cable.trycloudflare.com/webhook"
+# WEBHOOK URL - Read from Streamlit Secrets ONLY
+# ============================================
+# This MUST be set in Streamlit Cloud Secrets
+# If not set, show error and stop
+if 'WEBHOOK_URL' not in st.secrets:
+    st.error("❌ WEBHOOK_URL not configured! Please add it in:")
+    st.error("Streamlit Cloud → Settings → Secrets")
+    st.info("Add this line: WEBHOOK_URL = 'https://your-tunnel-url.trycloudflare.com/webhook'")
+    st.stop()
 
-# Debug - remove this line after confirming it works
-st.sidebar.write(f"🌐 Webhook: {WEBHOOK_URL[:50]}...")
+WEBHOOK_URL = st.secrets['WEBHOOK_URL']
+
+# Optional: Show status (remove after confirming)
+st.sidebar.success("✅ ETL Server Configured")
 
 # ============================================
 # EMAIL CONFIGURATION
