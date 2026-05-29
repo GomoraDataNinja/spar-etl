@@ -6,149 +6,6 @@ st.stop()
 WEBHOOK_URL = st.secrets['WEBHOOK_URL']
 
 # ============================================
-# EMAIL CONFIGURATION
-# ============================================
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SENDER_EMAIL = "gomoraefesto97@gmail.com"
-SENDER_PASSWORD = "picz cijg kgbw zoup"
-ADMIN_EMAIL = "gomoraefesto97@gmail.com"
-
-# ============================================
-# SPAR BRAND COLORS
-# ============================================
-SPAR_RED = "#E3000F"
-SPAR_GREEN = "#007A3D"
-SPAR_DARK_RED = "#C4000D"
-SPAR_LIGHT_GREEN = "#A8D46B"
-SPAR_GRAY = "#f6f7fb"
-CARD_BG = "#FFFFFF"
-
-# Configure page
-st.set_page_config(
-page_title="Tengai - SPAR Sales & Rewards System",
-page_icon="🛒",
-layout="wide",
-initial_sidebar_state="expanded"
-)
-
-# CSS as a separate string WITHOUT f-string
-# Replace your css_code section with this:
-
-# CSS as a separate string WITHOUT f-string
-css_code = """
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-
-.stApp {
-    background: linear-gradient(135deg, COLOR_GRAY 0%%, COLOR_CARD 100%%);
-}
-
-.app-header {
-    background: linear-gradient(135deg, COLOR_RED 0%%, COLOR_GREEN 100%%);
-    padding: 1.5rem 2rem;
-    border-radius: 28px;
-    margin-bottom: 2rem;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
-
-.app-header h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: white;
-    text-align: center;
-}
-
-.app-header p {
-    margin: 0.3rem 0 0 0;
-    opacity: 0.9;
-    font-size: 0.8rem;
-    color: white;
-    text-align: center;
-}
-
-.stTabs [data-baseweb="tab-list"] {
-    gap: 0.5rem;
-    background-color: COLOR_GRAY;
-    padding: 0.4rem;
-    border-radius: 60px;
-    justify-content: center;
-    display: flex;
-    margin-bottom: 1.5rem;
-}
-
-.stTabs [data-baseweb="tab"] {
-    border-radius: 40px;
-    padding: 0.5rem 1.5rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.stTabs [aria-selected="true"] {
-    background-color: COLOR_RED;
-    color: white;
-}
-
-.content-card {
-    background: COLOR_CARD;
-    padding: 1.5rem;
-    border-radius: 24px;
-    margin-bottom: 1rem;
-    border: 1px solid #E5E7EB;
-    border-left: 4px solid COLOR_RED;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-}
-
-.login-box {
-    background: COLOR_CARD;
-    border-radius: 32px;
-    padding: 2rem;
-    max-width: 450px;
-    margin: 0 auto;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border: 1px solid #E5E7EB;
-    text-align: center;
-}
-
-.app-name {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: COLOR_RED;
-    text-align: center;
-}
-
-.user-info {
-    background: COLOR_RED;
-    padding: 0.3rem 1rem;
-    border-radius: 40px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: white;
-}
-
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-</style>
-"""
-
-# Replace color placeholders
-css_code = css_code.replace("COLOR_RED", SPAR_RED)
-css_code = css_code.replace("COLOR_GREEN", SPAR_GREEN)
-css_code = css_code.replace("COLOR_GRAY", SPAR_GRAY)
-css_code = css_code.replace("COLOR_CARD", CARD_BG)
-
-st.markdown(css_code, unsafe_allow_html=True)
-
-# ============================================
 # USER STORAGE
 # ============================================
 def get_users_file():
@@ -502,8 +359,8 @@ def login_screen():
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    st.markdown('<div class="app-name">Tengai</div>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center;">SPAR Sales & Rewards System</p>', unsafe_allow_html=True)
+    st.markdown('<div class="app-name">🛒 Tengai</div>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align: center; margin-bottom: 2rem;">SPAR Sales & Rewards System</p>', unsafe_allow_html=True)
     
     with st.form("login_form"):
         username = st.text_input("Username / Email", placeholder="Enter your username or email")
@@ -537,7 +394,7 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 2, 1])
 with col3:
     st.markdown(f"""
-    <div style="display: flex; justify-content: flex-end;">
+    <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
         <div class="user-info" style="background: {SPAR_GREEN};">
             🛒 TILL OPERATOR
         </div>
@@ -691,7 +548,7 @@ with tab2:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW (Simplified for brevity - same as before but with proper CSS)
+# ADMIN VIEW
 # ============================================
 def admin_view():
 user_name = st.session_state.current_user['name']
@@ -706,7 +563,7 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 2, 1])
 with col3:
     st.markdown(f"""
-    <div style="display: flex; justify-content: flex-end;">
+    <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
         <div class="user-info" style="background: {SPAR_RED};">
             👑 ADMIN
         </div>
@@ -926,7 +783,7 @@ with tab3:
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# TAB 4: Rewards Analysis (Simplified)
+# TAB 4: Rewards Analysis
 with tab4:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.markdown("### 🏆 Rewards Intelligence Hub")
@@ -965,10 +822,17 @@ with tab4:
                          hole=0.3)
             fig.update_layout(height=400)
             st.plotly_chart(fig, use_container_width=True)
+            
+            # Display top at-risk customers
+            st.markdown("#### 🚨 High Priority Customers (At Risk / Warming)")
+            high_priority = rfm[rfm['priority'] == 'High'].head(10)
+            if not high_priority.empty:
+                display_cols = ['member_number', 'segment', 'recency', 'frequency', 'monetary', 'churn_risk', 'recommended_action']
+                st.dataframe(high_priority[display_cols], use_container_width=True)
         else:
             st.error("No valid data found")
     else:
-        st.info("📂 Please upload a CSV file")
+        st.info("📂 Please upload a CSV file with columns: member_number, redemption_date, basket_value (or amount)")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
