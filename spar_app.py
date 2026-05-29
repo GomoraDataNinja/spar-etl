@@ -151,14 +151,12 @@ SPAR_PRODUCTS = {
 }
 
 # ============================================
-# CLEAN LOGIN CSS - TIGHT & COMPACT
+# CSS STYLING - WITH VISIBLE DROPDOWNS
 # ============================================
 st.markdown("""
 <style>
-    /* Import fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
     
-    /* Global reset */
     * {
         margin: 0;
         padding: 0;
@@ -169,19 +167,17 @@ st.markdown("""
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    /* Main app background - Plain white */
     .stApp {
         background: #f5f7fa;
     }
     
-    /* Remove default padding */
     .block-container {
         padding: 1rem 2rem !important;
         max-width: 1400px !important;
         margin: 0 auto !important;
     }
     
-    /* Centered Login Container */
+    /* Login centered container */
     .login-centered {
         display: flex;
         justify-content: center;
@@ -190,7 +186,6 @@ st.markdown("""
         background: #f5f7fa;
     }
     
-    /* Tight Compact Login Card */
     .login-card-tight {
         background: white;
         border-radius: 16px;
@@ -221,51 +216,83 @@ st.markdown("""
         margin-bottom: 1.25rem;
     }
     
-    /* ============================================
-       VISIBLE FORM STYLING - IMPORTANT FIX
-    ============================================ */
+    /* Make all labels visible and black */
+    .stTextInput > label,
+    .stSelectbox > label,
+    .stNumberInput > label {
+        font-size: 0.75rem !important;
+        color: #202124 !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.25rem !important;
+        display: block !important;
+        text-align: left !important;
+    }
     
-    /* Make all input fields visible */
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div,
-    .stNumberInput > div > div > input {
-        border-radius: 8px;
+    /* Make selectbox input field black and visible */
+    .stSelectbox > div > div {
+        background: white !important;
         border: 1px solid #dadce0 !important;
-        padding: 0.6rem 0.75rem;
-        font-size: 0.85rem;
+        border-radius: 8px !important;
+        padding: 0.6rem 0.75rem !important;
+        color: #202124 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Make the selected value text BLACK and BOLD */
+    .stSelectbox > div > div > div {
+        color: #202124 !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+    }
+    
+    /* Make dropdown menu items visible */
+    div[data-baseweb="select"] > div {
+        color: #202124 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Dropdown menu container */
+    div[data-baseweb="popover"] {
+        background: white !important;
+        border: 1px solid #dadce0 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Dropdown options text */
+    div[data-baseweb="select"] li {
+        color: #202124 !important;
+        font-weight: 500 !important;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    /* Dropdown options on hover */
+    div[data-baseweb="select"] li:hover {
+        background: #f1f3f4 !important;
+        color: #1a73e8 !important;
+    }
+    
+    /* Make all text inputs visible */
+    .stTextInput > div > div > input,
+    .stNumberInput > div > div > input {
+        border-radius: 8px !important;
+        border: 1px solid #dadce0 !important;
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.85rem !important;
         background: white !important;
         color: #202124 !important;
-        transition: all 0.2s ease;
+        font-weight: 500 !important;
     }
     
     .stTextInput > div > div > input:focus,
     .stSelectbox > div > div:focus-within,
     .stNumberInput > div > div > input:focus {
         border-color: #1a73e8 !important;
-        box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+        box-shadow: 0 0 0 2px rgba(26,115,232,0.2) !important;
     }
     
-    /* Make labels visible */
-    .stTextInput > label,
-    .stSelectbox > label,
-    .stNumberInput > label {
-        font-size: 0.75rem !important;
-        color: #5f6368 !important;
-        font-weight: 500 !important;
-        margin-bottom: 0.25rem !important;
-        display: block !important;
-        text-align: left !important;
-    }
-    
-    /* Make selectbox text visible */
-    .stSelectbox > div > div {
-        color: #202124 !important;
-        background: white !important;
-    }
-    
-    /* Make selectbox options visible */
-    div[data-baseweb="select"] > div {
-        color: #202124 !important;
+    .stTextInput > div > div > input::placeholder {
+        color: #9aa0a6 !important;
     }
     
     /* Make metric text visible */
@@ -275,14 +302,7 @@ st.markdown("""
     
     div[data-testid="stMetric"] div {
         color: #1a73e8 !important;
-    }
-    
-    /* Make info text visible */
-    .stAlert {
-        border-radius: 8px;
-        border: none;
-        margin-bottom: 0.75rem;
-        font-size: 0.8rem;
+        font-weight: 600 !important;
     }
     
     /* Button Styling */
@@ -315,7 +335,6 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Divider styling */
     hr {
         margin: 0.75rem 0;
         border: none;
@@ -347,7 +366,6 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Modern card */
     .modern-card {
         background: white;
         border-radius: 12px;
@@ -366,15 +384,105 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
     
-    /* Hide username label completely on login screen */
+    /* Hide username label on login screen */
     div[data-testid="stTextInput"]:first-of-type label {
         display: none !important;
     }
     
-    /* Form container styling */
     .stForm {
         margin: 0;
         padding: 0;
+    }
+    
+    .stAlert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Main app header */
+    .modern-header {
+        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        padding: 1.25rem 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .modern-header h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+    
+    .modern-header p {
+        color: rgba(255,255,255,0.9);
+        font-size: 0.7rem;
+    }
+    
+    .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.4rem 1rem;
+        background: white;
+        border-radius: 40px;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        border: 1px solid #e8eaed;
+    }
+    
+    .logo-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1a73e8;
+    }
+    
+    .role-badge {
+        background: #1a73e8;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 500;
+    }
+    
+    .user-name-badge {
+        background: #f0f2f5;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        color: #5f6368;
+        font-size: 0.65rem;
+        font-weight: 500;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.25rem;
+        background-color: white;
+        padding: 0.25rem;
+        border-radius: 40px;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 32px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: #5f6368;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: #1a73e8;
+        color: white;
+    }
+    
+    /* Make sure selectbox dropdown arrow is visible */
+    .stSelectbox > div > div > div:last-child {
+        color: #5f6368 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -507,45 +615,6 @@ if 'rfm_data' not in st.session_state:
 # ============================================
 APP_NAME = "Tengai"
 APP_VERSION = "3.5.0"
-
-# ============================================
-# LOGIN SCREEN - TIGHT & COMPACT
-# ============================================
-def login_screen():
-    st.markdown("""
-    <div class="login-centered">
-        <div class="login-card-tight">
-            <div class="app-name-tight">Tengai</div>
-            <div class="signin-text-tight">Sign in to continue</div>
-            <div class="version-info-tight">Version 3.5.0 - Production</div>
-    """, unsafe_allow_html=True)
-    
-    with st.form("login_form"):
-        username = st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
-        password = st.text_input("Password", type="password", placeholder="Organisation password", key="password")
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            submitted = st.form_submit_button("Sign In", use_container_width=False)
-        
-        if submitted:
-            username_val = st.session_state.get('username', '')
-            password_val = st.session_state.get('password', '')
-            if username_val and password_val:
-                success, message = login_user(username_val, password_val)
-                if success:
-                    st.success(message)
-                    time.sleep(0.5)
-                    st.rerun()
-                else:
-                    st.error(message)
-            else:
-                st.warning("Please enter your username and password")
-    
-    st.markdown("""
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
 # ============================================
 # DATABASE QUERY FUNCTIONS
@@ -803,108 +872,51 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         return False
 
 # ============================================
+# LOGIN SCREEN
+# ============================================
+def login_screen():
+    st.markdown("""
+    <div class="login-centered">
+        <div class="login-card-tight">
+            <div class="app-name-tight">Tengai</div>
+            <div class="signin-text-tight">Sign in to continue</div>
+            <div class="version-info-tight">Version 3.5.0 - Production</div>
+    """, unsafe_allow_html=True)
+    
+    with st.form("login_form"):
+        username = st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
+        password = st.text_input("Password", type="password", placeholder="Organisation password", key="password")
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            submitted = st.form_submit_button("Sign In", use_container_width=False)
+        
+        if submitted:
+            username_val = st.session_state.get('username', '')
+            password_val = st.session_state.get('password', '')
+            if username_val and password_val:
+                success, message = login_user(username_val, password_val)
+                if success:
+                    st.success(message)
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error(message)
+            else:
+                st.warning("Please enter your username and password")
+    
+    st.markdown("""
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================
 # MAIN APP INTERFACE (After Login)
 # ============================================
 def main_app_interface():
     user_name = st.session_state.current_user['name']
     user_role = st.session_state.current_user['role']
     is_admin = (user_role == 'admin')
-    
-    # Custom CSS for main app interface - ensures visibility
-    st.markdown("""
-    <style>
-        /* Main app container */
-        .stApp {
-            background: #f5f7fa;
-        }
-        
-        .block-container {
-            padding: 1rem 2rem !important;
-            max-width: 1400px !important;
-        }
-        
-        /* Modern Header */
-        .modern-header {
-            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-            padding: 1.25rem 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .modern-header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-        
-        .modern-header p {
-            color: rgba(255,255,255,0.9);
-            font-size: 0.7rem;
-        }
-        
-        /* Navigation Bar */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.4rem 1rem;
-            background: white;
-            border-radius: 40px;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            border: 1px solid #e8eaed;
-        }
-        
-        .logo-text {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #1a73e8;
-        }
-        
-        .role-badge {
-            background: #1a73e8;
-            padding: 0.2rem 0.7rem;
-            border-radius: 20px;
-            color: white;
-            font-size: 0.6rem;
-            font-weight: 500;
-        }
-        
-        .user-name-badge {
-            background: #f0f2f5;
-            padding: 0.2rem 0.7rem;
-            border-radius: 20px;
-            color: #5f6368;
-            font-size: 0.65rem;
-            font-weight: 500;
-        }
-        
-        /* Tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 0.25rem;
-            background-color: white;
-            padding: 0.25rem;
-            border-radius: 40px;
-            margin-bottom: 1rem;
-            border: 1px solid #e8eaed;
-        }
-        
-        .stTabs [data-baseweb="tab"] {
-            border-radius: 32px;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: #5f6368;
-        }
-        
-        .stTabs [aria-selected="true"] {
-            background: #1a73e8;
-            color: white;
-        }
-    </style>
-    """, unsafe_allow_html=True)
     
     # Header
     if is_admin:
@@ -1161,7 +1173,7 @@ def admin_view():
                 # Product Category Selector
                 product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
                 
-                # Product Selector - dynamically shows products based on selected category
+                # Product Selector
                 products = SPAR_PRODUCTS.get(product_category, [])
                 product = st.selectbox("Product", products)
                 
@@ -1174,7 +1186,6 @@ def admin_view():
                 total_sales = quantity * unit_price
                 st.metric("Total Amount", f"${total_sales:,.2f}")
                 
-                # Show purchase date
                 st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
                 
                 rewards_earned = total_sales * 0.02
