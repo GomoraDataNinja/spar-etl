@@ -24,13 +24,12 @@ st.set_page_config(
 )
 
 # ============================================
-# MODERN SAAS-STYLE CUSTOM CSS
+# MODERN CENTERED SAAS-STYLE CSS
 # ============================================
 st.markdown("""
 <style>
     /* Import modern fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
     
     /* Global reset */
     * {
@@ -45,48 +44,86 @@ st.markdown("""
     
     /* Main app background */
     .stApp {
-        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+        background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
     }
     
-    /* Modern Header - SaaS Style */
-    .modern-header {
+    /* Centered Header - Like NanoSite */
+    .hero-section {
+        text-align: center;
+        padding: 3rem 2rem 2rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .hero-badge {
+        display: inline-block;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 3rem 4rem;
-        border-radius: 0 0 32px 32px;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .modern-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        pointer-events: none;
-    }
-    
-    .modern-header h1 {
-        font-size: 3rem;
-        font-weight: 700;
         color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 1rem;
+        border-radius: 40px;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        line-height: 1.2;
         letter-spacing: -0.02em;
-        margin-bottom: 0.5rem;
-        font-family: 'Space Grotesk', monospace;
     }
     
-    .modern-header p {
-        font-size: 1.1rem;
-        color: rgba(255,255,255,0.9);
-        font-weight: 400;
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        margin-bottom: 2rem;
+        line-height: 1.5;
         max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
     }
     
-    /* Navigation Bar */
+    .feature-grid {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin: 2rem 0;
+    }
+    
+    .feature-item {
+        text-align: center;
+        padding: 1rem;
+        min-width: 200px;
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .feature-text {
+        font-size: 0.9rem;
+        color: #334155;
+        font-weight: 500;
+    }
+    
+    .disclaimer {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        margin-top: 2rem;
+        padding: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    /* Modern Navigation Bar */
     .nav-bar {
         display: flex;
         justify-content: space-between;
@@ -94,7 +131,7 @@ st.markdown("""
         padding: 1rem 2rem;
         background: white;
         border-radius: 60px;
-        margin-bottom: 2rem;
+        margin: 1rem 2rem 2rem 2rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         border: 1px solid #eef2f6;
     }
@@ -143,7 +180,7 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Modern Cards */
+    /* Modern Cards - Centered */
     .modern-card {
         background: white;
         border-radius: 24px;
@@ -155,7 +192,7 @@ st.markdown("""
     }
     
     .modern-card:hover {
-        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 8px 30px rgba(102,126,234,0.08);
         transform: translateY(-2px);
     }
     
@@ -171,7 +208,7 @@ st.markdown("""
         padding-bottom: 0.75rem;
     }
     
-    /* Metric Cards */
+    /* Metric Cards - Centered */
     .metric-modern {
         background: white;
         border-radius: 20px;
@@ -205,7 +242,7 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Modern Tabs */
+    /* Centered Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 0.5rem;
         background-color: white;
@@ -214,6 +251,7 @@ st.markdown("""
         margin-bottom: 1.5rem;
         border: 1px solid #eef2f6;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        justify-content: center;
     }
     
     .stTabs [data-baseweb="tab"] {
@@ -233,7 +271,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(102,126,234,0.3);
     }
     
-    /* Modern Buttons */
+    /* Centered Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -243,6 +281,7 @@ st.markdown("""
         font-weight: 500;
         font-size: 0.85rem;
         transition: all 0.2s ease;
+        width: 100%;
     }
     
     .stButton > button:hover {
@@ -250,8 +289,10 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(102,126,234,0.4);
     }
     
-    /* Form inputs */
-    .stTextInput > div > div > input, .stSelectbox > div > div, .stNumberInput > div > div > input {
+    /* Form inputs - Centered */
+    .stTextInput > div > div > input, 
+    .stSelectbox > div > div, 
+    .stNumberInput > div > div > input {
         border-radius: 12px;
         border: 1px solid #e2e8f0;
         padding: 0.7rem 1rem;
@@ -259,18 +300,19 @@ st.markdown("""
         transition: all 0.2s ease;
     }
     
-    .stTextInput > div > div > input:focus, .stSelectbox > div > div:focus-within {
+    .stTextInput > div > div > input:focus, 
+    .stSelectbox > div > div:focus-within {
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
     }
     
-    /* Login Container */
+    /* Centered Login Container */
     .login-modern {
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 85vh;
-        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+        background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
     }
     
     .login-card-modern {
@@ -340,14 +382,17 @@ st.markdown("""
         border-left: 4px solid #667eea;
     }
     
-    /* Badge */
-    .badge-modern {
-        background: #f0f2f5;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        color: #64748b;
-        display: inline-block;
+    /* Grid layout for forms */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -770,11 +815,26 @@ def login_screen():
 def operator_view():
     user_name = st.session_state.current_user['name']
     
-    # Modern Header
+    # Modern Hero Section - Centered like NanoSite
     st.markdown("""
-    <div class="modern-header">
-        <h1>🛒 Tengai</h1>
-        <p>SPAR Sales & Rewards System — Streamline your retail operations with real-time sales tracking and intelligent rewards management.</p>
+    <div class="hero-section">
+        <div class="hero-badge">✨ SPAR OFFICIAL PARTNER</div>
+        <div class="hero-title">Easy to Use Sales & Rewards System</div>
+        <div class="hero-subtitle">Record sales, track rewards, and manage customer loyalty - all in one place</div>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon">📝</div>
+                <div class="feature-text">Record sales in seconds</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⭐</div>
+                <div class="feature-text">Track rewards points</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">View daily performance</div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -965,6 +1025,13 @@ def operator_view():
             st.warning("⚠️ Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Disclaimer
+    st.markdown("""
+    <div class="disclaimer">
+        * Our tool is intended for retail business use only. We are not liable for any consequences resulting from users' violation of any laws or infringement of others' rights.
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================
 # ADMIN VIEW
@@ -972,11 +1039,26 @@ def operator_view():
 def admin_view():
     user_name = st.session_state.current_user['name']
     
-    # Modern Header
+    # Modern Hero Section - Centered
     st.markdown("""
-    <div class="modern-header">
-        <h1>🛒 Tengai</h1>
-        <p>SPAR Sales & Rewards System — Complete control over sales, rewards, and customer insights.</p>
+    <div class="hero-section">
+        <div class="hero-badge">✨ ADMIN DASHBOARD</div>
+        <div class="hero-title">Complete Control & Analytics</div>
+        <div class="hero-subtitle">Manage operators, track sales, and analyze customer rewards from one central hub</div>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">Sales Analytics</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">👥</div>
+                <div class="feature-text">Operator Management</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-text">Rewards Intelligence</div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -1341,6 +1423,13 @@ def admin_view():
         st.code(f"WEBHOOK_URL = {WEBHOOK_URL}", language="python")
         
         st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Disclaimer
+    st.markdown("""
+    <div class="disclaimer">
+        * Our tool is intended for retail business use only. We are not liable for any consequences resulting from users' violation of any laws or infringement of others' rights.
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================
 # MAIN
