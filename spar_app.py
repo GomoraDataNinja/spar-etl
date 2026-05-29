@@ -24,250 +24,330 @@ st.set_page_config(
 )
 
 # ============================================
-# GOOGLE-INSPIRED CUSTOM CSS
+# MODERN SAAS-STYLE CUSTOM CSS
 # ============================================
 st.markdown("""
 <style>
-    /* Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+    /* Import modern fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* Global Styles */
+    /* Global reset */
     * {
-        font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    
-    /* Main background */
-    .stApp {
-        background: #ffffff;
-    }
-    
-    /* Header Section - Google Style */
-    .main-header {
-        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-        padding: 2rem 3rem;
-        border-radius: 0 0 24px 24px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .main-header h1 {
         margin: 0;
-        font-size: 2.5rem;
-        font-weight: 600;
-        color: white;
-        letter-spacing: -0.5px;
+        padding: 0;
+        box-sizing: border-box;
     }
     
-    .main-header p {
-        margin: 0.5rem 0 0 0;
-        font-size: 1rem;
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    /* Main app background */
+    .stApp {
+        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    }
+    
+    /* Modern Header - SaaS Style */
+    .modern-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 4rem;
+        border-radius: 0 0 32px 32px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .modern-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .modern-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+        font-family: 'Space Grotesk', monospace;
+    }
+    
+    .modern-header p {
+        font-size: 1.1rem;
         color: rgba(255,255,255,0.9);
         font-weight: 400;
+        max-width: 600px;
     }
     
-    /* User Info Bar */
-    .user-bar {
+    /* Navigation Bar */
+    .nav-bar {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background: white;
+        border-radius: 60px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid #eef2f6;
+    }
+    
+    .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .logo-icon {
+        font-size: 1.8rem;
+    }
+    
+    .logo-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .user-area {
+        display: flex;
         align-items: center;
         gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 0.5rem 1rem;
-        background: #f8f9fa;
-        border-radius: 48px;
-        display: inline-flex;
-        float: right;
     }
     
-    .user-badge {
-        background: #1a73e8;
+    .role-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 0.4rem 1.2rem;
-        border-radius: 32px;
+        border-radius: 40px;
         color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .user-name-badge {
+        background: #f0f2f5;
+        padding: 0.4rem 1.2rem;
+        border-radius: 40px;
+        color: #1a1a2e;
         font-size: 0.8rem;
         font-weight: 500;
     }
     
-    .user-name {
-        color: #5f6368;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-    
-    /* Tabs - Google Material Style */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 0.5rem;
-        background-color: #f8f9fa;
-        padding: 0.5rem;
-        border-radius: 32px;
-        margin-bottom: 1.5rem;
-        border: none;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 28px;
-        padding: 0.5rem 1.5rem;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #5f6368;
-        background: transparent;
-        border: none;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: #1a73e8;
-        color: white;
-    }
-    
-    /* Cards - Google Material Design */
-    .google-card {
+    /* Modern Cards */
+    .modern-card {
         background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        border: 1px solid #e8eaed;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        transition: box-shadow 0.2s ease;
+        border-radius: 24px;
+        padding: 1.75rem;
+        margin-bottom: 1.25rem;
+        border: 1px solid #eef2f6;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        transition: all 0.3s ease;
     }
     
-    .google-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .modern-card:hover {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        transform: translateY(-2px);
     }
     
-    .card-title {
+    .card-header {
         font-size: 1.25rem;
         font-weight: 600;
-        color: #202124;
-        margin-bottom: 1rem;
+        color: #1a1a2e;
+        margin-bottom: 1.25rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        border-bottom: 2px solid #f0f2f5;
+        padding-bottom: 0.75rem;
     }
     
     /* Metric Cards */
-    .metric-google {
+    .metric-modern {
         background: white;
-        border-radius: 12px;
-        padding: 1rem;
+        border-radius: 20px;
+        padding: 1.25rem;
         text-align: center;
-        border: 1px solid #e8eaed;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        border: 1px solid #eef2f6;
+        transition: all 0.3s ease;
     }
     
-    .metric-value {
+    .metric-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102,126,234,0.1);
+        border-color: #667eea;
+    }
+    
+    .metric-value-modern {
         font-size: 2rem;
-        font-weight: 600;
-        color: #1a73e8;
-        margin-bottom: 0.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
     }
     
-    .metric-label {
-        font-size: 0.8rem;
-        color: #5f6368;
+    .metric-label-modern {
+        font-size: 0.75rem;
+        color: #64748b;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
     
-    /* Login Box */
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
-    }
-    
-    .login-card {
-        background: white;
-        border-radius: 24px;
-        padding: 2.5rem;
-        max-width: 420px;
-        width: 100%;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-        border: 1px solid #e8eaed;
-        text-align: center;
-    }
-    
-    .login-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    
-    .login-title {
-        font-size: 1.75rem;
-        font-weight: 500;
-        color: #202124;
-        margin-bottom: 0.5rem;
-    }
-    
-    .login-subtitle {
-        color: #5f6368;
-        font-size: 0.85rem;
+    /* Modern Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+        background-color: white;
+        padding: 0.5rem;
+        border-radius: 60px;
         margin-bottom: 1.5rem;
+        border: 1px solid #eef2f6;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     
-    /* Buttons */
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 40px;
+        padding: 0.6rem 1.8rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #64748b;
+        background: transparent;
+        border: none;
+        transition: all 0.2s ease;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+    }
+    
+    /* Modern Buttons */
     .stButton > button {
-        background-color: #1a73e8;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 24px;
-        padding: 0.5rem 1.5rem;
+        border-radius: 40px;
+        padding: 0.6rem 1.5rem;
         font-weight: 500;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         transition: all 0.2s ease;
     }
     
     .stButton > button:hover {
-        background-color: #1557b0;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102,126,234,0.4);
     }
     
     /* Form inputs */
-    .stTextInput > div > div > input {
-        border-radius: 8px;
-        border: 1px solid #dadce0;
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
+    .stTextInput > div > div > input, .stSelectbox > div > div, .stNumberInput > div > div > input {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
     }
     
-    .stTextInput > div > div > input:focus {
-        border-color: #1a73e8;
-        box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+    .stTextInput > div > div > input:focus, .stSelectbox > div > div:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
     }
     
-    /* DataFrames */
+    /* Login Container */
+    .login-modern {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 85vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    }
+    
+    .login-card-modern {
+        background: white;
+        border-radius: 32px;
+        padding: 2.5rem;
+        max-width: 450px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        border: 1px solid #eef2f6;
+        text-align: center;
+    }
+    
+    .login-icon-modern {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .login-title-modern {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-subtitle-modern {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-bottom: 2rem;
+    }
+    
+    /* Dataframes */
     .stDataFrame {
-        border-radius: 12px;
-        border: 1px solid #e8eaed;
+        border-radius: 16px;
+        border: 1px solid #eef2f6;
     }
     
-    /* Success/Error messages */
-    .stAlert {
-        border-radius: 12px;
-        border: none;
-    }
-    
-    /* Hide default menu */
+    /* Hide default elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* Success/Error/Warning alerts */
+    .stAlert {
+        border-radius: 16px;
+        border: none;
+    }
     
     /* Divider */
     hr {
         margin: 1.5rem 0;
         border: none;
-        border-top: 1px solid #e8eaed;
+        border-top: 1px solid #eef2f6;
     }
     
     /* Info box */
-    .info-box {
-        background: #e8f0fe;
-        padding: 1rem;
-        border-radius: 12px;
-        color: #174ea6;
+    .info-box-modern {
+        background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        color: #667eea;
         font-size: 0.85rem;
         margin: 1rem 0;
+        border-left: 4px solid #667eea;
+    }
+    
+    /* Badge */
+    .badge-modern {
+        background: #f0f2f5;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        color: #64748b;
+        display: inline-block;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -286,15 +366,15 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 if 'WEBHOOK_URL' not in st.secrets:
     st.markdown("""
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-icon">🔧</div>
-            <div class="login-title">Configuration Required</div>
-            <div class="login-subtitle">Please set up your Cloudflare tunnel URL in Streamlit Secrets</div>
-            <div class="info-box">
-                <strong>How to configure:</strong><br><br>
+    <div class="login-modern">
+        <div class="login-card-modern">
+            <div class="login-icon-modern">🔧</div>
+            <div class="login-title-modern">Configuration Required</div>
+            <div class="login-subtitle-modern">Please set up your Cloudflare tunnel URL</div>
+            <div class="info-box-modern">
+                <strong>📋 How to configure:</strong><br><br>
                 1. Go to Settings → Secrets<br>
-                2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
+                2. Add: <code style="background:#f0f2f5;padding:2px 6px;border-radius:6px;">WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
                 3. Replace with your actual tunnel URL<br>
                 4. Click Save and Restart
             </div>
@@ -625,8 +705,8 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         
         html_content = f"""
         <html>
-        <body style="font-family: 'Google Sans', Arial, sans-serif;">
-            <h2 style="color: #1a73e8;">New SPAR Sale Recorded!</h2>
+        <body style="font-family: 'Inter', Arial, sans-serif;">
+            <h2 style="color: #667eea;">New SPAR Sale Recorded!</h2>
             <p><strong>Sale ID:</strong> {sale_id}</p>
             <p><strong>Customer:</strong> {customer_name}</p>
             <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
@@ -656,11 +736,11 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
 # ============================================
 def login_screen():
     st.markdown("""
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-icon">🛒</div>
-            <div class="login-title">Tengai</div>
-            <div class="login-subtitle">SPAR Sales & Rewards System</div>
+    <div class="login-modern">
+        <div class="login-card-modern">
+            <div class="login-icon-modern">🛒</div>
+            <div class="login-title-modern">Tengai</div>
+            <div class="login-subtitle-modern">SPAR Sales & Rewards System</div>
     """, unsafe_allow_html=True)
     
     with st.form("login_form"):
@@ -677,7 +757,7 @@ def login_screen():
                 st.error(message)
     
     st.markdown("""
-            <p style="text-align: center; font-size: 0.7rem; margin-top: 1rem; color: #5f6368;">
+            <p style="text-align: center; font-size: 0.7rem; margin-top: 1.5rem; color: #94a3b8;">
                 Contact your administrator to get an account
             </p>
         </div>
@@ -690,23 +770,27 @@ def login_screen():
 def operator_view():
     user_name = st.session_state.current_user['name']
     
-    # Header
+    # Modern Header
     st.markdown("""
-    <div class="main-header">
+    <div class="modern-header">
         <h1>🛒 Tengai</h1>
-        <p>SPAR Sales & Rewards System</p>
+        <p>SPAR Sales & Rewards System — Streamline your retail operations with real-time sales tracking and intelligent rewards management.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # User bar
-    col1, col2, col3 = st.columns([3, 1, 1])
-    with col3:
-        st.markdown(f"""
-        <div class="user-bar">
-            <span class="user-badge">TILL OPERATOR</span>
-            <span class="user-name">👋 {user_name}</span>
+    # Navigation Bar
+    st.markdown(f"""
+    <div class="nav-bar">
+        <div class="logo-area">
+            <span class="logo-icon">🛒</span>
+            <span class="logo-text">Tengai</span>
         </div>
-        """, unsafe_allow_html=True)
+        <div class="user-area">
+            <span class="role-badge">TILL OPERATOR</span>
+            <span class="user-name-badge">👋 {user_name}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     if st.button("Sign Out", key="signout"):
         logout_user()
@@ -720,8 +804,8 @@ def operator_view():
         col_left, col_right = st.columns([2, 1])
         
         with col_left:
-            st.markdown('<div class="google-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">📋 New Purchase</div>', unsafe_allow_html=True)
+            st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
             with st.form(key="sales_form", clear_on_submit=True):
                 col_a, col_b = st.columns(2)
@@ -798,8 +882,8 @@ def operator_view():
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
-            st.markdown('<div class="google-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">📊 Today\'s Stats</div>', unsafe_allow_html=True)
+            st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📊 Today\'s Stats</div>', unsafe_allow_html=True)
             
             if check_connection():
                 st.success("✅ ETL Connected")
@@ -808,15 +892,15 @@ def operator_view():
                     df_today = pd.DataFrame(today_sales)
                     total_revenue = df_today['total_sales'].sum() if 'total_sales' in df_today.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${total_revenue:,.2f}</div>
-                        <div class="metric-label">Today's Revenue</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
+                        <div class="metric-label-modern">Today's Revenue</div>
                     </div>
                     """, unsafe_allow_html=True)
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{len(df_today)}</div>
-                        <div class="metric-label">Transactions</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{len(df_today)}</div>
+                        <div class="metric-label-modern">Transactions</div>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
@@ -828,8 +912,8 @@ def operator_view():
     
     # TAB 2: My Sales Today
     with tab2:
-        st.markdown('<div class="google-card">', unsafe_allow_html=True)
-        st.markdown(f'<div class="card-title">📊 My Sales Today - {user_name}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+        st.markdown(f'<div class="card-header">📊 My Sales Today - {user_name}</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
@@ -840,33 +924,33 @@ def operator_view():
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{len(df)}</div>
-                        <div class="metric-label">Transactions</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{len(df)}</div>
+                        <div class="metric-label-modern">Transactions</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col2:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${total_revenue:,.2f}</div>
-                        <div class="metric-label">Revenue</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
+                        <div class="metric-label-modern">Revenue</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col3:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${avg_sale:.2f}</div>
-                        <div class="metric-label">Average Sale</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${avg_sale:.2f}</div>
+                        <div class="metric-label-modern">Average Sale</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col4:
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{customers}</div>
-                        <div class="metric-label">Customers Served</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{customers}</div>
+                        <div class="metric-label-modern">Customers Served</div>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -883,28 +967,32 @@ def operator_view():
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW (Simplified for brevity - same as before)
+# ADMIN VIEW
 # ============================================
 def admin_view():
     user_name = st.session_state.current_user['name']
     
-    # Header
+    # Modern Header
     st.markdown("""
-    <div class="main-header">
+    <div class="modern-header">
         <h1>🛒 Tengai</h1>
-        <p>SPAR Sales & Rewards System | Admin Dashboard</p>
+        <p>SPAR Sales & Rewards System — Complete control over sales, rewards, and customer insights.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # User bar
-    col1, col2, col3 = st.columns([3, 1, 1])
-    with col3:
-        st.markdown(f"""
-        <div class="user-bar">
-            <span class="user-badge">ADMIN</span>
-            <span class="user-name">👋 {user_name}</span>
+    # Navigation Bar
+    st.markdown(f"""
+    <div class="nav-bar">
+        <div class="logo-area">
+            <span class="logo-icon">🛒</span>
+            <span class="logo-text">Tengai</span>
         </div>
-        """, unsafe_allow_html=True)
+        <div class="user-area">
+            <span class="role-badge">ADMIN</span>
+            <span class="user-name-badge">👋 {user_name}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     if st.button("Sign Out", key="signout"):
         logout_user()
@@ -920,8 +1008,8 @@ def admin_view():
         col_left, col_right = st.columns([2, 1])
         
         with col_left:
-            st.markdown('<div class="google-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">📋 New Purchase</div>', unsafe_allow_html=True)
+            st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
             with st.form(key="sales_form_admin", clear_on_submit=True):
                 col_a, col_b = st.columns(2)
@@ -997,8 +1085,8 @@ def admin_view():
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
-            st.markdown('<div class="google-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title">📊 System Status</div>', unsafe_allow_html=True)
+            st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📊 System Status</div>', unsafe_allow_html=True)
             
             if check_connection():
                 st.success("✅ ETL Connected")
@@ -1011,8 +1099,8 @@ def admin_view():
     
     # TAB 2: Today's All Sales
     with tab2:
-        st.markdown('<div class="google-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">📊 Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
+        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">📊 Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(date_filter='today')
@@ -1023,33 +1111,33 @@ def admin_view():
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{len(df)}</div>
-                        <div class="metric-label">Transactions</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{len(df)}</div>
+                        <div class="metric-label-modern">Transactions</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col2:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${total_revenue:,.2f}</div>
-                        <div class="metric-label">Revenue</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
+                        <div class="metric-label-modern">Revenue</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col3:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${avg_sale:.2f}</div>
-                        <div class="metric-label">Average Sale</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${avg_sale:.2f}</div>
+                        <div class="metric-label-modern">Average Sale</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col4:
                     operators = df['recorded_by'].nunique() if 'recorded_by' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{operators}</div>
-                        <div class="metric-label">Active Operators</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{operators}</div>
+                        <div class="metric-label-modern">Active Operators</div>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -1076,8 +1164,8 @@ def admin_view():
     
     # TAB 3: Sales Reports
     with tab3:
-        st.markdown('<div class="google-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">📈 Sales Reports & Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">📈 Sales Reports & Analytics</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -1095,32 +1183,32 @@ def admin_view():
                 with col1:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${total_revenue:,.2f}</div>
-                        <div class="metric-label">Total Sales</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
+                        <div class="metric-label-modern">Total Sales</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col2:
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{len(df)}</div>
-                        <div class="metric-label">Transactions</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{len(df)}</div>
+                        <div class="metric-label-modern">Transactions</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col3:
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">{customers}</div>
-                        <div class="metric-label">Unique Customers</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">{customers}</div>
+                        <div class="metric-label-modern">Unique Customers</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with col4:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
                     st.markdown(f"""
-                    <div class="metric-google">
-                        <div class="metric-value">${avg_sale:.2f}</div>
-                        <div class="metric-label">Avg Transaction</div>
+                    <div class="metric-modern">
+                        <div class="metric-value-modern">${avg_sale:.2f}</div>
+                        <div class="metric-label-modern">Avg Transaction</div>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -1130,7 +1218,7 @@ def admin_view():
                     daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
                     fig = px.line(daily_sales, x='sale_date', y='total_sales', 
                                   title="Sales Over Time", markers=True,
-                                  color_discrete_sequence=['#1a73e8'])
+                                  color_discrete_sequence=['#667eea'])
                     fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
                     st.plotly_chart(fig, use_container_width=True)
                 
@@ -1161,8 +1249,8 @@ def admin_view():
     
     # TAB 4: Rewards Analysis
     with tab4:
-        st.markdown('<div class="google-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">🏆 Rewards Intelligence Hub</div>', unsafe_allow_html=True)
+        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">🏆 Rewards Intelligence Hub</div>', unsafe_allow_html=True)
         
         uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="rewards_upload")
         
@@ -1183,7 +1271,7 @@ def admin_view():
                 seg_counts = rfm['segment'].value_counts().reset_index()
                 seg_counts.columns = ['Segment', 'Count']
                 fig = px.pie(seg_counts, values='Count', names='Segment', 
-                             color_discrete_sequence=['#1a73e8', '#e8710a', '#fbbc04', '#34a853', '#e8eaed'],
+                             color_discrete_sequence=['#667eea', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'],
                              hole=0.3)
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
@@ -1196,8 +1284,8 @@ def admin_view():
     
     # TAB 5: Admin Panel
     with tab5:
-        st.markdown('<div class="google-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">👑 Admin Control Panel</div>', unsafe_allow_html=True)
+        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">👑 Admin Control Panel</div>', unsafe_allow_html=True)
         
         st.markdown("#### ➕ Create New Operator Account")
         
