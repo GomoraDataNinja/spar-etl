@@ -13,6 +13,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
+import os
 
 # ============================================
 # APP CONFIGURATION
@@ -22,6 +23,19 @@ APP_VERSION = "3.5.0"
 DEPLOYMENT_MODE = "production"
 
 # ============================================
+# WEBHOOK URL - Read from Streamlit Secrets
+# ============================================
+# This reads the URL you set in Streamlit Cloud Secrets
+if 'WEBHOOK_URL' in st.secrets:
+    WEBHOOK_URL = st.secrets['WEBHOOK_URL']
+else:
+    # Fallback for local testing (won't be used in cloud)
+    WEBHOOK_URL = "https://among-examinations-wet-cable.trycloudflare.com/webhook"
+
+# Debug - remove this line after confirming it works
+st.sidebar.write(f"🌐 Webhook: {WEBHOOK_URL[:50]}...")
+
+# ============================================
 # EMAIL CONFIGURATION
 # ============================================
 SMTP_SERVER = "smtp.gmail.com"
@@ -29,28 +43,6 @@ SMTP_PORT = 587
 SENDER_EMAIL = "gomoraefesto97@gmail.com"
 SENDER_PASSWORD = "picz cijg kgbw zoup"
 ADMIN_EMAIL = "gomoraefesto97@gmail.com"
-
-# ============================================
-# WEBHOOK URL - UPDATE THIS DAILY WITH NEW TUNNEL URL
-# ============================================
-WEBHOOK_URL = "https://among-examinations-wet-cable.trycloudflare.com/webhook"
-import os
-
-# Add this debug code
-st.write(f"🔍 DEBUG: WEBHOOK_URL = {WEBHOOK_URL}")
-st.write(f"🔍 DEBUG: Health URL = {WEBHOOK_URL.replace('/webhook', '/health')}")
-
-# Test the connection
-try:
-    response = requests.get(WEBHOOK_URL.replace('/webhook', '/health'), timeout=5)
-    st.write(f"🔍 DEBUG: Health check status = {response.status_code}")
-    st.write(f"🔍 DEBUG: Health check response = {response.text}")
-except Exception as e:
-    st.write(f"🔍 DEBUG: Error = {e}")
-
-
-# Read URL from secrets, fallback to a default
-WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://default.trycloudflare.com/webhook")
 
 # ============================================
 # SPAR BRAND COLORS
