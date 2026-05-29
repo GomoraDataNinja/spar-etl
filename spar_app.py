@@ -36,6 +36,19 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # WEBHOOK_URL = "https://formal-syndrome-cult-ons.trycloudflare.com/webhook"
 import os
 
+# Add this debug code
+st.write(f"🔍 DEBUG: WEBHOOK_URL = {WEBHOOK_URL}")
+st.write(f"🔍 DEBUG: Health URL = {WEBHOOK_URL.replace('/webhook', '/health')}")
+
+# Test the connection
+try:
+    response = requests.get(WEBHOOK_URL.replace('/webhook', '/health'), timeout=5)
+    st.write(f"🔍 DEBUG: Health check status = {response.status_code}")
+    st.write(f"🔍 DEBUG: Health check response = {response.text}")
+except Exception as e:
+    st.write(f"🔍 DEBUG: Error = {e}")
+
+
 # Read URL from secrets, fallback to a default
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://default.trycloudflare.com/webhook")
 
