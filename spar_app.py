@@ -24,7 +24,7 @@ st.set_page_config(
 )
 
 # ============================================
-# MODERN CENTERED LOGIN CSS
+# CLEAN LOGIN CSS - Batsirai Style
 # ============================================
 st.markdown("""
 <style>
@@ -62,34 +62,32 @@ st.markdown("""
         min-height: 100vh;
     }
     
-    /* Single Login Card - Clean and simple */
-    .login-card-single {
+    /* Clean Login Card */
+    .login-card-clean {
         background: white;
-        border-radius: 32px;
+        border-radius: 24px;
         padding: 2.5rem;
-        max-width: 400px;
+        max-width: 380px;
         width: 100%;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         text-align: center;
     }
     
-    .login-logo {
-        font-size: 3.5rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .login-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+    .app-name {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1a1a2e;
         margin-bottom: 0.5rem;
     }
     
-    .login-subtitle {
-        font-size: 0.8rem;
+    .signin-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 1rem;
+    }
+    
+    .version-info {
+        font-size: 0.7rem;
         color: #94a3b8;
         margin-bottom: 1.5rem;
     }
@@ -112,6 +110,16 @@ st.markdown("""
     
     .stTextInput > div > div > input::placeholder {
         color: #94a3b8;
+    }
+    
+    /* Password label styling */
+    .stTextInput > label {
+        font-size: 0.75rem !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        margin-bottom: 0.25rem !important;
+        display: block !important;
+        text-align: left !important;
     }
     
     /* Button Container - Center the button */
@@ -141,21 +149,6 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(102,126,234,0.4);
     }
     
-    /* Version info */
-    .version-info {
-        margin-top: 1.5rem;
-        text-align: center;
-        font-size: 0.7rem;
-        color: #94a3b8;
-    }
-    
-    /* Divider */
-    .divider {
-        margin: 1rem 0;
-        border: none;
-        border-top: 1px solid #e2e8f0;
-    }
-    
     /* Hide default elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -166,6 +159,13 @@ st.markdown("""
         border-radius: 12px;
         border: none;
         margin-bottom: 1rem;
+    }
+    
+    /* Divider */
+    hr {
+        margin: 1rem 0;
+        border: none;
+        border-top: 1px solid #e2e8f0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -185,11 +185,10 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 if 'WEBHOOK_URL' not in st.secrets:
     st.markdown("""
     <div class="login-centered">
-        <div class="login-card-single">
-            <div class="login-logo">🔧</div>
-            <div class="login-title">Configuration Required</div>
-            <div class="login-subtitle">Please set up your Cloudflare tunnel URL</div>
-            <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left;">
+        <div class="login-card-clean">
+            <div class="app-name">Configuration Required</div>
+            <div class="signin-text">Please set up your Cloudflare tunnel URL</div>
+            <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left; margin-top: 1rem;">
                 <strong>How to configure:</strong><br><br>
                 1. Go to Settings → Secrets<br>
                 2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
@@ -301,41 +300,45 @@ APP_NAME = "Tengai"
 APP_VERSION = "3.5.0"
 
 # ============================================
-# LOGIN SCREEN - Clean Simple Box
+# LOGIN SCREEN - Clean Batsirai Style
 # ============================================
 def login_screen():
     st.markdown("""
     <div class="login-centered">
-        <div class="login-card-single">
-            <div class="login-logo">🛒</div>
-            <div class="login-title">Tengai</div>
-            <div class="login-subtitle">SPAR Sales & Rewards System</div>
+        <div class="login-card-clean">
+            <div class="app-name">Tengai</div>
+            <div class="signin-text">Sign in to continue</div>
+            <div class="version-info">Version 3.5.0 • Production</div>
     """, unsafe_allow_html=True)
     
     # Login Form
     with st.form("login_form"):
-        username = st.text_input("Username or Email", placeholder="Enter your username or email", label_visibility="collapsed")
-        password = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
+        # Username field (hidden label)
+        st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
+        
+        # Password field with visible label "Password"
+        st.text_input("Password", type="password", placeholder="Organisation password", key="password")
         
         # Centered button
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             submitted = st.form_submit_button("Sign In", use_container_width=False)
         
-        if submitted and username and password:
-            success, message = login_user(username, password)
-            if success:
-                st.success(message)
-                time.sleep(0.5)
-                st.rerun()
+        if submitted:
+            username = st.session_state.get('username', '')
+            password = st.session_state.get('password', '')
+            if username and password:
+                success, message = login_user(username, password)
+                if success:
+                    st.success(message)
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error(message)
             else:
-                st.error(message)
+                st.warning("Please enter your username and password")
     
-    # Version info
-    st.markdown(f"""
-            <div class="version-info">
-                Version {APP_VERSION} • Production
-            </div>
+    st.markdown("""
         </div>
     </div>
     """, unsafe_allow_html=True)
