@@ -24,7 +24,7 @@ st.set_page_config(
 )
 
 # ============================================
-# MODERN LOGIN-STYLE CSS
+# MODERN CENTERED LOGIN CSS
 # ============================================
 st.markdown("""
 <style>
@@ -47,123 +47,81 @@ st.markdown("""
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
-    /* Modern Login Container - Split Screen Style */
-    .login-container-modern {
+    /* Remove default padding */
+    .block-container {
+        padding: 2rem !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+    }
+    
+    /* Centered Login Container */
+    .login-centered {
         display: flex;
+        justify-content: center;
+        align-items: flex-start;
         min-height: 100vh;
-        width: 100%;
+        padding-top: 8rem;
     }
     
-    /* Left Side - Branding Area */
-    .login-branding {
-        flex: 1;
-        background: linear-gradient(135deg, rgba(102,126,234,0.95) 0%, rgba(118,75,162,0.95) 100%);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 3rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .login-branding::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        pointer-events: none;
-    }
-    
-    .brand-icon {
-        font-size: 5rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .brand-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .brand-subtitle {
-        font-size: 1rem;
-        opacity: 0.9;
-        text-align: center;
-        max-width: 300px;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .brand-features {
-        margin-top: 2rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .brand-feature {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-    }
-    
-    /* Right Side - Login Form Area */
-    .login-form-area {
-        flex: 1;
+    /* Single Login Card */
+    .login-card-single {
         background: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 3rem;
-    }
-    
-    .login-form-card {
-        max-width: 380px;
+        border-radius: 28px;
+        padding: 2.5rem;
+        max-width: 440px;
         width: 100%;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        text-align: center;
     }
     
-    .login-welcome {
-        margin-bottom: 2rem;
-        text-align: left;
+    .login-logo {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
     }
     
-    .login-welcome h2 {
+    .login-title {
         font-size: 1.75rem;
-        font-weight: 600;
-        color: #1a1a2e;
-        margin-bottom: 0.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.25rem;
     }
     
-    .login-welcome p {
+    .login-subtitle {
+        font-size: 0.8rem;
         color: #64748b;
-        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
     }
     
-    .version-info {
-        margin-top: 2rem;
+    /* Features list */
+    .features-list {
         text-align: left;
-        font-size: 0.7rem;
-        color: #94a3b8;
-        border-top: 1px solid #e2e8f0;
-        padding-top: 1.5rem;
+        margin: 1.5rem 0;
+        padding: 0 0.5rem;
+    }
+    
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.8rem;
+        color: #334155;
+    }
+    
+    .feature-check {
+        color: #10b981;
+        font-weight: 700;
+        font-size: 1rem;
     }
     
     /* Form Styling */
     .stTextInput > div > div > input {
         border-radius: 12px;
         border: 1px solid #e2e8f0;
-        padding: 0.8rem 1rem;
+        padding: 0.75rem 1rem;
         font-size: 0.9rem;
         background: #f8fafc;
         transition: all 0.2s ease;
@@ -185,11 +143,12 @@ st.markdown("""
         color: white;
         border: none;
         border-radius: 12px;
-        padding: 0.8rem;
+        padding: 0.75rem;
         font-weight: 600;
         font-size: 0.9rem;
         transition: all 0.2s ease;
         width: 100%;
+        margin-top: 0.5rem;
     }
     
     .stButton > button:hover {
@@ -197,16 +156,25 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(102,126,234,0.4);
     }
     
+    /* Version info */
+    .version-info {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.7rem;
+        color: #94a3b8;
+    }
+    
+    /* Divider */
+    .divider {
+        margin: 1rem 0;
+        border: none;
+        border-top: 1px solid #e2e8f0;
+    }
+    
     /* Hide default elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* Remove default Streamlit padding */
-    .block-container {
-        padding: 0 !important;
-        max-width: 100% !important;
-    }
     
     /* Success/Error messages */
     .stAlert {
@@ -231,20 +199,17 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 # ============================================
 if 'WEBHOOK_URL' not in st.secrets:
     st.markdown("""
-    <div style="display: flex; min-height: 100vh;">
-        <div style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
-        <div style="flex: 1; background: white; display: flex; justify-content: center; align-items: center;">
-            <div style="max-width: 400px; padding: 2rem; text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
-                <h2 style="color: #1a1a2e;">Configuration Required</h2>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Please set up your Cloudflare tunnel URL</p>
-                <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left;">
-                    <strong>How to configure:</strong><br><br>
-                    1. Go to Settings → Secrets<br>
-                    2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
-                    3. Replace with your actual tunnel URL<br>
-                    4. Click Save and Restart
-                </div>
+    <div class="login-centered">
+        <div class="login-card-single">
+            <div class="login-logo">🔧</div>
+            <div class="login-title">Configuration Required</div>
+            <div class="login-subtitle">Please set up your Cloudflare tunnel URL</div>
+            <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left;">
+                <strong>How to configure:</strong><br><br>
+                1. Go to Settings → Secrets<br>
+                2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
+                3. Replace with your actual tunnel URL<br>
+                4. Click Save and Restart
             </div>
         </div>
     </div>
@@ -600,43 +565,39 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         return False
 
 # ============================================
-# LOGIN SCREEN - Modern Split Design
+# APP CONSTANTS
+# ============================================
+APP_NAME = "Tengai"
+APP_VERSION = "3.5.0"
+
+# ============================================
+# LOGIN SCREEN - Centered Single Box
 # ============================================
 def login_screen():
-    # Use HTML for the split layout
-    login_html = f"""
-    <div class="login-container-modern">
-        <!-- Left Side - Branding -->
-        <div class="login-branding">
-            <div class="brand-icon">🛒</div>
-            <div class="brand-title">Tengai</div>
-            <div class="brand-subtitle">SPAR Sales & Rewards System</div>
-            <div class="brand-features">
-                <div class="brand-feature">
-                    <span>✓</span>
+    st.markdown("""
+    <div class="login-centered">
+        <div class="login-card-single">
+            <div class="login-logo">🛒</div>
+            <div class="login-title">Tengai</div>
+            <div class="login-subtitle">SPAR Sales & Rewards System</div>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
                     <span>Real-time sales tracking</span>
                 </div>
-                <div class="brand-feature">
-                    <span>✓</span>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
                     <span>Rewards intelligence</span>
                 </div>
-                <div class="brand-feature">
-                    <span>✓</span>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
                     <span>Customer insights</span>
                 </div>
             </div>
-        </div>
-        
-        <!-- Right Side - Login Form -->
-        <div class="login-form-area">
-            <div class="login-form-card">
-                <div class="login-welcome">
-                    <h2>Sign in to continue</h2>
-                    <p>Enter your credentials to access the system</p>
-                </div>
-    """
-    
-    st.markdown(login_html, unsafe_allow_html=True)
+            
+            <hr class="divider">
+    """, unsafe_allow_html=True)
     
     # Login Form
     with st.form("login_form"):
@@ -655,20 +616,12 @@ def login_screen():
     
     # Version info
     st.markdown(f"""
-                <div class="version-info">
-                    <p>Version {APP_VERSION} • Production</p>
-                    <p style="margin-top: 0.5rem;">Contact your administrator to get an account</p>
-                </div>
+            <div class="version-info">
+                Version {APP_VERSION} • Production
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-# ============================================
-# APP CONSTANTS
-# ============================================
-APP_NAME = "Tengai"
-APP_VERSION = "3.5.0"
 
 # ============================================
 # MAIN APP INTERFACE (After Login)
