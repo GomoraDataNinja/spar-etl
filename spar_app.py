@@ -68,7 +68,7 @@ st.markdown("""
         background: white;
         border-radius: 28px;
         padding: 2.5rem;
-        max-width: 440px;
+        max-width: 400px;
         width: 100%;
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         text-align: center;
@@ -97,14 +97,15 @@ st.markdown("""
     
     /* Features list */
     .features-list {
-        text-align: left;
+        text-align: center;
         margin: 1.5rem 0;
-        padding: 0 0.5rem;
+        padding: 0;
     }
     
     .feature-item {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 0.6rem;
         margin-bottom: 0.6rem;
         font-size: 0.8rem;
@@ -137,18 +138,25 @@ st.markdown("""
         color: #94a3b8;
     }
     
-    /* Button Styling */
+    /* Button Container - Center the button */
+    .stButton {
+        display: flex;
+        justify-content: center;
+    }
+    
+    /* Button Styling - NOT full width, centered */
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 12px;
-        padding: 0.75rem;
+        border-radius: 40px;
+        padding: 0.6rem 2rem;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         transition: all 0.2s ease;
-        width: 100%;
-        margin-top: 0.5rem;
+        width: auto;
+        min-width: 120px;
+        margin: 0 auto;
     }
     
     .stButton > button:hover {
@@ -308,6 +316,69 @@ if 'rewards_df' not in st.session_state:
     st.session_state.rewards_df = None
 if 'rfm_data' not in st.session_state:
     st.session_state.rfm_data = None
+
+# ============================================
+# APP CONSTANTS
+# ============================================
+APP_NAME = "Tengai"
+APP_VERSION = "3.5.0"
+
+# ============================================
+# LOGIN SCREEN - Centered Single Box
+# ============================================
+def login_screen():
+    st.markdown("""
+    <div class="login-centered">
+        <div class="login-card-single">
+            <div class="login-logo">🛒</div>
+            <div class="login-title">Tengai</div>
+            <div class="login-subtitle">SPAR Sales & Rewards System</div>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span>Real-time sales tracking</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span>Rewards intelligence</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <span>Customer insights</span>
+                </div>
+            </div>
+            
+            <hr class="divider">
+    """, unsafe_allow_html=True)
+    
+    # Login Form
+    with st.form("login_form"):
+        username = st.text_input("Username or Email", placeholder="Enter your username or email", label_visibility="collapsed")
+        password = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
+        
+        # Create a centered column for the button
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            submitted = st.form_submit_button("Sign In", use_container_width=False)
+        
+        if submitted and username and password:
+            success, message = login_user(username, password)
+            if success:
+                st.success(message)
+                time.sleep(0.5)
+                st.rerun()
+            else:
+                st.error(message)
+    
+    # Version info
+    st.markdown(f"""
+            <div class="version-info">
+                Version {APP_VERSION} • Production
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================
 # DATABASE QUERY FUNCTIONS
@@ -563,65 +634,6 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
     except Exception as e:
         print(f"Email error: {e}")
         return False
-
-# ============================================
-# APP CONSTANTS
-# ============================================
-APP_NAME = "Tengai"
-APP_VERSION = "3.5.0"
-
-# ============================================
-# LOGIN SCREEN - Centered Single Box
-# ============================================
-def login_screen():
-    st.markdown("""
-    <div class="login-centered">
-        <div class="login-card-single">
-            <div class="login-logo">🛒</div>
-            <div class="login-title">Tengai</div>
-            <div class="login-subtitle">SPAR Sales & Rewards System</div>
-            
-            <div class="features-list">
-                <div class="feature-item">
-                    <span class="feature-check">✓</span>
-                    <span>Real-time sales tracking</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-check">✓</span>
-                    <span>Rewards intelligence</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-check">✓</span>
-                    <span>Customer insights</span>
-                </div>
-            </div>
-            
-            <hr class="divider">
-    """, unsafe_allow_html=True)
-    
-    # Login Form
-    with st.form("login_form"):
-        username = st.text_input("Username or Email", placeholder="Enter your username or email")
-        password = st.text_input("Password", type="password", placeholder="Enter your password")
-        submitted = st.form_submit_button("Sign In", use_container_width=True)
-        
-        if submitted and username and password:
-            success, message = login_user(username, password)
-            if success:
-                st.success(message)
-                time.sleep(0.5)
-                st.rerun()
-            else:
-                st.error(message)
-    
-    # Version info
-    st.markdown(f"""
-            <div class="version-info">
-                Version {APP_VERSION} • Production
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
 # ============================================
 # MAIN APP INTERFACE (After Login)
