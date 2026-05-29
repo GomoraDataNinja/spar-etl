@@ -222,17 +222,17 @@ rfm = df.groupby('member_number').agg(
 return rfm
 
 def segment_customers(rfm):
-rfm['segment'] = '📊 Other'
+rfm['segment'] = 'Other'
 mask_active = (rfm['recency'] <= 30)
-rfm.loc[mask_active, 'segment'] = "⭐ Active"
+rfm.loc[mask_active, 'segment'] = "Active"
 mask_warming = (rfm['recency'] > 30) & (rfm['recency'] <= 60)
-rfm.loc[mask_warming, 'segment'] = "⚠️ Warming"
+rfm.loc[mask_warming, 'segment'] = "Warming"
 mask_at_risk = (rfm['recency'] > 60) & (rfm['recency'] <= 90)
-rfm.loc[mask_at_risk, 'segment'] = "⚠️ At Risk"
+rfm.loc[mask_at_risk, 'segment'] = "At Risk"
 mask_churned = (rfm['recency'] > 90)
-rfm.loc[mask_churned, 'segment'] = "💔 Churned"
-mask_one_time = (rfm['frequency'] == 1) & (rfm['segment'] == '📊 Other')
-rfm.loc[mask_one_time, 'segment'] = "🆕 One-Time"
+rfm.loc[mask_churned, 'segment'] = "Churned"
+mask_one_time = (rfm['frequency'] == 1) & (rfm['segment'] == 'Other')
+rfm.loc[mask_one_time, 'segment'] = "One-Time"
 return rfm
 
 def calculate_clv(rfm):
@@ -265,23 +265,23 @@ def generate_actions(rfm):
 actions = []
 priorities = []
 for idx, row in rfm.iterrows():
-    if row['segment'] == '⚠️ At Risk':
-        actions.append("🚨 URGENT: Send 30% discount + personalized email")
+    if row['segment'] == 'At Risk':
+        actions.append("URGENT: Send 30% discount + personalized email")
         priorities.append("High")
-    elif row['segment'] == '⚠️ Warming':
-        actions.append("⚡ ACT NOW: Send 15% off + engagement email")
+    elif row['segment'] == 'Warming':
+        actions.append("ACT NOW: Send 15% off + engagement email")
         priorities.append("High")
-    elif row['segment'] == '💔 Churned':
-        actions.append("🔄 Win-back campaign with special offer")
+    elif row['segment'] == 'Churned':
+        actions.append("Win-back campaign with special offer")
         priorities.append("High")
-    elif row['segment'] == '🆕 One-Time':
-        actions.append("🎁 Welcome back incentive + loyalty program invite")
+    elif row['segment'] == 'One-Time':
+        actions.append("Welcome back incentive + loyalty program invite")
         priorities.append("Medium")
-    elif row['segment'] == '⭐ Active':
-        actions.append("🎉 Thank you for shopping! Check out our latest offers")
+    elif row['segment'] == 'Active':
+        actions.append("Thank you for shopping! Check out our latest offers")
         priorities.append("Low")
     else:
-        actions.append("📈 Nurture engagement with regular content")
+        actions.append("Nurture engagement with regular content")
         priorities.append("Low")
 rfm['recommended_action'] = actions
 rfm['priority'] = priorities
@@ -320,11 +320,10 @@ try:
     msg = MIMEMultipart()
     msg['From'] = SENDER_EMAIL
     msg['To'] = ADMIN_EMAIL
-    msg['Subject'] = f"🛒 NEW SALE - {sale_id}"
+    msg['Subject'] = f"NEW SALE - {sale_id}"
     
     recorded_by = st.session_state.current_user['name'] if st.session_state.current_user else 'Unknown'
     
-    # Format the total sales value
     formatted_total = f"${total_sales:,.2f}"
     formatted_rewards = f"{rewards_earned:.0f}"
     
@@ -363,7 +362,7 @@ def login_screen():
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    st.markdown('<div class="app-name">🛒 Tengai</div>', unsafe_allow_html=True)
+    st.markdown('<div class="app-name">Tengai</div>', unsafe_allow_html=True)
     st.markdown('<p style="text-align: center; margin-bottom: 2rem;">SPAR Sales & Rewards System</p>', unsafe_allow_html=True)
     
     with st.form("login_form"):
@@ -390,7 +389,7 @@ user_name = st.session_state.current_user['name']
 
 st.markdown("""
 <div class="app-header">
-    <h1>🛒 Tengai - SPAR Sales System</h1>
+    <h1>Tengai - SPAR Sales System</h1>
     <p>Sales tracking • Customer management • Real-time recording</p>
 </div>
 """, unsafe_allow_html=True)
@@ -400,10 +399,10 @@ with col3:
     st.markdown(f"""
     <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
         <div class="user-info" style="background: {SPAR_GREEN};">
-            🛒 TILL OPERATOR
+            TILL OPERATOR
         </div>
         <div class="user-info">
-            👋 {user_name}
+            Hello {user_name}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -411,14 +410,14 @@ with col3:
         logout_user()
         st.rerun()
 
-tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
+tab1, tab2 = st.tabs(["Record Sale", "My Sales Today"])
 
 # TAB 1: Record Sale
 with tab1:
     col_left, col_right = st.columns([2, 1])
     with col_left:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### 📋 New Purchase")
+        st.markdown("### New Purchase")
         
         with st.form(key="sales_form", clear_on_submit=True):
             col_a, col_b = st.columns(2)
@@ -434,7 +433,7 @@ with tab1:
                 phone = st.text_input("Phone Number", placeholder="Optional")
             
             st.markdown("---")
-            st.markdown("#### 🛍️ Purchase Details")
+            st.markdown("#### Purchase Details")
             
             col_e, col_f = st.columns(2)
             with col_e:
@@ -453,9 +452,9 @@ with tab1:
                 st.metric("Total Amount", f"${total_sales:,.2f}")
             
             rewards_earned = total_sales * 0.02
-            st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
             
-            submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
+            submitted = st.form_submit_button("Record Sale", use_container_width=True)
             
             if submitted and customer_name:
                 now = datetime.now()
@@ -487,36 +486,36 @@ with tab1:
                 st.session_state.sales_history.insert(0, data)
                 
                 if success:
-                    st.success(f"✅ Sale recorded! ID: {sale_id}")
+                    st.success(f"Sale recorded! ID: {sale_id}")
                     st.balloons()
                 else:
-                    st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
+                    st.warning(f"Sale recorded but not sent to ETL: {message}")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col_right:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 Today's Stats")
+        st.markdown("### Today's Stats")
         
         if check_connection():
             today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
             if today_sales:
                 df_today = pd.DataFrame(today_sales)
                 total_revenue = df_today['total_sales'].sum() if 'total_sales' in df_today.columns else 0
-                st.metric("💰 Today's Revenue", f"${total_revenue:,.2f}")
-                st.metric("📝 Today's Transactions", len(df_today))
+                st.metric("Today's Revenue", f"${total_revenue:,.2f}")
+                st.metric("Today's Transactions", len(df_today))
             else:
                 st.info("No sales recorded yet today")
-            st.success("✅ ETL Connected")
+            st.success("ETL Connected")
         else:
-            st.warning("⚠️ ETL Offline - Tunnel may be down")
+            st.warning("ETL Offline - Tunnel may be down")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 # TAB 2: My Sales Today
 with tab2:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown(f"### 📊 My Sales Today - {user_name}")
+    st.markdown(f"### My Sales Today - {user_name}")
     
     if check_connection():
         today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
@@ -537,7 +536,7 @@ with tab2:
                 customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
                 st.metric("Customers Served", customers)
             
-            st.markdown("#### 📋 Your Sales Today")
+            st.markdown("#### Your Sales Today")
             display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
             available_cols = [c for c in display_cols if c in df.columns]
             if available_cols:
@@ -545,9 +544,9 @@ with tab2:
             else:
                 st.info("No data to display")
         else:
-            st.info("No sales recorded today. Start selling! 🛒")
+            st.info("No sales recorded today. Start selling!")
     else:
-        st.warning("⚠️ Cannot connect to ETL server. Please check your tunnel connection.")
+        st.warning("Cannot connect to ETL server. Please check your tunnel connection.")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -559,7 +558,7 @@ user_name = st.session_state.current_user['name']
 
 st.markdown("""
 <div class="app-header">
-    <h1>🛒 Tengai - SPAR Sales & Rewards System</h1>
+    <h1>Tengai - SPAR Sales & Rewards System</h1>
     <p>Sales tracking • Rewards intelligence • Customer retention</p>
 </div>
 """, unsafe_allow_html=True)
@@ -569,10 +568,10 @@ with col3:
     st.markdown(f"""
     <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
         <div class="user-info" style="background: {SPAR_RED};">
-            👑 ADMIN
+            ADMIN
         </div>
         <div class="user-info">
-            👋 {user_name}
+            Hello {user_name}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -581,7 +580,7 @@ with col3:
         st.rerun()
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
+    "Record Sale", "Today's Sales", "Sales Reports", "Rewards Analysis", "Admin Panel"
 ])
 
 # TAB 1: Record Sale
@@ -589,7 +588,7 @@ with tab1:
     col_left, col_right = st.columns([2, 1])
     with col_left:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### 📋 New Purchase")
+        st.markdown("### New Purchase")
         
         with st.form(key="sales_form_admin", clear_on_submit=True):
             col_a, col_b = st.columns(2)
@@ -605,7 +604,7 @@ with tab1:
                 phone = st.text_input("Phone Number", placeholder="Optional")
             
             st.markdown("---")
-            st.markdown("#### 🛍️ Purchase Details")
+            st.markdown("#### Purchase Details")
             
             col_e, col_f = st.columns(2)
             with col_e:
@@ -624,9 +623,9 @@ with tab1:
                 st.metric("Total Amount", f"${total_sales:,.2f}")
             
             rewards_earned = total_sales * 0.02
-            st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
             
-            submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
+            submitted = st.form_submit_button("Record Sale", use_container_width=True)
             
             if submitted and customer_name:
                 now = datetime.now()
@@ -657,30 +656,30 @@ with tab1:
                 send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                 
                 if success:
-                    st.success(f"✅ Sale recorded! ID: {sale_id}")
+                    st.success(f"Sale recorded! ID: {sale_id}")
                     st.balloons()
                 else:
-                    st.warning(f"⚠️ Sale recorded but not sent to ETL: {message}")
+                    st.warning(f"Sale recorded but not sent to ETL: {message}")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col_right:
         st.markdown('<div class="content-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 System Status")
+        st.markdown("### System Status")
         
         if check_connection():
-            st.success("✅ ETL Connected")
-            st.info("📤 Data is being sent to SQL Server")
+            st.success("ETL Connected")
+            st.info("Data is being sent to SQL Server")
         else:
-            st.warning("⚠️ ETL Offline - Tunnel may be down")
-            st.info("💡 Update your WEBHOOK_URL in Settings -> Secrets")
+            st.warning("ETL Offline - Tunnel may be down")
+            st.info("Update your WEBHOOK_URL in Settings -> Secrets")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 # TAB 2: Today's All Sales
 with tab2:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown("### 📊 Today's All Sales (All Operators)")
+    st.markdown("### Today's All Sales (All Operators)")
     
     if check_connection():
         today_sales = get_sales_from_db(date_filter='today')
@@ -701,14 +700,14 @@ with tab2:
                 operators = df['recorded_by'].nunique() if 'recorded_by' in df.columns else 0
                 st.metric("Active Operators", operators)
             
-            st.markdown("#### 📋 Today's Sales Details")
+            st.markdown("#### Today's Sales Details")
             display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
             available_cols = [c for c in display_cols if c in df.columns]
             if available_cols:
                 st.dataframe(df[available_cols], use_container_width=True, height=400)
             
             if 'recorded_by' in df.columns and 'total_sales' in df.columns:
-                st.markdown("#### 👥 Operator Performance Today")
+                st.markdown("#### Operator Performance Today")
                 operator_today = df.groupby('recorded_by').agg({
                     'sale_id': 'count',
                     'total_sales': 'sum'
@@ -718,14 +717,14 @@ with tab2:
         else:
             st.info("No sales recorded today")
     else:
-        st.warning("⚠️ ETL Server not connected")
+        st.warning("ETL Server not connected")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
 # TAB 3: Sales Reports
 with tab3:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown("### 📈 Sales Reports & Analytics")
+    st.markdown("### Sales Reports & Analytics")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -753,7 +752,7 @@ with tab3:
                 st.metric("Avg Transaction", f"${avg_sale:.2f}")
             
             if 'sale_date' in df.columns and 'total_sales' in df.columns:
-                st.markdown("#### 📅 Daily Sales Trend")
+                st.markdown("#### Daily Sales Trend")
                 df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
                 daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
                 fig = px.line(daily_sales, x='sale_date', y='total_sales', 
@@ -763,7 +762,7 @@ with tab3:
                 st.plotly_chart(fig, use_container_width=True)
             
             if 'recorded_by' in df.columns:
-                st.markdown("#### 👥 Operator Performance")
+                st.markdown("#### Operator Performance")
                 operator_perf = df.groupby('recorded_by').agg({
                     'sale_id': 'count',
                     'total_sales': 'sum'
@@ -774,7 +773,7 @@ with tab3:
             st.markdown("---")
             csv = df.to_csv(index=False)
             st.download_button(
-                label="📥 Download Full Report (CSV)",
+                label="Download Full Report (CSV)",
                 data=csv,
                 file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
                 mime="text/csv",
@@ -783,14 +782,14 @@ with tab3:
         else:
             st.info(f"No sales found between {start_date} and {end_date}")
     else:
-        st.warning("⚠️ Cannot connect to ETL server")
+        st.warning("Cannot connect to ETL server")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
 # TAB 4: Rewards Analysis
 with tab4:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown("### 🏆 Rewards Intelligence Hub")
+    st.markdown("### Rewards Intelligence Hub")
     st.markdown("Upload your customer transaction data to unlock powerful insights")
     
     uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="rewards_upload")
@@ -800,7 +799,7 @@ with tab4:
         df = clean_rewards_data(df)
         
         if not df.empty:
-            st.success(f"✅ Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
+            st.success(f"Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
             
             col1, col2, col3, col4 = st.columns(4)
             with col1:
@@ -827,8 +826,7 @@ with tab4:
             fig.update_layout(height=400)
             st.plotly_chart(fig, use_container_width=True)
             
-            # Display top at-risk customers
-            st.markdown("#### 🚨 High Priority Customers (At Risk / Warming)")
+            st.markdown("#### High Priority Customers (At Risk / Warming)")
             high_priority = rfm[rfm['priority'] == 'High'].head(10)
             if not high_priority.empty:
                 display_cols = ['member_number', 'segment', 'recency', 'frequency', 'monetary', 'churn_risk', 'recommended_action']
@@ -836,16 +834,16 @@ with tab4:
         else:
             st.error("No valid data found")
     else:
-        st.info("📂 Please upload a CSV file with columns: member_number, redemption_date, basket_value (or amount)")
+        st.info("Please upload a CSV file with columns: member_number, redemption_date, basket_value (or amount)")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
 # TAB 5: Admin Panel
 with tab5:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown("### 👑 Admin Control Panel")
+    st.markdown("### Admin Control Panel")
     
-    st.markdown("#### ➕ Create New Operator Account")
+    st.markdown("#### Create New Operator Account")
     
     with st.form("create_operator_form"):
         col1, col2 = st.columns(2)
@@ -856,7 +854,7 @@ with tab5:
             new_email = st.text_input("Email *", placeholder="operator@store.com")
             new_password = st.text_input("Password *", type="password", placeholder="Min 6 characters")
         
-        submitted = st.form_submit_button("👤 Create Operator", use_container_width=True)
+        submitted = st.form_submit_button("Create Operator", use_container_width=True)
         
         if submitted:
             if not all([new_name, new_username, new_email, new_password]):
@@ -866,13 +864,13 @@ with tab5:
             else:
                 success, message = register_user(new_name, new_username, new_email, new_password, role="user")
                 if success:
-                    st.success(f"✅ {message}")
+                    st.success(f"{message}")
                     st.info(f"Operator can login with username: {new_username}")
                 else:
-                    st.error(f"❌ {message}")
+                    st.error(f"{message}")
     
     st.divider()
-    st.markdown("#### 👥 Existing Users")
+    st.markdown("#### Existing Users")
     
     users = get_all_users()
     if users:
@@ -882,19 +880,19 @@ with tab5:
                 'Name': u['name'],
                 'Email': email,
                 'Username': u['username'],
-                'Role': '👑 ADMIN' if u['role'] == 'admin' else '🛒 OPERATOR',
+                'Role': 'ADMIN' if u['role'] == 'admin' else 'OPERATOR',
                 'Created': u.get('created_at', '')[:10]
             })
         st.dataframe(pd.DataFrame(users_list), use_container_width=True)
     
     st.divider()
-    st.markdown("#### 📊 System Status")
+    st.markdown("#### System Status")
     
     if check_connection():
-        st.success("✅ ETL Server Connected")
-        st.success("✅ Database Connection Active")
+        st.success("ETL Server Connected")
+        st.success("Database Connection Active")
     else:
-        st.error("❌ ETL Server Offline")
+        st.error("ETL Server Offline")
         st.info("""
         **To fix this:**
         1. Make sure your local Flask receiver is running
@@ -903,7 +901,7 @@ with tab5:
         """)
     
     st.divider()
-    st.markdown("#### 🔧 Current Configuration")
+    st.markdown("#### Current Configuration")
     st.code(f"WEBHOOK_URL = {WEBHOOK_URL}", language="python")
     
     st.markdown('</div>', unsafe_allow_html=True)
