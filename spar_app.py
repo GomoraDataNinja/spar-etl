@@ -171,13 +171,14 @@ st.markdown("""
     
     /* Main app background - Plain white */
     .stApp {
-        background: #ffffff;
+        background: #f5f7fa;
     }
     
     /* Remove default padding */
     .block-container {
-        padding: 0 !important;
-        max-width: 100% !important;
+        padding: 1rem 2rem !important;
+        max-width: 1400px !important;
+        margin: 0 auto !important;
     }
     
     /* Centered Login Container */
@@ -186,7 +187,7 @@ st.markdown("""
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background: #ffffff;
+        background: #f5f7fa;
     }
     
     /* Tight Compact Login Card */
@@ -194,7 +195,7 @@ st.markdown("""
         background: white;
         border-radius: 16px;
         padding: 2rem 2rem 1.5rem 2rem;
-        max-width: 360px;
+        max-width: 380px;
         width: 100%;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         border: 1px solid #e8eaed;
@@ -204,7 +205,7 @@ st.markdown("""
     .app-name-tight {
         font-size: 1.75rem;
         font-weight: 600;
-        color: #1a1a2e;
+        color: #1a73e8;
         margin-bottom: 0.25rem;
     }
     
@@ -220,31 +221,35 @@ st.markdown("""
         margin-bottom: 1.25rem;
     }
     
-    /* Form Styling - Tight */
+    /* ============================================
+       VISIBLE FORM STYLING - IMPORTANT FIX
+    ============================================ */
+    
+    /* Make all input fields visible */
     .stTextInput > div > div > input,
-    .stSelectbox > div > div {
+    .stSelectbox > div > div,
+    .stNumberInput > div > div > input {
         border-radius: 8px;
-        border: 1px solid #dadce0;
+        border: 1px solid #dadce0 !important;
         padding: 0.6rem 0.75rem;
         font-size: 0.85rem;
-        background: white;
+        background: white !important;
+        color: #202124 !important;
         transition: all 0.2s ease;
-        margin-bottom: 0;
     }
     
     .stTextInput > div > div > input:focus,
-    .stSelectbox > div > div:focus-within {
-        border-color: #1a73e8;
+    .stSelectbox > div > div:focus-within,
+    .stNumberInput > div > div > input:focus {
+        border-color: #1a73e8 !important;
         box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
     }
     
-    .stTextInput > div > div > input::placeholder {
-        color: #9aa0a6;
-    }
-    
-    /* Password label styling */
-    .stTextInput > label {
-        font-size: 0.7rem !important;
+    /* Make labels visible */
+    .stTextInput > label,
+    .stSelectbox > label,
+    .stNumberInput > label {
+        font-size: 0.75rem !important;
         color: #5f6368 !important;
         font-weight: 500 !important;
         margin-bottom: 0.25rem !important;
@@ -252,19 +257,41 @@ st.markdown("""
         text-align: left !important;
     }
     
-    /* Hide username label completely */
-    div[data-testid="stTextInput"]:first-of-type label {
-        display: none !important;
+    /* Make selectbox text visible */
+    .stSelectbox > div > div {
+        color: #202124 !important;
+        background: white !important;
     }
     
-    /* Button Container - Center */
+    /* Make selectbox options visible */
+    div[data-baseweb="select"] > div {
+        color: #202124 !important;
+    }
+    
+    /* Make metric text visible */
+    div[data-testid="stMetric"] label {
+        color: #5f6368 !important;
+    }
+    
+    div[data-testid="stMetric"] div {
+        color: #1a73e8 !important;
+    }
+    
+    /* Make info text visible */
+    .stAlert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Button Styling */
     .stButton {
         display: flex;
         justify-content: center;
         margin-top: 0.5rem;
     }
     
-    /* Button Styling */
     .stButton > button {
         background: #1a73e8;
         color: white;
@@ -276,7 +303,6 @@ st.markdown("""
         transition: all 0.2s ease;
         width: auto;
         min-width: 100px;
-        margin: 0 auto;
     }
     
     .stButton > button:hover {
@@ -284,49 +310,71 @@ st.markdown("""
         box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     
-    /* Hide default elements */
+    /* Hide default menu */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Success/Error messages */
-    .stAlert {
-        border-radius: 8px;
+    /* Divider styling */
+    hr {
+        margin: 0.75rem 0;
         border: none;
-        margin-bottom: 0.75rem;
-        padding: 0.5rem;
-        font-size: 0.8rem;
+        border-top: 1px solid #e8eaed;
     }
     
-    /* Remove extra spacing between form elements */
+    /* Metric card styling */
+    .metric-modern {
+        background: white;
+        border-radius: 12px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid #e8eaed;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .metric-value-modern {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1a73e8;
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-label-modern {
+        font-size: 0.6rem;
+        color: #5f6368;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Modern card */
+    .modern-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .card-header {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #202124;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e8eaed;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Hide username label completely on login screen */
+    div[data-testid="stTextInput"]:first-of-type label {
+        display: none !important;
+    }
+    
+    /* Form container styling */
     .stForm {
         margin: 0;
         padding: 0;
-    }
-    
-    div[data-testid="stForm"] > div {
-        gap: 0.5rem;
-    }
-    
-    /* Selectbox styling */
-    .stSelectbox > label {
-        font-size: 0.7rem !important;
-        color: #5f6368 !important;
-        margin-bottom: 0.25rem !important;
-    }
-    
-    /* Number input styling */
-    .stNumberInput > label {
-        font-size: 0.7rem !important;
-        color: #5f6368 !important;
-        margin-bottom: 0.25rem !important;
-    }
-    
-    .stNumberInput > div > div > input {
-        border-radius: 8px;
-        border: 1px solid #dadce0;
-        padding: 0.6rem 0.75rem;
-        font-size: 0.85rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -472,7 +520,6 @@ def login_screen():
             <div class="version-info-tight">Version 3.5.0 - Production</div>
     """, unsafe_allow_html=True)
     
-    # Login Form
     with st.form("login_form"):
         username = st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
         password = st.text_input("Password", type="password", placeholder="Organisation password", key="password")
@@ -763,31 +810,30 @@ def main_app_interface():
     user_role = st.session_state.current_user['role']
     is_admin = (user_role == 'admin')
     
-    # Custom CSS for main app interface
+    # Custom CSS for main app interface - ensures visibility
     st.markdown("""
     <style>
-        /* Reset for main app */
+        /* Main app container */
         .stApp {
-            background: #f5f5f5;
+            background: #f5f7fa;
         }
         
         .block-container {
-            padding: 2rem !important;
-            max-width: 1200px !important;
-            margin: 0 auto !important;
+            padding: 1rem 2rem !important;
+            max-width: 1400px !important;
         }
         
         /* Modern Header */
         .modern-header {
             background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 1.5rem;
             border-radius: 16px;
             margin-bottom: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .modern-header h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: white;
             margin-bottom: 0.25rem;
@@ -795,7 +841,7 @@ def main_app_interface():
         
         .modern-header p {
             color: rgba(255,255,255,0.9);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
         
         /* Navigation Bar */
@@ -803,90 +849,36 @@ def main_app_interface():
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem;
             background: white;
             border-radius: 40px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             border: 1px solid #e8eaed;
         }
         
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
         .logo-text {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #1a73e8;
         }
         
-        .user-area {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
         .role-badge {
             background: #1a73e8;
-            padding: 0.25rem 0.75rem;
+            padding: 0.2rem 0.7rem;
             border-radius: 20px;
             color: white;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 500;
         }
         
         .user-name-badge {
             background: #f0f2f5;
-            padding: 0.25rem 0.75rem;
+            padding: 0.2rem 0.7rem;
             border-radius: 20px;
             color: #5f6368;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 500;
-        }
-        
-        /* Modern Cards */
-        .modern-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e8eaed;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .card-header {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #202124;
-            margin-bottom: 0.75rem;
-            border-bottom: 1px solid #e8eaed;
-            padding-bottom: 0.5rem;
-        }
-        
-        /* Metric Cards */
-        .metric-modern {
-            background: white;
-            border-radius: 12px;
-            padding: 0.75rem;
-            text-align: center;
-            border: 1px solid #e8eaed;
-        }
-        
-        .metric-value-modern {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1a73e8;
-            margin-bottom: 0.25rem;
-        }
-        
-        .metric-label-modern {
-            font-size: 0.6rem;
-            color: #5f6368;
-            font-weight: 500;
-            text-transform: uppercase;
         }
         
         /* Tabs */
@@ -901,8 +893,8 @@ def main_app_interface():
         
         .stTabs [data-baseweb="tab"] {
             border-radius: 32px;
-            padding: 0.35rem 1rem;
-            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
             font-weight: 500;
             color: #5f6368;
         }
@@ -910,48 +902,6 @@ def main_app_interface():
         .stTabs [aria-selected="true"] {
             background: #1a73e8;
             color: white;
-        }
-        
-        /* Buttons */
-        .stButton > button {
-            background: #1a73e8;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            padding: 0.4rem 1rem;
-            font-weight: 500;
-            font-size: 0.75rem;
-        }
-        
-        /* Form inputs */
-        .stTextInput > div > div > input,
-        .stSelectbox > div > div,
-        .stNumberInput > div > div > input {
-            border-radius: 8px;
-            border: 1px solid #dadce0;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-        }
-        
-        .stTextInput > div > div > input:focus,
-        .stSelectbox > div > div:focus-within {
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
-        }
-        
-        /* Selectbox label */
-        .stSelectbox > label {
-            font-size: 0.7rem !important;
-            color: #5f6368 !important;
-            font-weight: 500 !important;
-            margin-bottom: 0.25rem !important;
-        }
-        
-        .stNumberInput > label {
-            font-size: 0.7rem !important;
-            color: #5f6368 !important;
-            font-weight: 500 !important;
-            margin-bottom: 0.25rem !important;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -976,7 +926,7 @@ def main_app_interface():
     st.markdown(f"""
     <div class="nav-bar">
         <div class="logo-area">
-            <span style="font-size: 1.2rem;">🛒</span>
+            <span style="font-size: 1rem;">🛒</span>
             <span class="logo-text">Tengai</span>
         </div>
         <div class="user-area">
@@ -1042,6 +992,9 @@ def operator_view():
                 
                 total_sales = quantity * unit_price
                 st.metric("Total Amount", f"${total_sales:,.2f}")
+                
+                # Show purchase date
+                st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
                 
                 rewards_earned = total_sales * 0.02
                 st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
@@ -1221,6 +1174,9 @@ def admin_view():
                 total_sales = quantity * unit_price
                 st.metric("Total Amount", f"${total_sales:,.2f}")
                 
+                # Show purchase date
+                st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
+                
                 rewards_earned = total_sales * 0.02
                 st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
@@ -1325,15 +1281,6 @@ def admin_view():
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=300)
-                
-                if 'recorded_by' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### Operator Performance Today")
-                    operator_today = df.groupby('recorded_by').agg({
-                        'sale_id': 'count',
-                        'total_sales': 'sum'
-                    }).rename(columns={'sale_id': 'Transactions', 'total_sales': 'Revenue'}).reset_index()
-                    operator_today['Revenue'] = operator_today['Revenue'].apply(lambda x: f"${x:,.2f}")
-                    st.dataframe(operator_today, use_container_width=True)
             else:
                 st.info("No sales recorded today")
         else:
