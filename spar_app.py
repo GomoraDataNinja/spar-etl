@@ -33,6 +33,9 @@ initial_sidebar_state="expanded"
 )
 
 # CSS as a separate string WITHOUT f-string
+# Replace your css_code section with this:
+
+# CSS as a separate string WITHOUT f-string
 css_code = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -42,11 +45,11 @@ html, body, [class*="css"] {
 }
 
 .stApp {
-    background: linear-gradient(135deg, COLOR_GRAY 0%, COLOR_CARD 100%);
+    background: linear-gradient(135deg, COLOR_GRAY 0%%, COLOR_CARD 100%%);
 }
 
 .app-header {
-    background: linear-gradient(135deg, COLOR_RED 0%, COLOR_GREEN 100%);
+    background: linear-gradient(135deg, COLOR_RED 0%%, COLOR_GREEN 100%%);
     padding: 1.5rem 2rem;
     border-radius: 28px;
     margin-bottom: 2rem;
