@@ -390,7 +390,7 @@ user_name = st.session_state.current_user['name']
 st.markdown("""
 <div class="app-header">
     <h1>Tengai - SPAR Sales System</h1>
-    <p>Sales tracking • Customer management • Real-time recording</p>
+    <p>Sales tracking . Customer management . Real-time recording</p>
 </div>
 """, unsafe_allow_html=True)
 
