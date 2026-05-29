@@ -24,7 +24,7 @@ st.set_page_config(
 )
 
 # ============================================
-# CLEAN LOGIN CSS - Batsirai Style
+# CLEAN LOGIN CSS - TIGHT & COMPACT
 # ============================================
 st.markdown("""
 <style>
@@ -42,16 +42,15 @@ st.markdown("""
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    /* Main app background - Clean gradient */
+    /* Main app background - Plain white */
     .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #ffffff;
     }
     
     /* Remove default padding */
     .block-container {
-        padding: 2rem !important;
-        max-width: 1200px !important;
-        margin: 0 auto !important;
+        padding: 0 !important;
+        max-width: 100% !important;
     }
     
     /* Centered Login Container */
@@ -60,93 +59,100 @@ st.markdown("""
         justify-content: center;
         align-items: center;
         min-height: 100vh;
+        background: #ffffff;
     }
     
-    /* Clean Login Card */
-    .login-card-clean {
+    /* Tight Compact Login Card */
+    .login-card-tight {
         background: white;
-        border-radius: 24px;
-        padding: 2.5rem;
-        max-width: 380px;
+        border-radius: 16px;
+        padding: 2rem 2rem 1.5rem 2rem;
+        max-width: 360px;
         width: 100%;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #e8eaed;
         text-align: center;
     }
     
-    .app-name {
-        font-size: 2rem;
+    .app-name-tight {
+        font-size: 1.75rem;
         font-weight: 600;
         color: #1a1a2e;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
     }
     
-    .signin-text {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin-bottom: 1rem;
+    .signin-text-tight {
+        font-size: 0.8rem;
+        color: #5f6368;
+        margin-bottom: 0.25rem;
     }
     
-    .version-info {
-        font-size: 0.7rem;
-        color: #94a3b8;
-        margin-bottom: 1.5rem;
+    .version-info-tight {
+        font-size: 0.65rem;
+        color: #9aa0a6;
+        margin-bottom: 1.25rem;
     }
     
-    /* Form Styling */
+    /* Form Styling - Tight */
     .stTextInput > div > div > input {
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #dadce0;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+        background: white;
         transition: all 0.2s ease;
+        margin-bottom: 0;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #667eea;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
     }
     
     .stTextInput > div > div > input::placeholder {
-        color: #94a3b8;
+        color: #9aa0a6;
     }
     
     /* Password label styling */
     .stTextInput > label {
-        font-size: 0.75rem !important;
-        color: #64748b !important;
+        font-size: 0.7rem !important;
+        color: #5f6368 !important;
         font-weight: 500 !important;
         margin-bottom: 0.25rem !important;
         display: block !important;
         text-align: left !important;
     }
     
-    /* Button Container - Center the button */
+    /* Hide username label completely */
+    div[data-testid="stTextInput"]:first-of-type label {
+        display: none !important;
+    }
+    
+    /* Button Container - Center */
     .stButton {
         display: flex;
         justify-content: center;
         margin-top: 0.5rem;
     }
     
-    /* Button Styling - Small and centered */
+    /* Button Styling */
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #1a73e8;
         color: white;
         border: none;
-        border-radius: 40px;
-        padding: 0.6rem 2rem;
-        font-weight: 600;
-        font-size: 0.85rem;
+        border-radius: 24px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.8rem;
         transition: all 0.2s ease;
         width: auto;
-        min-width: 120px;
+        min-width: 100px;
         margin: 0 auto;
     }
     
     .stButton > button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        background: #1557b0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     
     /* Hide default elements */
@@ -156,16 +162,21 @@ st.markdown("""
     
     /* Success/Error messages */
     .stAlert {
-        border-radius: 12px;
+        border-radius: 8px;
         border: none;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+        font-size: 0.8rem;
     }
     
-    /* Divider */
-    hr {
-        margin: 1rem 0;
-        border: none;
-        border-top: 1px solid #e2e8f0;
+    /* Remove extra spacing between form elements */
+    .stForm {
+        margin: 0;
+        padding: 0;
+    }
+    
+    div[data-testid="stForm"] > div {
+        gap: 0.5rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -185,10 +196,10 @@ ADMIN_EMAIL = "gomoraefesto97@gmail.com"
 if 'WEBHOOK_URL' not in st.secrets:
     st.markdown("""
     <div class="login-centered">
-        <div class="login-card-clean">
-            <div class="app-name">Configuration Required</div>
-            <div class="signin-text">Please set up your Cloudflare tunnel URL</div>
-            <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left; margin-top: 1rem;">
+        <div class="login-card-tight">
+            <div class="app-name-tight">Configuration Required</div>
+            <div class="signin-text-tight">Please set up your Cloudflare tunnel URL</div>
+            <div style="background: #f1f5f9; padding: 0.75rem; border-radius: 8px; text-align: left; margin-top: 0.75rem; font-size: 0.7rem;">
                 <strong>How to configure:</strong><br><br>
                 1. Go to Settings → Secrets<br>
                 2. Add: <code>WEBHOOK_URL = "https://your-tunnel-url.trycloudflare.com/webhook"</code><br>
@@ -300,15 +311,15 @@ APP_NAME = "Tengai"
 APP_VERSION = "3.5.0"
 
 # ============================================
-# LOGIN SCREEN - Clean Batsirai Style
+# LOGIN SCREEN - TIGHT & COMPACT
 # ============================================
 def login_screen():
     st.markdown("""
     <div class="login-centered">
-        <div class="login-card-clean">
-            <div class="app-name">Tengai</div>
-            <div class="signin-text">Sign in to continue</div>
-            <div class="version-info">Version 3.5.0 • Production</div>
+        <div class="login-card-tight">
+            <div class="app-name-tight">Tengai</div>
+            <div class="signin-text-tight">Sign in to continue</div>
+            <div class="version-info-tight">Version 3.5.0 - Production</div>
     """, unsafe_allow_html=True)
     
     # Login Form
@@ -316,7 +327,7 @@ def login_screen():
         # Username field (hidden label)
         st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
         
-        # Password field with visible label "Password"
+        # Password field with visible label
         st.text_input("Password", type="password", placeholder="Organisation password", key="password")
         
         # Centered button
@@ -573,7 +584,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         html_content = f"""
         <html>
         <body style="font-family: 'Inter', Arial, sans-serif;">
-            <h2 style="color: #667eea;">New SPAR Sale Recorded!</h2>
+            <h2 style="color: #1a73e8;">New SPAR Sale Recorded!</h2>
             <p><strong>Sale ID:</strong> {sale_id}</p>
             <p><strong>Customer:</strong> {customer_name}</p>
             <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
@@ -611,7 +622,7 @@ def main_app_interface():
     <style>
         /* Reset for main app */
         .stApp {
-            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+            background: #f5f5f5;
         }
         
         .block-container {
@@ -622,23 +633,23 @@ def main_app_interface():
         
         /* Modern Header */
         .modern-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem 3rem;
-            border-radius: 24px;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .modern-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 600;
             color: white;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .modern-header p {
             color: rgba(255,255,255,0.9);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
         
         /* Navigation Bar */
@@ -646,151 +657,137 @@ def main_app_interface():
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             background: white;
-            border-radius: 60px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border: 1px solid #eef2f6;
+            border-radius: 40px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #e8eaed;
         }
         
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
         
         .logo-text {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a73e8;
         }
         
         .user-area {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
         
         .role-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 0.4rem 1.2rem;
-            border-radius: 40px;
+            background: #1a73e8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
             color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.65rem;
+            font-weight: 500;
         }
         
         .user-name-badge {
             background: #f0f2f5;
-            padding: 0.4rem 1.2rem;
-            border-radius: 40px;
-            color: #1a1a2e;
-            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            color: #5f6368;
+            font-size: 0.7rem;
             font-weight: 500;
         }
         
         /* Modern Cards */
         .modern-card {
             background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1.25rem;
-            border: 1px solid #eef2f6;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: all 0.3s ease;
-        }
-        
-        .modern-card:hover {
-            box-shadow: 0 8px 30px rgba(102,126,234,0.08);
-            transform: translateY(-2px);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e8eaed;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .card-header {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 2px solid #f0f2f5;
-            padding-bottom: 0.75rem;
+            color: #202124;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #e8eaed;
+            padding-bottom: 0.5rem;
         }
         
         /* Metric Cards */
         .metric-modern {
             background: white;
-            border-radius: 16px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 0.75rem;
             text-align: center;
-            border: 1px solid #eef2f6;
+            border: 1px solid #e8eaed;
         }
         
         .metric-value-modern {
-            font-size: 1.75rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a73e8;
             margin-bottom: 0.25rem;
         }
         
         .metric-label-modern {
-            font-size: 0.7rem;
-            color: #64748b;
+            font-size: 0.6rem;
+            color: #5f6368;
             font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         /* Tabs */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 0.5rem;
+            gap: 0.25rem;
             background-color: white;
-            padding: 0.5rem;
-            border-radius: 60px;
-            margin-bottom: 1.5rem;
-            border: 1px solid #eef2f6;
+            padding: 0.25rem;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+            border: 1px solid #e8eaed;
         }
         
         .stTabs [data-baseweb="tab"] {
-            border-radius: 40px;
-            padding: 0.5rem 1.5rem;
-            font-size: 0.85rem;
+            border-radius: 32px;
+            padding: 0.35rem 1rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            color: #64748b;
+            color: #5f6368;
         }
         
         .stTabs [aria-selected="true"] {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a73e8;
             color: white;
         }
         
         /* Buttons */
         .stButton > button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a73e8;
             color: white;
             border: none;
-            border-radius: 40px;
-            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            padding: 0.4rem 1rem;
             font-weight: 500;
+            font-size: 0.75rem;
         }
         
         /* Form inputs */
         .stTextInput > div > div > input, .stSelectbox > div > div, .stNumberInput > div > div > input {
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
         }
         
         .stTextInput > div > div > input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
         }
     </style>
     """, unsafe_allow_html=True)
@@ -799,14 +796,14 @@ def main_app_interface():
     if is_admin:
         st.markdown("""
         <div class="modern-header">
-            <h1>🛒 Admin Dashboard</h1>
+            <h1>Admin Dashboard</h1>
             <p>Complete control over sales, operators, and rewards analytics</p>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
         <div class="modern-header">
-            <h1>🛒 Operator Dashboard</h1>
+            <h1>Operator Dashboard</h1>
             <p>Record sales, track rewards, and view your daily performance</p>
         </div>
         """, unsafe_allow_html=True)
@@ -815,12 +812,12 @@ def main_app_interface():
     st.markdown(f"""
     <div class="nav-bar">
         <div class="logo-area">
-            <span style="font-size: 1.5rem;">🛒</span>
+            <span style="font-size: 1.2rem;">🛒</span>
             <span class="logo-text">Tengai</span>
         </div>
         <div class="user-area">
             <span class="role-badge">{user_role.upper()}</span>
-            <span class="user-name-badge">👋 {user_name}</span>
+            <span class="user-name-badge">{user_name}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -840,7 +837,7 @@ def main_app_interface():
 def operator_view():
     user_name = st.session_state.current_user['name']
     
-    tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
+    tab1, tab2 = st.tabs(["Record Sale", "My Sales Today"])
     
     # TAB 1: Record Sale
     with tab1:
@@ -848,7 +845,7 @@ def operator_view():
         
         with col_left:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">New Purchase</div>', unsafe_allow_html=True)
             
             with st.form(key="sales_form", clear_on_submit=True):
                 col_a, col_b = st.columns(2)
@@ -864,7 +861,7 @@ def operator_view():
                     phone = st.text_input("Phone Number", placeholder="Optional")
                 
                 st.markdown("---")
-                st.markdown("#### 🛍️ Purchase Details")
+                st.markdown("#### Purchase Details")
                 
                 col_e, col_f = st.columns(2)
                 with col_e:
@@ -883,9 +880,9 @@ def operator_view():
                     st.metric("Total Amount", f"${total_sales:,.2f}")
                 
                 rewards_earned = total_sales * 0.02
-                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+                st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
-                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
+                submitted = st.form_submit_button("Record Sale", use_container_width=True)
                 
                 if submitted and customer_name:
                     now = datetime.now()
@@ -917,19 +914,19 @@ def operator_view():
                     st.session_state.sales_history.insert(0, data)
                     
                     if success:
-                        st.success(f"✅ Sale recorded! ID: {sale_id}")
+                        st.success(f"Sale recorded! ID: {sale_id}")
                         st.balloons()
                     else:
-                        st.warning(f"⚠️ {message}")
+                        st.warning(f"{message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">📊 Today\'s Stats</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">Today\'s Stats</div>', unsafe_allow_html=True)
             
             if check_connection():
-                st.success("✅ ETL Connected")
+                st.success("ETL Connected")
                 today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
                 if today_sales:
                     df_today = pd.DataFrame(today_sales)
@@ -949,14 +946,14 @@ def operator_view():
                 else:
                     st.info("No sales recorded yet today")
             else:
-                st.warning("⚠️ ETL Offline - Tunnel may be down")
+                st.warning("ETL Offline - Tunnel may be down")
             
             st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 2: My Sales Today
     with tab2:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown(f'<div class="card-header">📊 My Sales Today - {user_name}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="card-header">My Sales Today - {user_name}</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
@@ -997,15 +994,15 @@ def operator_view():
                     </div>
                     """, unsafe_allow_html=True)
                 
-                st.markdown("#### 📋 Your Sales Today")
+                st.markdown("#### Your Sales Today")
                 display_cols = ['sale_id', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
-                    st.dataframe(df[available_cols], use_container_width=True, height=400)
+                    st.dataframe(df[available_cols], use_container_width=True, height=300)
             else:
-                st.info("No sales recorded today. Start selling! 🛒")
+                st.info("No sales recorded today. Start selling!")
         else:
-            st.warning("⚠️ Cannot connect to ETL server")
+            st.warning("Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1016,7 +1013,7 @@ def admin_view():
     user_name = st.session_state.current_user['name']
     
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
+        "Record Sale", "Today's Sales", "Sales Reports", "Rewards Analysis", "Admin Panel"
     ])
     
     # TAB 1: Record Sale
@@ -1025,7 +1022,7 @@ def admin_view():
         
         with col_left:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">New Purchase</div>', unsafe_allow_html=True)
             
             with st.form(key="sales_form_admin", clear_on_submit=True):
                 col_a, col_b = st.columns(2)
@@ -1041,7 +1038,7 @@ def admin_view():
                     phone = st.text_input("Phone Number", placeholder="Optional")
                 
                 st.markdown("---")
-                st.markdown("#### 🛍️ Purchase Details")
+                st.markdown("#### Purchase Details")
                 
                 col_e, col_f = st.columns(2)
                 with col_e:
@@ -1060,9 +1057,9 @@ def admin_view():
                     st.metric("Total Amount", f"${total_sales:,.2f}")
                 
                 rewards_earned = total_sales * 0.02
-                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+                st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
-                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
+                submitted = st.form_submit_button("Record Sale", use_container_width=True)
                 
                 if submitted and customer_name:
                     now = datetime.now()
@@ -1093,30 +1090,30 @@ def admin_view():
                     send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                     
                     if success:
-                        st.success(f"✅ Sale recorded! ID: {sale_id}")
+                        st.success(f"Sale recorded! ID: {sale_id}")
                         st.balloons()
                     else:
-                        st.warning(f"⚠️ {message}")
+                        st.warning(f"{message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col_right:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">📊 System Status</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">System Status</div>', unsafe_allow_html=True)
             
             if check_connection():
-                st.success("✅ ETL Connected")
-                st.info("📤 Data is being sent to SQL Server")
+                st.success("ETL Connected")
+                st.info("Data is being sent to SQL Server")
             else:
-                st.warning("⚠️ ETL Offline - Tunnel may be down")
-                st.info("💡 Update your WEBHOOK_URL in Settings → Secrets")
+                st.warning("ETL Offline - Tunnel may be down")
+                st.info("Update your WEBHOOK_URL in Settings → Secrets")
             
             st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 2: Today's All Sales
     with tab2:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">📊 Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(date_filter='today')
@@ -1157,14 +1154,14 @@ def admin_view():
                     </div>
                     """, unsafe_allow_html=True)
                 
-                st.markdown("#### 📋 Today's Sales Details")
+                st.markdown("#### Today's Sales Details")
                 display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product_category', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
-                    st.dataframe(df[available_cols], use_container_width=True, height=400)
+                    st.dataframe(df[available_cols], use_container_width=True, height=300)
                 
                 if 'recorded_by' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### 👥 Operator Performance Today")
+                    st.markdown("#### Operator Performance Today")
                     operator_today = df.groupby('recorded_by').agg({
                         'sale_id': 'count',
                         'total_sales': 'sum'
@@ -1174,14 +1171,14 @@ def admin_view():
             else:
                 st.info("No sales recorded today")
         else:
-            st.warning("⚠️ ETL Server not connected")
+            st.warning("ETL Server not connected")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 3: Sales Reports
     with tab3:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">📈 Sales Reports & Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">Sales Reports & Analytics</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -1229,17 +1226,17 @@ def admin_view():
                     """, unsafe_allow_html=True)
                 
                 if 'sale_date' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### 📅 Daily Sales Trend")
+                    st.markdown("#### Daily Sales Trend")
                     df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
                     daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
                     fig = px.line(daily_sales, x='sale_date', y='total_sales', 
                                   title="Sales Over Time", markers=True,
-                                  color_discrete_sequence=['#667eea'])
-                    fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
+                                  color_discrete_sequence=['#1a73e8'])
+                    fig.update_layout(height=350, plot_bgcolor='white', paper_bgcolor='white')
                     st.plotly_chart(fig, use_container_width=True)
                 
                 if 'recorded_by' in df.columns:
-                    st.markdown("#### 👥 Operator Performance")
+                    st.markdown("#### Operator Performance")
                     operator_perf = df.groupby('recorded_by').agg({
                         'sale_id': 'count',
                         'total_sales': 'sum'
@@ -1250,7 +1247,7 @@ def admin_view():
                 st.markdown("---")
                 csv = df.to_csv(index=False)
                 st.download_button(
-                    label="📥 Download Full Report (CSV)",
+                    label="Download Full Report (CSV)",
                     data=csv,
                     file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
                     mime="text/csv",
@@ -1259,14 +1256,14 @@ def admin_view():
             else:
                 st.info(f"No sales found between {start_date} and {end_date}")
         else:
-            st.warning("⚠️ Cannot connect to ETL server")
+            st.warning("Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 4: Rewards Analysis
     with tab4:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">🏆 Rewards Intelligence Hub</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">Rewards Intelligence Hub</div>', unsafe_allow_html=True)
         
         uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="rewards_upload")
         
@@ -1275,7 +1272,7 @@ def admin_view():
             df = clean_rewards_data(df)
             
             if not df.empty:
-                st.success(f"✅ Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
+                st.success(f"Loaded {len(df)} transactions from {df['member_number'].nunique()} unique customers")
                 
                 rfm = calculate_rfm(df)
                 rfm = segment_customers(rfm)
@@ -1287,23 +1284,23 @@ def admin_view():
                 seg_counts = rfm['segment'].value_counts().reset_index()
                 seg_counts.columns = ['Segment', 'Count']
                 fig = px.pie(seg_counts, values='Count', names='Segment', 
-                             color_discrete_sequence=['#667eea', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'],
+                             color_discrete_sequence=['#1a73e8', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'],
                              hole=0.3)
-                fig.update_layout(height=400)
+                fig.update_layout(height=350)
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.error("No valid data found")
         else:
-            st.info("📂 Upload a CSV file with columns: member_number, redemption_date, basket_value")
+            st.info("Upload a CSV file with columns: member_number, redemption_date, basket_value")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 5: Admin Panel
     with tab5:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">👑 Admin Control Panel</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">Admin Control Panel</div>', unsafe_allow_html=True)
         
-        st.markdown("#### ➕ Create New Operator Account")
+        st.markdown("#### Create New Operator Account")
         
         with st.form("create_operator_form"):
             col1, col2 = st.columns(2)
@@ -1314,7 +1311,7 @@ def admin_view():
                 new_email = st.text_input("Email *", placeholder="operator@store.com")
                 new_password = st.text_input("Password *", type="password", placeholder="Min 6 characters")
             
-            submitted = st.form_submit_button("👤 Create Operator", use_container_width=True)
+            submitted = st.form_submit_button("Create Operator", use_container_width=True)
             
             if submitted:
                 if not all([new_name, new_username, new_email, new_password]):
@@ -1324,12 +1321,12 @@ def admin_view():
                 else:
                     success, message = register_user(new_name, new_username, new_email, new_password, role="user")
                     if success:
-                        st.success(f"✅ {message}")
+                        st.success(f"{message}")
                     else:
-                        st.error(f"❌ {message}")
+                        st.error(f"{message}")
         
         st.markdown("---")
-        st.markdown("#### 👥 Existing Users")
+        st.markdown("#### Existing Users")
         
         users = get_all_users()
         if users:
@@ -1345,15 +1342,15 @@ def admin_view():
             st.dataframe(pd.DataFrame(users_list), use_container_width=True)
         
         st.markdown("---")
-        st.markdown("#### 📊 System Status")
+        st.markdown("#### System Status")
         
         if check_connection():
-            st.success("✅ ETL Server Connected")
+            st.success("ETL Server Connected")
         else:
-            st.error("❌ ETL Server Offline")
+            st.error("ETL Server Offline")
         
         st.markdown("---")
-        st.markdown("#### 🔧 Current Configuration")
+        st.markdown("#### Current Configuration")
         st.code(f"WEBHOOK_URL = {WEBHOOK_URL}", language="python")
         
         st.markdown('</div>', unsafe_allow_html=True)
