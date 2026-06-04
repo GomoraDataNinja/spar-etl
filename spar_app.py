@@ -28,173 +28,90 @@ st.set_page_config(
 # ============================================
 SPAR_PRODUCTS = {
     "Fresh Produce": [
-        "Apples - Golden Delicious",
-        "Apples - Granny Smith",
-        "Bananas - Fresh",
-        "Oranges - Navel",
-        "Avocados - Hass",
-        "Tomatoes - Vine Ripened",
-        "Potatoes - White",
-        "Onions - Brown",
-        "Carrots - Fresh",
-        "Lettuce - Iceberg",
-        "Broccoli - Fresh",
-        "Cauliflower - Fresh",
-        "Spinach - Baby Leaves",
-        "Strawberries - Fresh",
-        "Grapes - Red Seedless",
-        "Lemons - Fresh",
-        "Limes - Fresh",
-        "Mangoes - Fresh",
-        "Pineapples - Whole",
-        "Watermelon - Fresh Cut"
+        "Apples - Golden Delicious", "Apples - Granny Smith", "Bananas - Fresh",
+        "Oranges - Navel", "Avocados - Hass", "Tomatoes - Vine Ripened",
+        "Potatoes - White", "Onions - Brown", "Carrots - Fresh", "Lettuce - Iceberg",
+        "Broccoli - Fresh", "Cauliflower - Fresh", "Spinach - Baby Leaves",
+        "Strawberries - Fresh", "Grapes - Red Seedless", "Lemons - Fresh",
+        "Limes - Fresh", "Mangoes - Fresh", "Pineapples - Whole", "Watermelon - Fresh Cut"
     ],
     "Meat and Poultry": [
-        "Beef - Steak (Rump)",
-        "Beef - Mince (Lean)",
-        "Chicken - Whole",
-        "Chicken - Breast Fillets",
-        "Chicken - Thighs",
-        "Pork - Chops",
-        "Pork - Ribs",
-        "Lamb - Chops",
-        "Lamb - Leg Roast",
-        "Boerewors - Classic",
-        "Sausages - Pork",
-        "Bacon - Streaky",
-        "Ham - Sliced",
-        "Turkey - Breast",
-        "Droëwors - Original"
+        "Beef - Steak (Rump)", "Beef - Mince (Lean)", "Chicken - Whole",
+        "Chicken - Breast Fillets", "Chicken - Thighs", "Pork - Chops",
+        "Pork - Ribs", "Lamb - Chops", "Lamb - Leg Roast", "Boerewors - Classic",
+        "Sausages - Pork", "Bacon - Streaky", "Ham - Sliced", "Turkey - Breast", "Droëwors - Original"
     ],
     "Dairy": [
-        "Milk - Fresh Full Cream",
-        "Milk - Low Fat",
-        "Milk - Lactose Free",
-        "Cheddar Cheese - Block",
-        "Gouda Cheese - Block",
-        "Cream Cheese - Plain",
-        "Butter - Salted",
-        "Yogurt - Plain",
-        "Yogurt - Greek Style",
-        "Sour Cream",
-        "Cream - Fresh",
-        "Cottage Cheese",
-        "Mozzarella Cheese",
-        "Feta Cheese",
-        "Long Life Milk"
+        "Milk - Fresh Full Cream", "Milk - Low Fat", "Milk - Lactose Free",
+        "Cheddar Cheese - Block", "Gouda Cheese - Block", "Cream Cheese - Plain",
+        "Butter - Salted", "Yogurt - Plain", "Yogurt - Greek Style", "Sour Cream",
+        "Cream - Fresh", "Cottage Cheese", "Mozzarella Cheese", "Feta Cheese", "Long Life Milk"
     ],
     "Bakery": [
-        "Brown Bread - Fresh",
-        "White Bread - Fresh",
-        "Whole Wheat Bread",
-        "Rolls - Sesame",
-        "Croissants - Butter",
-        "Muffins - Blueberry",
-        "Muffins - Chocolate Chip",
-        "Cupcakes - Vanilla",
-        "Doughnuts - Glazed",
-        "Pies - Steak",
-        "Pies - Chicken",
-        "Scones - Plain",
-        "Baguette - Fresh",
-        "Ciabatta - Fresh",
-        "Rye Bread"
+        "Brown Bread - Fresh", "White Bread - Fresh", "Whole Wheat Bread",
+        "Rolls - Sesame", "Croissants - Butter", "Muffins - Blueberry",
+        "Muffins - Chocolate Chip", "Cupcakes - Vanilla", "Doughnuts - Glazed",
+        "Pies - Steak", "Pies - Chicken", "Scones - Plain", "Baguette - Fresh",
+        "Ciabatta - Fresh", "Rye Bread"
     ],
     "Beverages": [
-        "Coca Cola - 2L",
-        "Coca Cola - Can",
-        "Fanta Orange - 2L",
-        "Sprite - 2L",
-        "Water - Still 500ml",
-        "Water - Sparkling",
-        "Juice - Orange",
-        "Juice - Apple",
-        "Juice - Mixed Fruit",
-        "Coffee - Instant",
-        "Tea - Rooibos",
-        "Tea - English Breakfast",
-        "Energy Drink - Red Bull",
-        "Iced Tea - Lemon"
+        "Coca Cola - 2L", "Coca Cola - Can", "Fanta Orange - 2L", "Sprite - 2L",
+        "Water - Still 500ml", "Water - Sparkling", "Juice - Orange", "Juice - Apple",
+        "Juice - Mixed Fruit", "Coffee - Instant", "Tea - Rooibos", "Tea - English Breakfast",
+        "Energy Drink - Red Bull", "Iced Tea - Lemon"
     ],
     "Household": [
-        "Toilet Paper - 12 Pack",
-        "Paper Towels - 3 Pack",
-        "Dishwashing Liquid",
-        "Laundry Detergent - 2kg",
-        "Fabric Softener",
-        "All Purpose Cleaner",
-        "Bathroom Cleaner",
-        "Glass Cleaner",
-        "Garbage Bags - Large",
-        "Sponges - Pack of 4",
-        "Rubber Gloves",
-        "Mop Refill",
-        "Broom - Household"
+        "Toilet Paper - 12 Pack", "Paper Towels - 3 Pack", "Dishwashing Liquid",
+        "Laundry Detergent - 2kg", "Fabric Softener", "All Purpose Cleaner",
+        "Bathroom Cleaner", "Glass Cleaner", "Garbage Bags - Large", "Sponges - Pack of 4",
+        "Rubber Gloves", "Mop Refill", "Broom - Household"
     ],
     "Personal Care": [
-        "Shampoo - Regular",
-        "Conditioner - Regular",
-        "Body Wash - Fragrance",
-        "Soap - Bar",
-        "Deodorant - Roll On",
-        "Toothpaste - 100ml",
-        "Toothbrush - Soft",
-        "Facial Cleanser",
-        "Moisturizer - Face",
-        "Sunscreen - SPF 30",
-        "Hair Gel",
-        "Razor - Disposable",
-        "Shaving Cream",
-        "Cotton Balls - 100 Pack",
-        "Tissues - Pocket Pack"
+        "Shampoo - Regular", "Conditioner - Regular", "Body Wash - Fragrance",
+        "Soap - Bar", "Deodorant - Roll On", "Toothpaste - 100ml", "Toothbrush - Soft",
+        "Facial Cleanser", "Moisturizer - Face", "Sunscreen - SPF 30", "Hair Gel",
+        "Razor - Disposable", "Shaving Cream", "Cotton Balls - 100 Pack", "Tissues - Pocket Pack"
     ]
 }
 
 # ============================================
-# CLEAN LOGIN CSS - TIGHT & COMPACT
+# CSS STYLING - CLEAR BLACK TEXT
 # ============================================
 st.markdown("""
 <style>
     /* Import fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
-    /* Global reset */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
+    /* Global styles */
     html, body, [class*="css"] {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    /* Main app background - Plain white */
+    /* Main app background */
     .stApp {
-        background: #ffffff;
+        background: #f5f7fa;
     }
     
-    /* Remove default padding */
     .block-container {
-        padding: 0 !important;
-        max-width: 100% !important;
+        padding: 1.5rem 2rem !important;
+        max-width: 1400px !important;
+        margin: 0 auto !important;
     }
     
-    /* Centered Login Container */
+    /* Login centered container */
     .login-centered {
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background: #ffffff;
+        background: #f5f7fa;
     }
     
-    /* Tight Compact Login Card */
     .login-card-tight {
         background: white;
         border-radius: 16px;
         padding: 2rem 2rem 1.5rem 2rem;
-        max-width: 360px;
+        max-width: 380px;
         width: 100%;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         border: 1px solid #e8eaed;
@@ -204,7 +121,7 @@ st.markdown("""
     .app-name-tight {
         font-size: 1.75rem;
         font-weight: 600;
-        color: #1a1a2e;
+        color: #1a73e8;
         margin-bottom: 0.25rem;
     }
     
@@ -220,51 +137,90 @@ st.markdown("""
         margin-bottom: 1.25rem;
     }
     
-    /* Form Styling - Tight */
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div {
-        border-radius: 8px;
-        border: 1px solid #dadce0;
-        padding: 0.6rem 0.75rem;
-        font-size: 0.85rem;
-        background: white;
-        transition: all 0.2s ease;
-        margin-bottom: 0;
-    }
+    /* ============================================
+       CLEAR TEXT STYLES - BLACK AND VISIBLE
+    ============================================ */
     
-    .stTextInput > div > div > input:focus,
-    .stSelectbox > div > div:focus-within {
-        border-color: #1a73e8;
-        box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
-    }
-    
-    .stTextInput > div > div > input::placeholder {
-        color: #9aa0a6;
-    }
-    
-    /* Password label styling */
-    .stTextInput > label {
-        font-size: 0.7rem !important;
-        color: #5f6368 !important;
-        font-weight: 500 !important;
+    /* Labels - Black and bold */
+    .stTextInput > label,
+    .stSelectbox > label,
+    .stNumberInput > label {
+        font-size: 0.75rem !important;
+        color: #202124 !important;
+        font-weight: 600 !important;
         margin-bottom: 0.25rem !important;
         display: block !important;
         text-align: left !important;
     }
     
-    /* Hide username label completely */
-    div[data-testid="stTextInput"]:first-of-type label {
-        display: none !important;
+    /* Input fields */
+    .stTextInput > div > div > input,
+    .stSelectbox > div > div,
+    .stNumberInput > div > div > input {
+        border-radius: 8px !important;
+        border: 1px solid #dadce0 !important;
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.85rem !important;
+        background: white !important;
+        color: #202124 !important;
+        font-weight: 500 !important;
     }
     
-    /* Button Container - Center */
-    .stButton {
-        display: flex;
-        justify-content: center;
-        margin-top: 0.5rem;
+    /* Selectbox selected value */
+    .stSelectbox > div > div > div {
+        color: #202124 !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
     }
     
-    /* Button Styling */
+    /* Dropdown menu options */
+    div[data-baseweb="select"] li {
+        color: #202124 !important;
+        font-weight: 500 !important;
+        background: white !important;
+    }
+    
+    div[data-baseweb="select"] li:hover {
+        background: #f1f3f4 !important;
+        color: #1a73e8 !important;
+    }
+    
+    /* Input focus */
+    .stTextInput > div > div > input:focus,
+    .stSelectbox > div > div:focus-within {
+        border-color: #1a73e8 !important;
+        box-shadow: 0 0 0 2px rgba(26,115,232,0.2) !important;
+    }
+    
+    /* Placeholder text */
+    .stTextInput > div > div > input::placeholder {
+        color: #9aa0a6 !important;
+    }
+    
+    /* Metric cards */
+    .metric-modern {
+        background: white;
+        border-radius: 12px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid #e8eaed;
+    }
+    
+    .metric-value-modern {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1a73e8;
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-label-modern {
+        font-size: 0.6rem;
+        color: #5f6368;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    /* Buttons */
     .stButton > button {
         background: #1a73e8;
         color: white;
@@ -274,14 +230,108 @@ st.markdown("""
         font-weight: 500;
         font-size: 0.8rem;
         transition: all 0.2s ease;
-        width: auto;
-        min-width: 100px;
-        margin: 0 auto;
     }
     
     .stButton > button:hover {
         background: #1557b0;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    /* Cards */
+    .modern-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .card-header {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #202124;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e8eaed;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Header */
+    .modern-header {
+        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        padding: 1.25rem 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1rem;
+    }
+    
+    .modern-header h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+    
+    .modern-header p {
+        color: rgba(255,255,255,0.9);
+        font-size: 0.7rem;
+    }
+    
+    /* Navigation bar */
+    .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.4rem 1rem;
+        background: white;
+        border-radius: 40px;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+    }
+    
+    .logo-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1a73e8;
+    }
+    
+    .role-badge {
+        background: #1a73e8;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 500;
+    }
+    
+    .user-name-badge {
+        background: #f0f2f5;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        color: #5f6368;
+        font-size: 0.65rem;
+        font-weight: 500;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.25rem;
+        background-color: white;
+        padding: 0.25rem;
+        border-radius: 40px;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 32px;
+        padding: 0.35rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #5f6368;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: #1a73e8;
+        color: white;
     }
     
     /* Hide default elements */
@@ -289,44 +339,20 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Success/Error messages */
+    /* Hide username label on login */
+    div[data-testid="stTextInput"]:first-of-type label {
+        display: none !important;
+    }
+    
+    /* Alert messages */
     .stAlert {
         border-radius: 8px;
-        border: none;
-        margin-bottom: 0.75rem;
-        padding: 0.5rem;
         font-size: 0.8rem;
     }
     
-    /* Remove extra spacing between form elements */
-    .stForm {
-        margin: 0;
-        padding: 0;
-    }
-    
-    div[data-testid="stForm"] > div {
-        gap: 0.5rem;
-    }
-    
-    /* Selectbox styling */
-    .stSelectbox > label {
-        font-size: 0.7rem !important;
-        color: #5f6368 !important;
-        margin-bottom: 0.25rem !important;
-    }
-    
-    /* Number input styling */
-    .stNumberInput > label {
-        font-size: 0.7rem !important;
-        color: #5f6368 !important;
-        margin-bottom: 0.25rem !important;
-    }
-    
-    .stNumberInput > div > div > input {
-        border-radius: 8px;
-        border: 1px solid #dadce0;
-        padding: 0.6rem 0.75rem;
-        font-size: 0.85rem;
+    /* Info text */
+    .stInfo, .stWarning, .stSuccess, .stError {
+        font-size: 0.8rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -459,46 +485,6 @@ if 'rfm_data' not in st.session_state:
 # ============================================
 APP_NAME = "Tengai"
 APP_VERSION = "3.5.0"
-
-# ============================================
-# LOGIN SCREEN - TIGHT & COMPACT
-# ============================================
-def login_screen():
-    st.markdown("""
-    <div class="login-centered">
-        <div class="login-card-tight">
-            <div class="app-name-tight">Tengai</div>
-            <div class="signin-text-tight">Sign in to continue</div>
-            <div class="version-info-tight">Version 3.5.0 - Production</div>
-    """, unsafe_allow_html=True)
-    
-    # Login Form
-    with st.form("login_form"):
-        username = st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
-        password = st.text_input("Password", type="password", placeholder="Organisation password", key="password")
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            submitted = st.form_submit_button("Sign In", use_container_width=False)
-        
-        if submitted:
-            username_val = st.session_state.get('username', '')
-            password_val = st.session_state.get('password', '')
-            if username_val and password_val:
-                success, message = login_user(username_val, password_val)
-                if success:
-                    st.success(message)
-                    time.sleep(0.5)
-                    st.rerun()
-                else:
-                    st.error(message)
-            else:
-                st.warning("Please enter your username and password")
-    
-    st.markdown("""
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
 # ============================================
 # DATABASE QUERY FUNCTIONS
@@ -756,205 +742,51 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         return False
 
 # ============================================
-# MAIN APP INTERFACE (After Login)
+# LOGIN SCREEN
+# ============================================
+def login_screen():
+    st.markdown("""
+    <div class="login-centered">
+        <div class="login-card-tight">
+            <div class="app-name-tight">Tengai</div>
+            <div class="signin-text-tight">Sign in to continue</div>
+            <div class="version-info-tight">Version 3.5.0 - Production</div>
+    """, unsafe_allow_html=True)
+    
+    with st.form("login_form"):
+        username = st.text_input("", placeholder="Username or Email", key="username", label_visibility="collapsed")
+        password = st.text_input("Password", type="password", placeholder="Organisation password", key="password")
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            submitted = st.form_submit_button("Sign In", use_container_width=False)
+        
+        if submitted:
+            username_val = st.session_state.get('username', '')
+            password_val = st.session_state.get('password', '')
+            if username_val and password_val:
+                success, message = login_user(username_val, password_val)
+                if success:
+                    st.success(message)
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error(message)
+            else:
+                st.warning("Please enter your username and password")
+    
+    st.markdown("""
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ============================================
+# MAIN APP INTERFACE
 # ============================================
 def main_app_interface():
     user_name = st.session_state.current_user['name']
     user_role = st.session_state.current_user['role']
     is_admin = (user_role == 'admin')
-    
-    # Custom CSS for main app interface
-    st.markdown("""
-    <style>
-        /* Reset for main app */
-        .stApp {
-            background: #f5f5f5;
-        }
-        
-        .block-container {
-            padding: 2rem !important;
-            max-width: 1200px !important;
-            margin: 0 auto !important;
-        }
-        
-        /* Modern Header */
-        .modern-header {
-            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
-            padding: 1.5rem 2rem;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .modern-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-        
-        .modern-header p {
-            color: rgba(255,255,255,0.9);
-            font-size: 0.8rem;
-        }
-        
-        /* Navigation Bar */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: white;
-            border-radius: 40px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            border: 1px solid #e8eaed;
-        }
-        
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .logo-text {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1a73e8;
-        }
-        
-        .user-area {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .role-badge {
-            background: #1a73e8;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 500;
-        }
-        
-        .user-name-badge {
-            background: #f0f2f5;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            color: #5f6368;
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-        
-        /* Modern Cards */
-        .modern-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e8eaed;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .card-header {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #202124;
-            margin-bottom: 0.75rem;
-            border-bottom: 1px solid #e8eaed;
-            padding-bottom: 0.5rem;
-        }
-        
-        /* Metric Cards */
-        .metric-modern {
-            background: white;
-            border-radius: 12px;
-            padding: 0.75rem;
-            text-align: center;
-            border: 1px solid #e8eaed;
-        }
-        
-        .metric-value-modern {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1a73e8;
-            margin-bottom: 0.25rem;
-        }
-        
-        .metric-label-modern {
-            font-size: 0.6rem;
-            color: #5f6368;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        
-        /* Tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 0.25rem;
-            background-color: white;
-            padding: 0.25rem;
-            border-radius: 40px;
-            margin-bottom: 1rem;
-            border: 1px solid #e8eaed;
-        }
-        
-        .stTabs [data-baseweb="tab"] {
-            border-radius: 32px;
-            padding: 0.35rem 1rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #5f6368;
-        }
-        
-        .stTabs [aria-selected="true"] {
-            background: #1a73e8;
-            color: white;
-        }
-        
-        /* Buttons */
-        .stButton > button {
-            background: #1a73e8;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            padding: 0.4rem 1rem;
-            font-weight: 500;
-            font-size: 0.75rem;
-        }
-        
-        /* Form inputs */
-        .stTextInput > div > div > input,
-        .stSelectbox > div > div,
-        .stNumberInput > div > div > input {
-            border-radius: 8px;
-            border: 1px solid #dadce0;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-        }
-        
-        .stTextInput > div > div > input:focus,
-        .stSelectbox > div > div:focus-within {
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
-        }
-        
-        /* Selectbox label */
-        .stSelectbox > label {
-            font-size: 0.7rem !important;
-            color: #5f6368 !important;
-            font-weight: 500 !important;
-            margin-bottom: 0.25rem !important;
-        }
-        
-        .stNumberInput > label {
-            font-size: 0.7rem !important;
-            color: #5f6368 !important;
-            font-weight: 500 !important;
-            margin-bottom: 0.25rem !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
     
     # Header
     if is_admin:
@@ -976,7 +808,7 @@ def main_app_interface():
     st.markdown(f"""
     <div class="nav-bar">
         <div class="logo-area">
-            <span style="font-size: 1.2rem;">🛒</span>
+            <span style="font-size: 1rem;">🛒</span>
             <span class="logo-text">Tengai</span>
         </div>
         <div class="user-area">
@@ -996,7 +828,7 @@ def main_app_interface():
         operator_view()
 
 # ============================================
-# OPERATOR VIEW - FIXED PRODUCT DROPDOWN
+# OPERATOR VIEW - WORKING PRODUCT DROPDOWN
 # ============================================
 def operator_view():
     user_name = st.session_state.current_user['name']
@@ -1011,55 +843,56 @@ def operator_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">New Purchase</div>', unsafe_allow_html=True)
             
-            with st.form(key="sales_form", clear_on_submit=True):
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    customer_name = st.text_input("Customer Name *", placeholder="Enter full name")
-                with col_b:
-                    customer_email = st.text_input("Email Address", placeholder="customer@example.com")
-                
-                col_c, col_d = st.columns(2)
-                with col_c:
-                    customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional")
-                with col_d:
-                    phone = st.text_input("Phone Number", placeholder="Optional")
-                
-                st.markdown("---")
-                st.markdown("#### Purchase Details")
-                
-                # Product Category Selector - FIXED with unique key
-                product_category = st.selectbox(
-                    "Product Category", 
-                    list(SPAR_PRODUCTS.keys()),
-                    key="op_category"
-                )
-                
-                # Product Selector - FIXED: Key changes when category changes
-                products = SPAR_PRODUCTS.get(product_category, [])
-                product = st.selectbox(
-                    "Product", 
-                    products,
-                    key=f"op_product_{product_category}"
-                )
-                
-                col_e, col_f = st.columns(2)
-                with col_e:
-                    quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
-                with col_f:
-                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f")
-                
-                total_sales = quantity * unit_price
-                st.metric("Total Amount", f"${total_sales:,.2f}")
-                
-                # Show purchase date
-                st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
-                
-                rewards_earned = total_sales * 0.02
-                st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
-                
-                submitted = st.form_submit_button("Record Sale", use_container_width=True)
-                
-                if submitted and customer_name:
+            # Customer Details
+            col_a, col_b = st.columns(2)
+            with col_a:
+                customer_name = st.text_input("Customer Name *", placeholder="Enter full name", key="op_customer_name")
+            with col_b:
+                customer_email = st.text_input("Email Address", placeholder="customer@example.com", key="op_customer_email")
+            
+            col_c, col_d = st.columns(2)
+            with col_c:
+                customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional", key="op_customer_id")
+            with col_d:
+                phone = st.text_input("Phone Number", placeholder="Optional", key="op_phone")
+            
+            st.markdown("---")
+            st.markdown("#### Purchase Details")
+            
+            # Product Category - updates in real time
+            product_category = st.selectbox(
+                "Product Category", 
+                list(SPAR_PRODUCTS.keys()),
+                key="op_category"
+            )
+            
+            # Product - dynamically updates when category changes
+            products = SPAR_PRODUCTS.get(product_category, [])
+            product = st.selectbox(
+                "Product", 
+                products,
+                key="op_product"
+            )
+            
+            col_e, col_f = st.columns(2)
+            with col_e:
+                quantity = st.number_input("Quantity", min_value=1, value=1, step=1, key="op_quantity")
+            with col_f:
+                unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f", key="op_unit_price")
+            
+            total_sales = quantity * unit_price
+            st.metric("Total Amount", f"${total_sales:,.2f}")
+            
+            st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
+            
+            rewards_earned = total_sales * 0.02
+            st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            
+            # Submit button
+            submitted = st.button("Record Sale", key="op_submit", use_container_width=True)
+            
+            if submitted:
+                if customer_name:
                     now = datetime.now()
                     sale_id = generate_sale_id()
                     
@@ -1092,8 +925,14 @@ def operator_view():
                     if success:
                         st.success(f"Sale recorded! ID: {sale_id}")
                         st.balloons()
+                        # Clear form
+                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone']:
+                            if key in st.session_state:
+                                st.session_state[key] = ""
                     else:
                         st.warning(f"{message}")
+                else:
+                    st.error("Please enter customer name")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
@@ -1107,18 +946,8 @@ def operator_view():
                 if today_sales:
                     df_today = pd.DataFrame(today_sales)
                     total_revenue = df_today['total_sales'].sum() if 'total_sales' in df_today.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
-                        <div class="metric-label-modern">Today's Revenue</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{len(df_today)}</div>
-                        <div class="metric-label-modern">Transactions</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Today's Revenue", f"${total_revenue:,.2f}")
+                    st.metric("Today's Transactions", len(df_today))
                 else:
                     st.info("No sales recorded yet today")
             else:
@@ -1139,36 +968,16 @@ def operator_view():
                 
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{len(df)}</div>
-                        <div class="metric-label-modern">Transactions</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Transactions", len(df))
                 with col2:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
-                        <div class="metric-label-modern">Revenue</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Revenue", f"${total_revenue:,.2f}")
                 with col3:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${avg_sale:.2f}</div>
-                        <div class="metric-label-modern">Average Sale</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Average Sale", f"${avg_sale:.2f}")
                 with col4:
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{customers}</div>
-                        <div class="metric-label-modern">Customers Served</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Customers Served", customers)
                 
                 st.markdown("#### Your Sales Today")
                 display_cols = ['sale_id', 'customer_name', 'product', 'quantity', 'total_sales', 'sale_time']
@@ -1183,7 +992,7 @@ def operator_view():
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW - FIXED PRODUCT DROPDOWN
+# ADMIN VIEW - WORKING PRODUCT DROPDOWN
 # ============================================
 def admin_view():
     user_name = st.session_state.current_user['name']
@@ -1200,55 +1009,56 @@ def admin_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">New Purchase</div>', unsafe_allow_html=True)
             
-            with st.form(key="sales_form_admin", clear_on_submit=True):
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    customer_name = st.text_input("Customer Name *", placeholder="Enter full name")
-                with col_b:
-                    customer_email = st.text_input("Email Address", placeholder="customer@example.com")
-                
-                col_c, col_d = st.columns(2)
-                with col_c:
-                    customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional")
-                with col_d:
-                    phone = st.text_input("Phone Number", placeholder="Optional")
-                
-                st.markdown("---")
-                st.markdown("#### Purchase Details")
-                
-                # Product Category Selector - FIXED with unique key
-                product_category = st.selectbox(
-                    "Product Category", 
-                    list(SPAR_PRODUCTS.keys()),
-                    key="admin_category"
-                )
-                
-                # Product Selector - FIXED: Key changes when category changes
-                products = SPAR_PRODUCTS.get(product_category, [])
-                product = st.selectbox(
-                    "Product", 
-                    products,
-                    key=f"admin_product_{product_category}"
-                )
-                
-                col_e, col_f = st.columns(2)
-                with col_e:
-                    quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
-                with col_f:
-                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f")
-                
-                total_sales = quantity * unit_price
-                st.metric("Total Amount", f"${total_sales:,.2f}")
-                
-                # Show purchase date
-                st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
-                
-                rewards_earned = total_sales * 0.02
-                st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
-                
-                submitted = st.form_submit_button("Record Sale", use_container_width=True)
-                
-                if submitted and customer_name:
+            # Customer Details
+            col_a, col_b = st.columns(2)
+            with col_a:
+                customer_name = st.text_input("Customer Name *", placeholder="Enter full name", key="admin_customer_name")
+            with col_b:
+                customer_email = st.text_input("Email Address", placeholder="customer@example.com", key="admin_customer_email")
+            
+            col_c, col_d = st.columns(2)
+            with col_c:
+                customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional", key="admin_customer_id")
+            with col_d:
+                phone = st.text_input("Phone Number", placeholder="Optional", key="admin_phone")
+            
+            st.markdown("---")
+            st.markdown("#### Purchase Details")
+            
+            # Product Category - updates in real time
+            product_category = st.selectbox(
+                "Product Category", 
+                list(SPAR_PRODUCTS.keys()),
+                key="admin_category"
+            )
+            
+            # Product - dynamically updates when category changes
+            products = SPAR_PRODUCTS.get(product_category, [])
+            product = st.selectbox(
+                "Product", 
+                products,
+                key="admin_product"
+            )
+            
+            col_e, col_f = st.columns(2)
+            with col_e:
+                quantity = st.number_input("Quantity", min_value=1, value=1, step=1, key="admin_quantity")
+            with col_f:
+                unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f", key="admin_unit_price")
+            
+            total_sales = quantity * unit_price
+            st.metric("Total Amount", f"${total_sales:,.2f}")
+            
+            st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
+            
+            rewards_earned = total_sales * 0.02
+            st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            
+            # Submit button
+            submitted = st.button("Record Sale", key="admin_submit", use_container_width=True)
+            
+            if submitted:
+                if customer_name:
                     now = datetime.now()
                     sale_id = generate_sale_id()
                     
@@ -1280,8 +1090,14 @@ def admin_view():
                     if success:
                         st.success(f"Sale recorded! ID: {sale_id}")
                         st.balloons()
+                        # Clear form
+                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone']:
+                            if key in st.session_state:
+                                st.session_state[key] = ""
                     else:
                         st.warning(f"{message}")
+                else:
+                    st.error("Please enter customer name")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
@@ -1311,36 +1127,16 @@ def admin_view():
                 
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{len(df)}</div>
-                        <div class="metric-label-modern">Transactions</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Transactions", len(df))
                 with col2:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
-                        <div class="metric-label-modern">Revenue</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Revenue", f"${total_revenue:,.2f}")
                 with col3:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${avg_sale:.2f}</div>
-                        <div class="metric-label-modern">Average Sale</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Average Sale", f"${avg_sale:.2f}")
                 with col4:
                     operators = df['recorded_by'].nunique() if 'recorded_by' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{operators}</div>
-                        <div class="metric-label-modern">Active Operators</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Active Operators", operators)
                 
                 st.markdown("#### Today's Sales Details")
                 display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product', 'quantity', 'total_sales', 'sale_time']
@@ -1383,35 +1179,15 @@ def admin_view():
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${total_revenue:,.2f}</div>
-                        <div class="metric-label-modern">Total Sales</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Total Sales", f"${total_revenue:,.2f}")
                 with col2:
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{len(df)}</div>
-                        <div class="metric-label-modern">Transactions</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Transactions", len(df))
                 with col3:
                     customers = df['customer_name'].nunique() if 'customer_name' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">{customers}</div>
-                        <div class="metric-label-modern">Unique Customers</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Unique Customers", customers)
                 with col4:
                     avg_sale = df['total_sales'].mean() if 'total_sales' in df.columns else 0
-                    st.markdown(f"""
-                    <div class="metric-modern">
-                        <div class="metric-value-modern">${avg_sale:.2f}</div>
-                        <div class="metric-label-modern">Avg Transaction</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.metric("Avg Transaction", f"${avg_sale:.2f}")
                 
                 if 'sale_date' in df.columns and 'total_sales' in df.columns:
                     st.markdown("#### Daily Sales Trend")
