@@ -14,6 +14,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # ============================================
+# FORCE LIGHT MODE - PREVENT DARK THEME ISSUES
+# ============================================
+try:
+    st._config.set_option('theme.base', 'light')
+except:
+    pass
+
+# ============================================
 # PAGE CONFIGURATION
 # ============================================
 st.set_page_config(
@@ -75,7 +83,7 @@ SPAR_PRODUCTS = {
 }
 
 # ============================================
-# CSS STYLING - CLEAR DARK BLACK TEXT
+# CSS STYLING - COMPLETE FIX FOR VISIBLE TEXT
 # ============================================
 st.markdown("""
 <style>
@@ -138,29 +146,24 @@ st.markdown("""
     }
     
     /* ============================================
-       CRITICAL - CLEAR BLACK TEXT FOR ALL ELEMENTS
+       CRITICAL FIX - MAKE ALL TEXT VISIBLE
     ============================================ */
     
-    /* All text should be dark */
-    .stMarkdown, .stMarkdown p, .stMarkdown div {
+    /* Force ALL text to be dark and visible */
+    label, .stTextInput label, .stSelectbox label, .stNumberInput label, 
+    .stTextArea label, div[data-testid="stWidgetLabel"],
+    .stMarkdown, .stMarkdown p, .stMarkdown div, span, div, p {
         color: #202124 !important;
+        font-weight: 500 !important;
     }
     
-    /* Labels - Black and bold */
-    .stTextInput > label,
-    .stSelectbox > label,
-    .stNumberInput > label,
-    .stTextArea > label {
-        font-size: 0.75rem !important;
+    /* Make section headers bold */
+    h1, h2, h3, h4, .card-header, .st-emotion-cache-1y4p8pa {
         color: #202124 !important;
         font-weight: 600 !important;
-        margin-bottom: 0.25rem !important;
-        display: block !important;
-        text-align: left !important;
-        opacity: 1 !important;
     }
     
-    /* Input fields text */
+    /* Input fields text - BLACK */
     .stTextInput > div > div > input,
     .stSelectbox > div > div,
     .stNumberInput > div > div > input,
@@ -206,11 +209,6 @@ st.markdown("""
         font-size: 1.5rem !important;
     }
     
-    /* Info box text */
-    .stAlert div, .stAlert p {
-        color: #202124 !important;
-    }
-    
     /* Button text */
     .stButton > button {
         background: #1a73e8;
@@ -224,17 +222,6 @@ st.markdown("""
     
     .stButton > button:hover {
         background: #1557b0;
-    }
-    
-    /* Form section headers */
-    h1, h2, h3, h4, h5, h6, .card-header, .modern-header h1, .modern-header p {
-        color: #202124 !important;
-    }
-    
-    /* Section divider text */
-    .stMarkdown h4, .stMarkdown h3, .stMarkdown h2 {
-        color: #202124 !important;
-        font-weight: 600 !important;
     }
     
     /* Cards */
@@ -374,10 +361,19 @@ st.markdown("""
         opacity: 1 !important;
     }
     
-    /* Number input spinner buttons */
-    .stNumberInput button {
-        background: #f1f3f4 !important;
-        border-radius: 4px !important;
+    /* Info box text */
+    .stAlert div, .stAlert p {
+        color: #202124 !important;
+    }
+    
+    /* Override any Streamlit default colors */
+    .st-emotion-cache-1y4p8pa, .st-emotion-cache-16idsys p, .st-emotion-cache-6qob1r {
+        color: #202124 !important;
+    }
+    
+    /* Make sure selectbox dropdown arrow is visible */
+    .stSelectbox svg {
+        fill: #5f6368 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -882,7 +878,7 @@ def operator_view():
                 phone = st.text_input("Phone Number", placeholder="Optional", key="op_phone")
             
             st.markdown("---")
-            st.markdown("#### Purchase Details")
+            st.markdown('<p style="color: #202124; font-weight: 600;">Purchase Details</p>', unsafe_allow_html=True)
             
             # Product Category - updates in real time
             product_category = st.selectbox(
@@ -963,12 +959,12 @@ def operator_view():
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                         # Clear form
-                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone', 'op_quantity', 'op_unit_price']:
+                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone']:
                             if key in st.session_state:
-                                if key in ['op_quantity', 'op_unit_price']:
-                                    st.session_state[key] = 0
-                                else:
-                                    st.session_state[key] = ""
+                                st.session_state[key] = ""
+                        st.session_state['op_quantity'] = 0
+                        st.session_state['op_unit_price'] = 0.00
+                        st.rerun()
                     else:
                         st.warning(f"⚠️ {message}")
             
@@ -1061,7 +1057,7 @@ def admin_view():
                 phone = st.text_input("Phone Number", placeholder="Optional", key="admin_phone")
             
             st.markdown("---")
-            st.markdown("#### Purchase Details")
+            st.markdown('<p style="color: #202124; font-weight: 600;">Purchase Details</p>', unsafe_allow_html=True)
             
             # Product Category - updates in real time
             product_category = st.selectbox(
@@ -1141,12 +1137,12 @@ def admin_view():
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                         # Clear form
-                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone', 'admin_quantity', 'admin_unit_price']:
+                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone']:
                             if key in st.session_state:
-                                if key in ['admin_quantity', 'admin_unit_price']:
-                                    st.session_state[key] = 0
-                                else:
-                                    st.session_state[key] = ""
+                                st.session_state[key] = ""
+                        st.session_state['admin_quantity'] = 0
+                        st.session_state['admin_unit_price'] = 0.00
+                        st.rerun()
                     else:
                         st.warning(f"⚠️ {message}")
             
