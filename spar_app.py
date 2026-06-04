@@ -145,28 +145,14 @@ st.markdown("""
         margin-bottom: 1.25rem;
     }
     
-    /* ============================================
-       CRITICAL FIX - BLACK TEXT FOR SELECTED VALUES
-    ============================================ */
-    
     /* Force ALL text to be dark and visible */
-    label, .stTextInput label, .stSelectbox label, .stNumberInput label, 
-    .stTextArea label, div[data-testid="stWidgetLabel"] {
+    label, .stTextInput label, .stSelectbox label, .stNumberInput label {
         color: #202124 !important;
         font-weight: 600 !important;
         font-size: 0.8rem !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        display: block !important;
     }
     
-    /* Make section headers bold */
-    h1, h2, h3, h4, .card-header {
-        color: #202124 !important;
-        font-weight: 600 !important;
-    }
-    
-    /* Input fields text - BLACK */
+    /* Input fields text */
     .stTextInput > div > div > input,
     .stNumberInput > div > div > input {
         border-radius: 8px !important;
@@ -175,18 +161,15 @@ st.markdown("""
         font-size: 0.85rem !important;
         background: white !important;
         color: #202124 !important;
-        font-weight: 500 !important;
     }
     
-    /* CRITICAL FIX: Selectbox container - make selected value BLACK */
+    /* Selectbox - make selected value BLACK */
     .stSelectbox > div > div {
         border-radius: 8px !important;
         border: 1px solid #dadce0 !important;
         background: white !important;
-        min-height: 38px !important;
     }
     
-    /* The selected value text - make it BLACK and BOLD */
     .stSelectbox > div > div > div {
         color: #202124 !important;
         font-weight: 700 !important;
@@ -206,12 +189,6 @@ st.markdown("""
         color: #5e9bff !important;
     }
     
-    div[data-baseweb="select"] li[aria-selected="true"] {
-        background: #e8f0fe !important;
-        color: #5e9bff !important;
-        font-weight: 600 !important;
-    }
-    
     /* Metric display text */
     div[data-testid="stMetric"] label {
         color: #5f6368 !important;
@@ -224,7 +201,7 @@ st.markdown("""
         font-size: 1.5rem !important;
     }
     
-    /* Button text - LIGHT BLUE */
+    /* Button text */
     .stButton > button {
         background: #5e9bff !important;
         color: white !important;
@@ -382,18 +359,12 @@ st.markdown("""
         color: #202124 !important;
     }
     
-    /* Success/Info/Warning colors */
-    .stAlert {
-        border-radius: 8px;
-    }
-    
     /* Selectbox arrow */
     .stSelectbox svg {
         fill: #5f6368 !important;
     }
     
-    /* Any remaining text */
-    .stMarkdown, .stMarkdown p, .stMarkdown div {
+    .stMarkdown, .stMarkdown p {
         color: #202124 !important;
     }
 </style>
@@ -979,12 +950,6 @@ def operator_view():
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
-                        # Clear form
-                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone']:
-                            if key in st.session_state:
-                                st.session_state[key] = ""
-                        st.session_state['op_quantity'] = 0
-                        st.session_state['op_unit_price'] = 0.00
                         st.rerun()
                     else:
                         st.warning(f"⚠️ {message}")
@@ -1157,12 +1122,6 @@ def admin_view():
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
-                        # Clear form
-                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone']:
-                            if key in st.session_state:
-                                st.session_state[key] = ""
-                        st.session_state['admin_quantity'] = 0
-                        st.session_state['admin_unit_price'] = 0.00
                         st.rerun()
                     else:
                         st.warning(f"⚠️ {message}")
