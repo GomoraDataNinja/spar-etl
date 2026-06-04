@@ -837,7 +837,7 @@ def operator_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
-            # Customer Details (outside form for better UX)
+            # Customer Details
             col_a, col_b = st.columns(2)
             with col_a:
                 customer_name = st.text_input("Customer Name *", placeholder="Enter full name", key="op_customer_name")
@@ -853,7 +853,7 @@ def operator_view():
             st.markdown("---")
             st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
             
-            # Product Category - REAL-TIME UPDATE (outside form)
+            # Product Category - REAL-TIME UPDATE
             product_category = st.selectbox(
                 "Product Category", 
                 list(SPAR_PRODUCTS.keys()),
@@ -922,13 +922,7 @@ def operator_view():
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
-                        # Clear all input fields - safely check if keys exist
-                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone']:
-                            if key in st.session_state:
-                                st.session_state[key] = ""
-                        # Reset number inputs
-                        st.session_state['op_quantity'] = 1
-                        st.session_state['op_unit_price'] = 0.01
+                        # Simple rerun without session state manipulation
                         st.rerun()
                     else:
                         st.warning(f"⚠️ {message}")
@@ -1089,13 +1083,7 @@ def admin_view():
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
-                        # Clear all input fields - safely check if keys exist
-                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone']:
-                            if key in st.session_state:
-                                st.session_state[key] = ""
-                        # Reset number inputs
-                        st.session_state['admin_quantity'] = 1
-                        st.session_state['admin_unit_price'] = 0.01
+                        # Simple rerun without session state manipulation
                         st.rerun()
                     else:
                         st.warning(f"⚠️ {message}")
