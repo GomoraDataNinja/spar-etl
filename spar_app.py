@@ -75,7 +75,7 @@ SPAR_PRODUCTS = {
 }
 
 # ============================================
-# CSS STYLING - CLEAR BLACK TEXT
+# CSS STYLING - CLEAR DARK BLACK TEXT
 # ============================================
 st.markdown("""
 <style>
@@ -138,25 +138,33 @@ st.markdown("""
     }
     
     /* ============================================
-       CLEAR TEXT STYLES - BLACK AND VISIBLE
+       CRITICAL - CLEAR BLACK TEXT FOR ALL ELEMENTS
     ============================================ */
+    
+    /* All text should be dark */
+    .stMarkdown, .stMarkdown p, .stMarkdown div {
+        color: #202124 !important;
+    }
     
     /* Labels - Black and bold */
     .stTextInput > label,
     .stSelectbox > label,
-    .stNumberInput > label {
+    .stNumberInput > label,
+    .stTextArea > label {
         font-size: 0.75rem !important;
         color: #202124 !important;
         font-weight: 600 !important;
         margin-bottom: 0.25rem !important;
         display: block !important;
         text-align: left !important;
+        opacity: 1 !important;
     }
     
-    /* Input fields */
+    /* Input fields text */
     .stTextInput > div > div > input,
     .stSelectbox > div > div,
-    .stNumberInput > div > div > input {
+    .stNumberInput > div > div > input,
+    .stTextArea > div > textarea {
         border-radius: 8px !important;
         border: 1px solid #dadce0 !important;
         padding: 0.6rem 0.75rem !important;
@@ -166,11 +174,12 @@ st.markdown("""
         font-weight: 500 !important;
     }
     
-    /* Selectbox selected value */
+    /* Selectbox selected value text */
     .stSelectbox > div > div > div {
         color: #202124 !important;
         font-weight: 600 !important;
         font-size: 0.85rem !important;
+        background: white !important;
     }
     
     /* Dropdown menu options */
@@ -185,55 +194,47 @@ st.markdown("""
         color: #1a73e8 !important;
     }
     
-    /* Input focus */
-    .stTextInput > div > div > input:focus,
-    .stSelectbox > div > div:focus-within {
-        border-color: #1a73e8 !important;
-        box-shadow: 0 0 0 2px rgba(26,115,232,0.2) !important;
+    /* Metric display text */
+    div[data-testid="stMetric"] label {
+        color: #5f6368 !important;
+        font-size: 0.7rem !important;
     }
     
-    /* Placeholder text */
-    .stTextInput > div > div > input::placeholder {
-        color: #9aa0a6 !important;
+    div[data-testid="stMetric"] div {
+        color: #1a73e8 !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
     }
     
-    /* Metric cards */
-    .metric-modern {
-        background: white;
-        border-radius: 12px;
-        padding: 0.75rem;
-        text-align: center;
-        border: 1px solid #e8eaed;
+    /* Info box text */
+    .stAlert div, .stAlert p {
+        color: #202124 !important;
     }
     
-    .metric-value-modern {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1a73e8;
-        margin-bottom: 0.25rem;
-    }
-    
-    .metric-label-modern {
-        font-size: 0.6rem;
-        color: #5f6368;
-        font-weight: 500;
-        text-transform: uppercase;
-    }
-    
-    /* Buttons */
+    /* Button text */
     .stButton > button {
         background: #1a73e8;
-        color: white;
+        color: white !important;
         border: none;
         border-radius: 24px;
         padding: 0.5rem 1.5rem;
         font-weight: 500;
         font-size: 0.8rem;
-        transition: all 0.2s ease;
     }
     
     .stButton > button:hover {
         background: #1557b0;
+    }
+    
+    /* Form section headers */
+    h1, h2, h3, h4, h5, h6, .card-header, .modern-header h1, .modern-header p {
+        color: #202124 !important;
+    }
+    
+    /* Section divider text */
+    .stMarkdown h4, .stMarkdown h3, .stMarkdown h2 {
+        color: #202124 !important;
+        font-weight: 600 !important;
     }
     
     /* Cards */
@@ -249,7 +250,7 @@ st.markdown("""
     .card-header {
         font-size: 0.9rem;
         font-weight: 600;
-        color: #202124;
+        color: #202124 !important;
         margin-bottom: 0.75rem;
         border-bottom: 1px solid #e8eaed;
         padding-bottom: 0.5rem;
@@ -266,12 +267,12 @@ st.markdown("""
     .modern-header h1 {
         font-size: 1.25rem;
         font-weight: 600;
-        color: white;
+        color: white !important;
         margin-bottom: 0.25rem;
     }
     
     .modern-header p {
-        color: rgba(255,255,255,0.9);
+        color: rgba(255,255,255,0.9) !important;
         font-size: 0.7rem;
     }
     
@@ -344,15 +345,39 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Alert messages */
-    .stAlert {
-        border-radius: 8px;
-        font-size: 0.8rem;
+    /* Metric cards */
+    .metric-modern {
+        background: white;
+        border-radius: 12px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid #e8eaed;
     }
     
-    /* Info text */
-    .stInfo, .stWarning, .stSuccess, .stError {
-        font-size: 0.8rem;
+    .metric-value-modern {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1a73e8;
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-label-modern {
+        font-size: 0.6rem;
+        color: #5f6368;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    /* Placeholder text */
+    ::placeholder {
+        color: #9aa0a6 !important;
+        opacity: 1 !important;
+    }
+    
+    /* Number input spinner buttons */
+    .stNumberInput button {
+        background: #f1f3f4 !important;
+        border-radius: 4px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -876,25 +901,37 @@ def operator_view():
             
             col_e, col_f = st.columns(2)
             with col_e:
-                quantity = st.number_input("Quantity", min_value=1, value=1, step=1, key="op_quantity")
+                quantity = st.number_input("Quantity", min_value=0, value=0, step=1, key="op_quantity")
             with col_f:
-                unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f", key="op_unit_price")
+                unit_price = st.number_input("Unit Price (USD)", min_value=0.00, value=0.00, step=0.01, format="%.2f", key="op_unit_price")
             
-            total_sales = quantity * unit_price
-            st.metric("Total Amount", f"${total_sales:,.2f}")
+            # Only show Total Amount if both quantity and unit_price are > 0
+            if quantity > 0 and unit_price > 0:
+                total_sales = quantity * unit_price
+                st.metric("Total Amount", f"${total_sales:,.2f}")
+                rewards_earned = total_sales * 0.02
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            else:
+                st.metric("Total Amount", "$0.00")
+                st.info("Enter quantity and price to see total amount")
             
-            st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
-            
-            rewards_earned = total_sales * 0.02
-            st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
             
             # Submit button
             submitted = st.button("Record Sale", key="op_submit", use_container_width=True)
             
             if submitted:
-                if customer_name:
+                if not customer_name:
+                    st.error("Please enter customer name")
+                elif quantity <= 0:
+                    st.error("Please enter quantity greater than 0")
+                elif unit_price <= 0:
+                    st.error("Please enter unit price greater than 0")
+                else:
                     now = datetime.now()
                     sale_id = generate_sale_id()
+                    total_sales = quantity * unit_price
+                    rewards_earned = total_sales * 0.02
                     
                     data = {
                         'sale_id': sale_id,
@@ -923,16 +960,17 @@ def operator_view():
                     st.session_state.sales_history.insert(0, data)
                     
                     if success:
-                        st.success(f"Sale recorded! ID: {sale_id}")
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                         # Clear form
-                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone']:
+                        for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone', 'op_quantity', 'op_unit_price']:
                             if key in st.session_state:
-                                st.session_state[key] = ""
+                                if key in ['op_quantity', 'op_unit_price']:
+                                    st.session_state[key] = 0
+                                else:
+                                    st.session_state[key] = ""
                     else:
-                        st.warning(f"{message}")
-                else:
-                    st.error("Please enter customer name")
+                        st.warning(f"⚠️ {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
@@ -941,7 +979,7 @@ def operator_view():
             st.markdown('<div class="card-header">Today\'s Stats</div>', unsafe_allow_html=True)
             
             if check_connection():
-                st.success("ETL Connected")
+                st.success("✅ ETL Connected")
                 today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
                 if today_sales:
                     df_today = pd.DataFrame(today_sales)
@@ -951,7 +989,7 @@ def operator_view():
                 else:
                     st.info("No sales recorded yet today")
             else:
-                st.warning("ETL Offline - Tunnel may be down")
+                st.warning("⚠️ ETL Offline - Tunnel may be down")
             
             st.markdown('</div>', unsafe_allow_html=True)
     
@@ -1042,25 +1080,37 @@ def admin_view():
             
             col_e, col_f = st.columns(2)
             with col_e:
-                quantity = st.number_input("Quantity", min_value=1, value=1, step=1, key="admin_quantity")
+                quantity = st.number_input("Quantity", min_value=0, value=0, step=1, key="admin_quantity")
             with col_f:
-                unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=49.99, step=0.01, format="%.2f", key="admin_unit_price")
+                unit_price = st.number_input("Unit Price (USD)", min_value=0.00, value=0.00, step=0.01, format="%.2f", key="admin_unit_price")
             
-            total_sales = quantity * unit_price
-            st.metric("Total Amount", f"${total_sales:,.2f}")
+            # Only show Total Amount if both are entered
+            if quantity > 0 and unit_price > 0:
+                total_sales = quantity * unit_price
+                st.metric("Total Amount", f"${total_sales:,.2f}")
+                rewards_earned = total_sales * 0.02
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            else:
+                st.metric("Total Amount", "$0.00")
+                st.info("Enter quantity and price to see total amount")
             
-            st.caption(f"Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
-            
-            rewards_earned = total_sales * 0.02
-            st.info(f"Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
             
             # Submit button
             submitted = st.button("Record Sale", key="admin_submit", use_container_width=True)
             
             if submitted:
-                if customer_name:
+                if not customer_name:
+                    st.error("Please enter customer name")
+                elif quantity <= 0:
+                    st.error("Please enter quantity greater than 0")
+                elif unit_price <= 0:
+                    st.error("Please enter unit price greater than 0")
+                else:
                     now = datetime.now()
                     sale_id = generate_sale_id()
+                    total_sales = quantity * unit_price
+                    rewards_earned = total_sales * 0.02
                     
                     data = {
                         'sale_id': sale_id,
@@ -1088,16 +1138,17 @@ def admin_view():
                     send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
                     
                     if success:
-                        st.success(f"Sale recorded! ID: {sale_id}")
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
                         # Clear form
-                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone']:
+                        for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone', 'admin_quantity', 'admin_unit_price']:
                             if key in st.session_state:
-                                st.session_state[key] = ""
+                                if key in ['admin_quantity', 'admin_unit_price']:
+                                    st.session_state[key] = 0
+                                else:
+                                    st.session_state[key] = ""
                     else:
-                        st.warning(f"{message}")
-                else:
-                    st.error("Please enter customer name")
+                        st.warning(f"⚠️ {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
@@ -1106,11 +1157,11 @@ def admin_view():
             st.markdown('<div class="card-header">System Status</div>', unsafe_allow_html=True)
             
             if check_connection():
-                st.success("ETL Connected")
-                st.info("Data is being sent to SQL Server")
+                st.success("✅ ETL Connected")
+                st.info("📤 Data is being sent to SQL Server")
             else:
-                st.warning("ETL Offline - Tunnel may be down")
-                st.info("Update your WEBHOOK_URL in Settings → Secrets")
+                st.warning("⚠️ ETL Offline - Tunnel may be down")
+                st.info("💡 Update your WEBHOOK_URL in Settings → Secrets")
             
             st.markdown('</div>', unsafe_allow_html=True)
     
@@ -1155,7 +1206,7 @@ def admin_view():
             else:
                 st.info("No sales recorded today")
         else:
-            st.warning("ETL Server not connected")
+            st.warning("⚠️ ETL Server not connected")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -1220,7 +1271,7 @@ def admin_view():
             else:
                 st.info(f"No sales found between {start_date} and {end_date}")
         else:
-            st.warning("Cannot connect to ETL server")
+            st.warning("⚠️ Cannot connect to ETL server")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
