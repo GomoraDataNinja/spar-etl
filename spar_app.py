@@ -87,15 +87,12 @@ SPAR_PRODUCTS = {
 # ============================================
 st.markdown("""
 <style>
-    /* Import fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
-    /* Global styles */
     html, body, [class*="css"] {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     
-    /* Main app background */
     .stApp {
         background: #f5f7fa;
     }
@@ -106,7 +103,6 @@ st.markdown("""
         margin: 0 auto !important;
     }
     
-    /* Login centered container */
     .login-centered {
         display: flex;
         justify-content: center;
@@ -145,14 +141,12 @@ st.markdown("""
         margin-bottom: 1.25rem;
     }
     
-    /* Force ALL text to be dark and visible */
     label, .stTextInput label, .stSelectbox label, .stNumberInput label {
         color: #202124 !important;
         font-weight: 600 !important;
         font-size: 0.8rem !important;
     }
     
-    /* Input fields text */
     .stTextInput > div > div > input,
     .stNumberInput > div > div > input {
         border-radius: 8px !important;
@@ -163,7 +157,6 @@ st.markdown("""
         color: #202124 !important;
     }
     
-    /* Selectbox - make selected value BLACK */
     .stSelectbox > div > div {
         border-radius: 8px !important;
         border: 1px solid #dadce0 !important;
@@ -177,7 +170,6 @@ st.markdown("""
         background: white !important;
     }
     
-    /* Dropdown menu options */
     div[data-baseweb="select"] li {
         color: #202124 !important;
         font-weight: 500 !important;
@@ -189,7 +181,6 @@ st.markdown("""
         color: #5e9bff !important;
     }
     
-    /* Metric display text */
     div[data-testid="stMetric"] label {
         color: #5f6368 !important;
         font-size: 0.7rem !important;
@@ -201,7 +192,6 @@ st.markdown("""
         font-size: 1.5rem !important;
     }
     
-    /* Button text */
     .stButton > button {
         background: #5e9bff !important;
         color: white !important;
@@ -216,7 +206,6 @@ st.markdown("""
         background: #4a7fd4 !important;
     }
     
-    /* Cards */
     .modern-card {
         background: white;
         border-radius: 12px;
@@ -235,7 +224,6 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
     
-    /* Header - CENTERED with lighter blue */
     .modern-header {
         background: linear-gradient(135deg, #5e9bff 0%, #7aadff 100%);
         padding: 1.25rem 1.5rem;
@@ -256,7 +244,6 @@ st.markdown("""
         font-size: 0.75rem;
     }
     
-    /* Navigation bar */
     .nav-bar {
         display: flex;
         justify-content: space-between;
@@ -292,7 +279,6 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 0.25rem;
         background-color: white;
@@ -315,17 +301,14 @@ st.markdown("""
         color: white;
     }
     
-    /* Hide default elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Hide username label on login */
     div[data-testid="stTextInput"]:first-of-type label {
         display: none !important;
     }
     
-    /* Metric cards */
     .metric-modern {
         background: white;
         border-radius: 12px;
@@ -348,18 +331,15 @@ st.markdown("""
         text-transform: uppercase;
     }
     
-    /* Placeholder text */
     ::placeholder {
         color: #9aa0a6 !important;
         opacity: 1 !important;
     }
     
-    /* Info box text */
     .stAlert div, .stAlert p {
         color: #202124 !important;
     }
     
-    /* Selectbox arrow */
     .stSelectbox svg {
         fill: #5f6368 !important;
     }
@@ -801,7 +781,6 @@ def main_app_interface():
     user_role = st.session_state.current_user['role']
     is_admin = (user_role == 'admin')
     
-    # Header - CENTERED
     if is_admin:
         st.markdown("""
         <div class="modern-header">
@@ -817,7 +796,6 @@ def main_app_interface():
         </div>
         """, unsafe_allow_html=True)
     
-    # Navigation Bar
     st.markdown(f"""
     <div class="nav-bar">
         <div class="logo-area">
@@ -848,7 +826,6 @@ def operator_view():
     
     tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
     
-    # TAB 1: Record Sale
     with tab1:
         col_left, col_right = st.columns([2, 1])
         
@@ -856,7 +833,6 @@ def operator_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
-            # Use a form with a unique key that changes after submission to force reset
             form_key = f"op_sales_form_{st.session_state.get('op_form_reset_counter', 0)}"
             
             with st.form(key=form_key, clear_on_submit=True):
@@ -875,13 +851,7 @@ def operator_view():
                 st.markdown("---")
                 st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
                 
-                # Product Category - updates in real time
-                product_category = st.selectbox(
-                    "Product Category", 
-                    list(SPAR_PRODUCTS.keys())
-                )
-                
-                # Product - dynamically updates when category changes
+                product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
                 products = SPAR_PRODUCTS.get(product_category, [])
                 product = st.selectbox("Product", products)
                 
@@ -889,33 +859,25 @@ def operator_view():
                 with col_e:
                     quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
                 with col_f:
-                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.00, step=0.01, format="%.2f")
+                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.01, step=0.01, format="%.2f")
                 
                 total_sales = quantity * unit_price
                 st.metric("Total Amount", f"${total_sales:,.2f}")
-                
                 st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
                 
                 rewards_earned = total_sales * 0.02
-                if unit_price > 0:
-                    st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
-                else:
-                    st.info("Enter unit price to see rewards points")
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
                 submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
                 
                 if submitted:
                     if not customer_name:
                         st.error("Please enter customer name")
-                    elif quantity <= 0:
-                        st.error("Please enter quantity greater than 0")
-                    elif unit_price <= 0:
-                        st.error("Please enter unit price greater than 0")
                     else:
                         now = datetime.now()
                         sale_id = generate_sale_id()
-                        total_sales = quantity * unit_price
-                        rewards_earned = total_sales * 0.02
+                        total_sales_calc = quantity * unit_price
+                        rewards_earned_calc = total_sales_calc * 0.02
                         
                         data = {
                             'sale_id': sale_id,
@@ -927,8 +889,8 @@ def operator_view():
                             'product': product,
                             'quantity': quantity,
                             'unit_price': unit_price,
-                            'total_sales': total_sales,
-                            'rewards_earned': rewards_earned,
+                            'total_sales': total_sales_calc,
+                            'rewards_earned': rewards_earned_calc,
                             'sale_date': now.strftime('%Y-%m-%d'),
                             'sale_month': now.strftime('%b').upper(),
                             'sale_year': now.year,
@@ -940,13 +902,12 @@ def operator_view():
                         }
                         
                         success, message = send_to_webhook(data)
-                        send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
+                        send_admin_notification(customer_name, sale_id, product, quantity, total_sales_calc, rewards_earned_calc, customer_email)
                         st.session_state.sales_history.insert(0, data)
                         
                         if success:
                             st.success(f"✅ Sale recorded! ID: {sale_id}")
                             st.balloons()
-                            # Increment counter to reset the form
                             st.session_state['op_form_reset_counter'] = st.session_state.get('op_form_reset_counter', 0) + 1
                             st.rerun()
                         else:
@@ -973,7 +934,6 @@ def operator_view():
             
             st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 2: My Sales Today
     with tab2:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
         st.markdown(f'<div class="card-header">📊 My Sales Today - {user_name}</div>', unsafe_allow_html=True)
@@ -1019,7 +979,6 @@ def admin_view():
         "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
     ])
     
-    # TAB 1: Record Sale
     with tab1:
         col_left, col_right = st.columns([2, 1])
         
@@ -1027,7 +986,6 @@ def admin_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
-            # Use a form with a unique key that changes after submission to force reset
             form_key = f"admin_sales_form_{st.session_state.get('admin_form_reset_counter', 0)}"
             
             with st.form(key=form_key, clear_on_submit=True):
@@ -1046,13 +1004,7 @@ def admin_view():
                 st.markdown("---")
                 st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
                 
-                # Product Category - updates in real time
-                product_category = st.selectbox(
-                    "Product Category", 
-                    list(SPAR_PRODUCTS.keys())
-                )
-                
-                # Product - dynamically updates when category changes
+                product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
                 products = SPAR_PRODUCTS.get(product_category, [])
                 product = st.selectbox("Product", products)
                 
@@ -1060,33 +1012,25 @@ def admin_view():
                 with col_e:
                     quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
                 with col_f:
-                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.00, step=0.01, format="%.2f")
+                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.01, step=0.01, format="%.2f")
                 
                 total_sales = quantity * unit_price
                 st.metric("Total Amount", f"${total_sales:,.2f}")
-                
                 st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
                 
                 rewards_earned = total_sales * 0.02
-                if unit_price > 0:
-                    st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
-                else:
-                    st.info("Enter unit price to see rewards points")
+                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
                 
                 submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
                 
                 if submitted:
                     if not customer_name:
                         st.error("Please enter customer name")
-                    elif quantity <= 0:
-                        st.error("Please enter quantity greater than 0")
-                    elif unit_price <= 0:
-                        st.error("Please enter unit price greater than 0")
                     else:
                         now = datetime.now()
                         sale_id = generate_sale_id()
-                        total_sales = quantity * unit_price
-                        rewards_earned = total_sales * 0.02
+                        total_sales_calc = quantity * unit_price
+                        rewards_earned_calc = total_sales_calc * 0.02
                         
                         data = {
                             'sale_id': sale_id,
@@ -1098,8 +1042,8 @@ def admin_view():
                             'product': product,
                             'quantity': quantity,
                             'unit_price': unit_price,
-                            'total_sales': total_sales,
-                            'rewards_earned': rewards_earned,
+                            'total_sales': total_sales_calc,
+                            'rewards_earned': rewards_earned_calc,
                             'sale_date': now.strftime('%Y-%m-%d'),
                             'sale_month': now.strftime('%b').upper(),
                             'sale_year': now.year,
@@ -1111,12 +1055,11 @@ def admin_view():
                         }
                         
                         success, message = send_to_webhook(data)
-                        send_admin_notification(customer_name, sale_id, product, quantity, total_sales, rewards_earned, customer_email)
+                        send_admin_notification(customer_name, sale_id, product, quantity, total_sales_calc, rewards_earned_calc, customer_email)
                         
                         if success:
                             st.success(f"✅ Sale recorded! ID: {sale_id}")
                             st.balloons()
-                            # Increment counter to reset the form
                             st.session_state['admin_form_reset_counter'] = st.session_state.get('admin_form_reset_counter', 0) + 1
                             st.rerun()
                         else:
@@ -1137,7 +1080,6 @@ def admin_view():
             
             st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 2: Today's All Sales
     with tab2:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-header">📊 Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
@@ -1166,15 +1108,6 @@ def admin_view():
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=300)
-                
-                if 'recorded_by' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### 👥 Operator Performance Today")
-                    operator_today = df.groupby('recorded_by').agg({
-                        'sale_id': 'count',
-                        'total_sales': 'sum'
-                    }).rename(columns={'sale_id': 'Transactions', 'total_sales': 'Revenue'}).reset_index()
-                    operator_today['Revenue'] = operator_today['Revenue'].apply(lambda x: f"${x:,.2f}")
-                    st.dataframe(operator_today, use_container_width=True)
             else:
                 st.info("No sales recorded today")
         else:
@@ -1182,7 +1115,6 @@ def admin_view():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 3: Sales Reports
     with tab3:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-header">📈 Sales Reports & Analytics</div>', unsafe_allow_html=True)
@@ -1247,7 +1179,6 @@ def admin_view():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 4: Rewards Analysis
     with tab4:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-header">🏆 Rewards Intelligence Hub</div>', unsafe_allow_html=True)
@@ -1282,7 +1213,6 @@ def admin_view():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # TAB 5: Admin Panel
     with tab5:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-header">⚙️ Admin Control Panel</div>', unsafe_allow_html=True)
