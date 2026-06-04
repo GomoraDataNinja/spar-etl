@@ -83,7 +83,7 @@ SPAR_PRODUCTS = {
 }
 
 # ============================================
-# CSS STYLING - COMPLETE FIX FOR VISIBLE TEXT
+# CSS STYLING - LIGHTER BLUE & CLEAR BLACK TEXT
 # ============================================
 st.markdown("""
 <style>
@@ -129,7 +129,7 @@ st.markdown("""
     .app-name-tight {
         font-size: 1.75rem;
         font-weight: 600;
-        color: #1a73e8;
+        color: #5e9bff;
         margin-bottom: 0.25rem;
     }
     
@@ -146,28 +146,29 @@ st.markdown("""
     }
     
     /* ============================================
-       CRITICAL FIX - MAKE ALL TEXT VISIBLE
+       CRITICAL FIX - BLACK TEXT FOR SELECTED VALUES
     ============================================ */
     
     /* Force ALL text to be dark and visible */
     label, .stTextInput label, .stSelectbox label, .stNumberInput label, 
-    .stTextArea label, div[data-testid="stWidgetLabel"],
-    .stMarkdown, .stMarkdown p, .stMarkdown div, span, div, p {
+    .stTextArea label, div[data-testid="stWidgetLabel"] {
         color: #202124 !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
+        font-size: 0.8rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
     }
     
     /* Make section headers bold */
-    h1, h2, h3, h4, .card-header, .st-emotion-cache-1y4p8pa {
+    h1, h2, h3, h4, .card-header {
         color: #202124 !important;
         font-weight: 600 !important;
     }
     
     /* Input fields text - BLACK */
     .stTextInput > div > div > input,
-    .stSelectbox > div > div,
-    .stNumberInput > div > div > input,
-    .stTextArea > div > textarea {
+    .stNumberInput > div > div > input {
         border-radius: 8px !important;
         border: 1px solid #dadce0 !important;
         padding: 0.6rem 0.75rem !important;
@@ -177,10 +178,18 @@ st.markdown("""
         font-weight: 500 !important;
     }
     
-    /* Selectbox selected value text */
+    /* CRITICAL FIX: Selectbox container - make selected value BLACK */
+    .stSelectbox > div > div {
+        border-radius: 8px !important;
+        border: 1px solid #dadce0 !important;
+        background: white !important;
+        min-height: 38px !important;
+    }
+    
+    /* The selected value text - make it BLACK and BOLD */
     .stSelectbox > div > div > div {
         color: #202124 !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
         font-size: 0.85rem !important;
         background: white !important;
     }
@@ -193,8 +202,14 @@ st.markdown("""
     }
     
     div[data-baseweb="select"] li:hover {
-        background: #f1f3f4 !important;
-        color: #1a73e8 !important;
+        background: #e8f0fe !important;
+        color: #5e9bff !important;
+    }
+    
+    div[data-baseweb="select"] li[aria-selected="true"] {
+        background: #e8f0fe !important;
+        color: #5e9bff !important;
+        font-weight: 600 !important;
     }
     
     /* Metric display text */
@@ -204,14 +219,14 @@ st.markdown("""
     }
     
     div[data-testid="stMetric"] div {
-        color: #1a73e8 !important;
+        color: #5e9bff !important;
         font-weight: 700 !important;
         font-size: 1.5rem !important;
     }
     
-    /* Button text */
+    /* Button text - LIGHT BLUE */
     .stButton > button {
-        background: #1a73e8;
+        background: #5e9bff !important;
         color: white !important;
         border: none;
         border-radius: 24px;
@@ -221,7 +236,7 @@ st.markdown("""
     }
     
     .stButton > button:hover {
-        background: #1557b0;
+        background: #4a7fd4 !important;
     }
     
     /* Cards */
@@ -243,16 +258,17 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
     
-    /* Header */
+    /* Header - CENTERED with lighter blue */
     .modern-header {
-        background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+        background: linear-gradient(135deg, #5e9bff 0%, #7aadff 100%);
         padding: 1.25rem 1.5rem;
         border-radius: 16px;
         margin-bottom: 1rem;
+        text-align: center;
     }
     
     .modern-header h1 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 600;
         color: white !important;
         margin-bottom: 0.25rem;
@@ -260,7 +276,7 @@ st.markdown("""
     
     .modern-header p {
         color: rgba(255,255,255,0.9) !important;
-        font-size: 0.7rem;
+        font-size: 0.75rem;
     }
     
     /* Navigation bar */
@@ -278,11 +294,11 @@ st.markdown("""
     .logo-text {
         font-size: 0.9rem;
         font-weight: 600;
-        color: #1a73e8;
+        color: #5e9bff;
     }
     
     .role-badge {
-        background: #1a73e8;
+        background: #5e9bff;
         padding: 0.2rem 0.7rem;
         border-radius: 20px;
         color: white;
@@ -318,7 +334,7 @@ st.markdown("""
     }
     
     .stTabs [aria-selected="true"] {
-        background: #1a73e8;
+        background: #5e9bff;
         color: white;
     }
     
@@ -344,7 +360,7 @@ st.markdown("""
     .metric-value-modern {
         font-size: 1.25rem;
         font-weight: 600;
-        color: #1a73e8;
+        color: #5e9bff;
         margin-bottom: 0.25rem;
     }
     
@@ -366,14 +382,19 @@ st.markdown("""
         color: #202124 !important;
     }
     
-    /* Override any Streamlit default colors */
-    .st-emotion-cache-1y4p8pa, .st-emotion-cache-16idsys p, .st-emotion-cache-6qob1r {
-        color: #202124 !important;
+    /* Success/Info/Warning colors */
+    .stAlert {
+        border-radius: 8px;
     }
     
-    /* Make sure selectbox dropdown arrow is visible */
+    /* Selectbox arrow */
     .stSelectbox svg {
         fill: #5f6368 !important;
+    }
+    
+    /* Any remaining text */
+    .stMarkdown, .stMarkdown p, .stMarkdown div {
+        color: #202124 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -737,7 +758,7 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         html_content = f"""
         <html>
         <body style="font-family: 'Inter', Arial, sans-serif;">
-            <h2 style="color: #1a73e8;">New SPAR Sale Recorded!</h2>
+            <h2 style="color: #5e9bff;">New SPAR Sale Recorded!</h2>
             <p><strong>Sale ID:</strong> {sale_id}</p>
             <p><strong>Customer:</strong> {customer_name}</p>
             <p><strong>Email:</strong> {customer_email if customer_email else 'Not provided'}</p>
@@ -809,18 +830,18 @@ def main_app_interface():
     user_role = st.session_state.current_user['role']
     is_admin = (user_role == 'admin')
     
-    # Header
+    # Header - CENTERED
     if is_admin:
         st.markdown("""
         <div class="modern-header">
-            <h1>Admin Dashboard</h1>
+            <h1>🛒 Admin Dashboard</h1>
             <p>Complete control over sales, operators, and rewards analytics</p>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
         <div class="modern-header">
-            <h1>Operator Dashboard</h1>
+            <h1>🛒 Operator Dashboard</h1>
             <p>Record sales, track rewards, and view your daily performance</p>
         </div>
         """, unsafe_allow_html=True)
@@ -849,12 +870,12 @@ def main_app_interface():
         operator_view()
 
 # ============================================
-# OPERATOR VIEW - WORKING PRODUCT DROPDOWN
+# OPERATOR VIEW
 # ============================================
 def operator_view():
     user_name = st.session_state.current_user['name']
     
-    tab1, tab2 = st.tabs(["Record Sale", "My Sales Today"])
+    tab1, tab2 = st.tabs(["📝 Record Sale", "📊 My Sales Today"])
     
     # TAB 1: Record Sale
     with tab1:
@@ -862,7 +883,7 @@ def operator_view():
         
         with col_left:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">New Purchase</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
             # Customer Details
             col_a, col_b = st.columns(2)
@@ -878,7 +899,7 @@ def operator_view():
                 phone = st.text_input("Phone Number", placeholder="Optional", key="op_phone")
             
             st.markdown("---")
-            st.markdown('<p style="color: #202124; font-weight: 600;">Purchase Details</p>', unsafe_allow_html=True)
+            st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
             
             # Product Category - updates in real time
             product_category = st.selectbox(
@@ -914,7 +935,7 @@ def operator_view():
             st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
             
             # Submit button
-            submitted = st.button("Record Sale", key="op_submit", use_container_width=True)
+            submitted = st.button("💾 Record Sale", key="op_submit", use_container_width=True)
             
             if submitted:
                 if not customer_name:
@@ -972,7 +993,7 @@ def operator_view():
         
         with col_right:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">Today\'s Stats</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📊 Today\'s Stats</div>', unsafe_allow_html=True)
             
             if check_connection():
                 st.success("✅ ETL Connected")
@@ -992,7 +1013,7 @@ def operator_view():
     # TAB 2: My Sales Today
     with tab2:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown(f'<div class="card-header">My Sales Today - {user_name}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="card-header">📊 My Sales Today - {user_name}</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(operator_name=user_name, date_filter='today')
@@ -1026,13 +1047,13 @@ def operator_view():
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW - WORKING PRODUCT DROPDOWN
+# ADMIN VIEW
 # ============================================
 def admin_view():
     user_name = st.session_state.current_user['name']
     
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Record Sale", "Today's Sales", "Sales Reports", "Rewards Analysis", "Admin Panel"
+        "📝 Record Sale", "📊 Today's Sales", "📈 Sales Reports", "🏆 Rewards Analysis", "⚙️ Admin Panel"
     ])
     
     # TAB 1: Record Sale
@@ -1041,7 +1062,7 @@ def admin_view():
         
         with col_left:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">New Purchase</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
             # Customer Details
             col_a, col_b = st.columns(2)
@@ -1057,7 +1078,7 @@ def admin_view():
                 phone = st.text_input("Phone Number", placeholder="Optional", key="admin_phone")
             
             st.markdown("---")
-            st.markdown('<p style="color: #202124; font-weight: 600;">Purchase Details</p>', unsafe_allow_html=True)
+            st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
             
             # Product Category - updates in real time
             product_category = st.selectbox(
@@ -1093,7 +1114,7 @@ def admin_view():
             st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
             
             # Submit button
-            submitted = st.button("Record Sale", key="admin_submit", use_container_width=True)
+            submitted = st.button("💾 Record Sale", key="admin_submit", use_container_width=True)
             
             if submitted:
                 if not customer_name:
@@ -1150,7 +1171,7 @@ def admin_view():
         
         with col_right:
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-            st.markdown('<div class="card-header">System Status</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-header">📊 System Status</div>', unsafe_allow_html=True)
             
             if check_connection():
                 st.success("✅ ETL Connected")
@@ -1164,7 +1185,7 @@ def admin_view():
     # TAB 2: Today's All Sales
     with tab2:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">📊 Today\'s All Sales (All Operators)</div>', unsafe_allow_html=True)
         
         if check_connection():
             today_sales = get_sales_from_db(date_filter='today')
@@ -1185,14 +1206,14 @@ def admin_view():
                     operators = df['recorded_by'].nunique() if 'recorded_by' in df.columns else 0
                     st.metric("Active Operators", operators)
                 
-                st.markdown("#### Today's Sales Details")
+                st.markdown("#### 📋 Today's Sales Details")
                 display_cols = ['sale_id', 'recorded_by', 'customer_name', 'product', 'quantity', 'total_sales', 'sale_time']
                 available_cols = [c for c in display_cols if c in df.columns]
                 if available_cols:
                     st.dataframe(df[available_cols], use_container_width=True, height=300)
                 
                 if 'recorded_by' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### Operator Performance Today")
+                    st.markdown("#### 👥 Operator Performance Today")
                     operator_today = df.groupby('recorded_by').agg({
                         'sale_id': 'count',
                         'total_sales': 'sum'
@@ -1209,7 +1230,7 @@ def admin_view():
     # TAB 3: Sales Reports
     with tab3:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">Sales Reports & Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">📈 Sales Reports & Analytics</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -1237,17 +1258,17 @@ def admin_view():
                     st.metric("Avg Transaction", f"${avg_sale:.2f}")
                 
                 if 'sale_date' in df.columns and 'total_sales' in df.columns:
-                    st.markdown("#### Daily Sales Trend")
+                    st.markdown("#### 📅 Daily Sales Trend")
                     df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
                     daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
                     fig = px.line(daily_sales, x='sale_date', y='total_sales', 
                                   title="Sales Over Time", markers=True,
-                                  color_discrete_sequence=['#1a73e8'])
+                                  color_discrete_sequence=['#5e9bff'])
                     fig.update_layout(height=350, plot_bgcolor='white', paper_bgcolor='white')
                     st.plotly_chart(fig, use_container_width=True)
                 
                 if 'recorded_by' in df.columns:
-                    st.markdown("#### Operator Performance")
+                    st.markdown("#### 👥 Operator Performance")
                     operator_perf = df.groupby('recorded_by').agg({
                         'sale_id': 'count',
                         'total_sales': 'sum'
@@ -1258,7 +1279,7 @@ def admin_view():
                 st.markdown("---")
                 csv = df.to_csv(index=False)
                 st.download_button(
-                    label="Download Full Report (CSV)",
+                    label="📥 Download Full Report (CSV)",
                     data=csv,
                     file_name=f"spar_sales_report_{start_date}_to_{end_date}.csv",
                     mime="text/csv",
@@ -1274,7 +1295,7 @@ def admin_view():
     # TAB 4: Rewards Analysis
     with tab4:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">Rewards Intelligence Hub</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">🏆 Rewards Intelligence Hub</div>', unsafe_allow_html=True)
         
         uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="rewards_upload")
         
@@ -1295,7 +1316,7 @@ def admin_view():
                 seg_counts = rfm['segment'].value_counts().reset_index()
                 seg_counts.columns = ['Segment', 'Count']
                 fig = px.pie(seg_counts, values='Count', names='Segment', 
-                             color_discrete_sequence=['#1a73e8', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'],
+                             color_discrete_sequence=['#5e9bff', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'],
                              hole=0.3)
                 fig.update_layout(height=350)
                 st.plotly_chart(fig, use_container_width=True)
@@ -1309,9 +1330,9 @@ def admin_view():
     # TAB 5: Admin Panel
     with tab5:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-header">Admin Control Panel</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-header">⚙️ Admin Control Panel</div>', unsafe_allow_html=True)
         
-        st.markdown("#### Create New Operator Account")
+        st.markdown("#### ➕ Create New Operator Account")
         
         with st.form("create_operator_form"):
             col1, col2 = st.columns(2)
@@ -1322,7 +1343,7 @@ def admin_view():
                 new_email = st.text_input("Email *", placeholder="operator@store.com")
                 new_password = st.text_input("Password *", type="password", placeholder="Min 6 characters")
             
-            submitted = st.form_submit_button("Create Operator", use_container_width=True)
+            submitted = st.form_submit_button("👤 Create Operator", use_container_width=True)
             
             if submitted:
                 if not all([new_name, new_username, new_email, new_password]):
@@ -1337,7 +1358,7 @@ def admin_view():
                         st.error(f"{message}")
         
         st.markdown("---")
-        st.markdown("#### Existing Users")
+        st.markdown("#### 👥 Existing Users")
         
         users = get_all_users()
         if users:
@@ -1353,7 +1374,7 @@ def admin_view():
             st.dataframe(pd.DataFrame(users_list), use_container_width=True)
         
         st.markdown("---")
-        st.markdown("#### System Status")
+        st.markdown("#### 📊 System Status")
         
         if check_connection():
             st.success("ETL Server Connected")
@@ -1361,7 +1382,7 @@ def admin_view():
             st.error("ETL Server Offline")
         
         st.markdown("---")
-        st.markdown("#### Current Configuration")
+        st.markdown("#### 🔧 Current Configuration")
         st.code(f"WEBHOOK_URL = {WEBHOOK_URL}", language="python")
         
         st.markdown('</div>', unsafe_allow_html=True)
