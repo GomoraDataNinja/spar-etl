@@ -1002,7 +1002,7 @@ def admin_view():
         col_left, col_right = st.columns([2, 1])
         
         with col_left:
-            st.markdown('<div class="modern-card">, unsafe_allow_html=True)
+            st.markdown('<div class="modern-card">, unsafe_allow_html=True')
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
             # Customer Details
