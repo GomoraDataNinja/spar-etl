@@ -890,8 +890,7 @@ def operator_view():
                 else:
                     now = datetime.now()
                     sale_id = generate_sale_id()
-                    total_sales_calc = quantity * unit_price
-                    rewards_earned_calc = total_sales_calc * 0.02
+                    total_sales_calc = quantity * unit_price                    rewards_earned_calc = total_sales_calc * 0.02
                     
                     data = {
                         'sale_id': sale_id,
@@ -1002,7 +1001,7 @@ def admin_view():
         col_left, col_right = st.columns([2, 1])
         
         with col_left:
-            st.markdown('<div class="modern-card">, unsafe_allow_html=True')
+            st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
             # Customer Details
