@@ -890,7 +890,8 @@ def operator_view():
                 else:
                     now = datetime.now()
                     sale_id = generate_sale_id()
-                    total_sales_calc = quantity * unit_price                    rewards_earned_calc = total_sales_calc * 0.02
+                    total_sales_calc = quantity * unit_price
+                    rewards_earned_calc = total_sales_calc * 0.02
                     
                     data = {
                         'sale_id': sale_id,
@@ -921,10 +922,11 @@ def operator_view():
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
-                        # Clear all input fields using session state
+                        # Clear all input fields - safely check if keys exist
                         for key in ['op_customer_name', 'op_customer_email', 'op_customer_id', 'op_phone']:
                             if key in st.session_state:
                                 st.session_state[key] = ""
+                        # Reset number inputs
                         st.session_state['op_quantity'] = 1
                         st.session_state['op_unit_price'] = 0.01
                         st.rerun()
@@ -1087,10 +1089,11 @@ def admin_view():
                     if success:
                         st.success(f"✅ Sale recorded! ID: {sale_id}")
                         st.balloons()
-                        # Clear all input fields
+                        # Clear all input fields - safely check if keys exist
                         for key in ['admin_customer_name', 'admin_customer_email', 'admin_customer_id', 'admin_phone']:
                             if key in st.session_state:
                                 st.session_state[key] = ""
+                        # Reset number inputs
                         st.session_state['admin_quantity'] = 1
                         st.session_state['admin_unit_price'] = 0.01
                         st.rerun()
