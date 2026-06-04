@@ -823,7 +823,7 @@ def main_app_interface():
         operator_view()
 
 # ============================================
-# OPERATOR VIEW - WITH FORM CLEARING USING UNIQUE KEYS
+# OPERATOR VIEW - WITH REAL-TIME PRODUCT UPDATES
 # ============================================
 def operator_view():
     user_name = st.session_state.current_user['name']
@@ -841,87 +841,96 @@ def operator_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
-            # Create a unique form key that changes after each successful submission
-            form_key = f"op_sale_form_{st.session_state.op_form_counter}"
+            # Customer Details (outside form so they can be cleared by rerun)
+            col_a, col_b = st.columns(2)
+            with col_a:
+                customer_name = st.text_input("Customer Name *", placeholder="Enter full name", key=f"op_name_{st.session_state.op_form_counter}")
+            with col_b:
+                customer_email = st.text_input("Email Address", placeholder="customer@example.com", key=f"op_email_{st.session_state.op_form_counter}")
             
-            with st.form(key=form_key, clear_on_submit=True):
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    customer_name = st.text_input("Customer Name *", placeholder="Enter full name")
-                with col_b:
-                    customer_email = st.text_input("Email Address", placeholder="customer@example.com")
-                
-                col_c, col_d = st.columns(2)
-                with col_c:
-                    customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional")
-                with col_d:
-                    phone = st.text_input("Phone Number", placeholder="Optional")
-                
-                st.markdown("---")
-                st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
-                
-                product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
-                products = SPAR_PRODUCTS.get(product_category, [])
-                product = st.selectbox("Product", products)
-                
-                col_e, col_f = st.columns(2)
-                with col_e:
-                    quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
-                with col_f:
-                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.01, step=0.01, format="%.2f")
-                
-                total_sales = quantity * unit_price
-                st.metric("Total Amount", f"${total_sales:,.2f}")
-                st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
-                
-                rewards_earned = total_sales * 0.02
-                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
-                
-                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
-                
-                if submitted:
-                    if not customer_name:
-                        st.error("Please enter customer name")
+            col_c, col_d = st.columns(2)
+            with col_c:
+                customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional", key=f"op_cid_{st.session_state.op_form_counter}")
+            with col_d:
+                phone = st.text_input("Phone Number", placeholder="Optional", key=f"op_phone_{st.session_state.op_form_counter}")
+            
+            st.markdown("---")
+            st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
+            
+            # Product Category - REAL-TIME UPDATE (outside form)
+            product_category = st.selectbox(
+                "Product Category", 
+                list(SPAR_PRODUCTS.keys()),
+                key=f"op_category_{st.session_state.op_form_counter}"
+            )
+            
+            # Product - dynamically updates when category changes
+            products = SPAR_PRODUCTS.get(product_category, [])
+            product = st.selectbox(
+                "Product", 
+                products,
+                key=f"op_product_{st.session_state.op_form_counter}"
+            )
+            
+            col_e, col_f = st.columns(2)
+            with col_e:
+                quantity = st.number_input("Quantity", min_value=1, value=1, step=1, key=f"op_qty_{st.session_state.op_form_counter}")
+            with col_f:
+                unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.01, step=0.01, format="%.2f", key=f"op_price_{st.session_state.op_form_counter}")
+            
+            total_sales = quantity * unit_price
+            st.metric("Total Amount", f"${total_sales:,.2f}")
+            st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
+            
+            rewards_earned = total_sales * 0.02
+            st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            
+            # Submit button
+            submitted = st.button("💾 Record Sale", key=f"op_submit_{st.session_state.op_form_counter}", use_container_width=True)
+            
+            if submitted:
+                if not customer_name:
+                    st.error("Please enter customer name")
+                else:
+                    now = datetime.now()
+                    sale_id = generate_sale_id()
+                    total_sales_calc = quantity * unit_price
+                    rewards_earned_calc = total_sales_calc * 0.02
+                    
+                    data = {
+                        'sale_id': sale_id,
+                        'customer_name': customer_name,
+                        'customer_email': customer_email,
+                        'customer_id': customer_id if customer_id else None,
+                        'phone': phone if phone else None,
+                        'product_category': product_category,
+                        'product': product,
+                        'quantity': quantity,
+                        'unit_price': unit_price,
+                        'total_sales': total_sales_calc,
+                        'rewards_earned': rewards_earned_calc,
+                        'sale_date': now.strftime('%Y-%m-%d'),
+                        'sale_month': now.strftime('%b').upper(),
+                        'sale_year': now.year,
+                        'sale_time': now.strftime('%H:%M:%S'),
+                        'timestamp_utc': now.isoformat(),
+                        'recorded_by': user_name,
+                        'etl_processed': 0,
+                        'etl_processed_at': None
+                    }
+                    
+                    success, message = send_to_webhook(data)
+                    send_admin_notification(customer_name, sale_id, product, quantity, total_sales_calc, rewards_earned_calc, customer_email)
+                    st.session_state.sales_history.insert(0, data)
+                    
+                    if success:
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
+                        st.balloons()
+                        # Increment the counter to create new widgets with new keys
+                        st.session_state.op_form_counter += 1
+                        st.rerun()
                     else:
-                        now = datetime.now()
-                        sale_id = generate_sale_id()
-                        total_sales_calc = quantity * unit_price
-                        rewards_earned_calc = total_sales_calc * 0.02
-                        
-                        data = {
-                            'sale_id': sale_id,
-                            'customer_name': customer_name,
-                            'customer_email': customer_email,
-                            'customer_id': customer_id if customer_id else None,
-                            'phone': phone if phone else None,
-                            'product_category': product_category,
-                            'product': product,
-                            'quantity': quantity,
-                            'unit_price': unit_price,
-                            'total_sales': total_sales_calc,
-                            'rewards_earned': rewards_earned_calc,
-                            'sale_date': now.strftime('%Y-%m-%d'),
-                            'sale_month': now.strftime('%b').upper(),
-                            'sale_year': now.year,
-                            'sale_time': now.strftime('%H:%M:%S'),
-                            'timestamp_utc': now.isoformat(),
-                            'recorded_by': user_name,
-                            'etl_processed': 0,
-                            'etl_processed_at': None
-                        }
-                        
-                        success, message = send_to_webhook(data)
-                        send_admin_notification(customer_name, sale_id, product, quantity, total_sales_calc, rewards_earned_calc, customer_email)
-                        st.session_state.sales_history.insert(0, data)
-                        
-                        if success:
-                            st.success(f"✅ Sale recorded! ID: {sale_id}")
-                            st.balloons()
-                            # Increment the counter to create a new form with a new key
-                            st.session_state.op_form_counter += 1
-                            st.rerun()
-                        else:
-                            st.warning(f"⚠️ {message}")
+                        st.warning(f"⚠️ {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
@@ -980,7 +989,7 @@ def operator_view():
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# ADMIN VIEW - WITH FORM CLEARING USING UNIQUE KEYS
+# ADMIN VIEW - WITH REAL-TIME PRODUCT UPDATES
 # ============================================
 def admin_view():
     user_name = st.session_state.current_user['name']
@@ -1000,86 +1009,94 @@ def admin_view():
             st.markdown('<div class="modern-card">', unsafe_allow_html=True)
             st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
             
-            # Create a unique form key that changes after each successful submission
-            form_key = f"admin_sale_form_{st.session_state.admin_form_counter}"
+            # Customer Details
+            col_a, col_b = st.columns(2)
+            with col_a:
+                customer_name = st.text_input("Customer Name *", placeholder="Enter full name", key=f"admin_name_{st.session_state.admin_form_counter}")
+            with col_b:
+                customer_email = st.text_input("Email Address", placeholder="customer@example.com", key=f"admin_email_{st.session_state.admin_form_counter}")
             
-            with st.form(key=form_key, clear_on_submit=True):
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    customer_name = st.text_input("Customer Name *", placeholder="Enter full name")
-                with col_b:
-                    customer_email = st.text_input("Email Address", placeholder="customer@example.com")
-                
-                col_c, col_d = st.columns(2)
-                with col_c:
-                    customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional")
-                with col_d:
-                    phone = st.text_input("Phone Number", placeholder="Optional")
-                
-                st.markdown("---")
-                st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
-                
-                product_category = st.selectbox("Product Category", list(SPAR_PRODUCTS.keys()))
-                products = SPAR_PRODUCTS.get(product_category, [])
-                product = st.selectbox("Product", products)
-                
-                col_e, col_f = st.columns(2)
-                with col_e:
-                    quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
-                with col_f:
-                    unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.01, step=0.01, format="%.2f")
-                
-                total_sales = quantity * unit_price
-                st.metric("Total Amount", f"${total_sales:,.2f}")
-                st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
-                
-                rewards_earned = total_sales * 0.02
-                st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
-                
-                submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
-                
-                if submitted:
-                    if not customer_name:
-                        st.error("Please enter customer name")
+            col_c, col_d = st.columns(2)
+            with col_c:
+                customer_id = st.text_input("SPAR Rewards ID", placeholder="Optional", key=f"admin_cid_{st.session_state.admin_form_counter}")
+            with col_d:
+                phone = st.text_input("Phone Number", placeholder="Optional", key=f"admin_phone_{st.session_state.admin_form_counter}")
+            
+            st.markdown("---")
+            st.markdown('<p style="color: #202124; font-weight: 600;">🛍️ Purchase Details</p>', unsafe_allow_html=True)
+            
+            # Product Category - REAL-TIME UPDATE
+            product_category = st.selectbox(
+                "Product Category", 
+                list(SPAR_PRODUCTS.keys()),
+                key=f"admin_category_{st.session_state.admin_form_counter}"
+            )
+            
+            # Product - dynamically updates
+            products = SPAR_PRODUCTS.get(product_category, [])
+            product = st.selectbox(
+                "Product", 
+                products,
+                key=f"admin_product_{st.session_state.admin_form_counter}"
+            )
+            
+            col_e, col_f = st.columns(2)
+            with col_e:
+                quantity = st.number_input("Quantity", min_value=1, value=1, step=1, key=f"admin_qty_{st.session_state.admin_form_counter}")
+            with col_f:
+                unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=0.01, step=0.01, format="%.2f", key=f"admin_price_{st.session_state.admin_form_counter}")
+            
+            total_sales = quantity * unit_price
+            st.metric("Total Amount", f"${total_sales:,.2f}")
+            st.caption(f"📅 Purchased Date: {datetime.now().strftime('%m/%d/%Y')}")
+            
+            rewards_earned = total_sales * 0.02
+            st.info(f"⭐ Rewards Points Earned: {rewards_earned:.0f} (2% of purchase)")
+            
+            submitted = st.button("💾 Record Sale", key=f"admin_submit_{st.session_state.admin_form_counter}", use_container_width=True)
+            
+            if submitted:
+                if not customer_name:
+                    st.error("Please enter customer name")
+                else:
+                    now = datetime.now()
+                    sale_id = generate_sale_id()
+                    total_sales_calc = quantity * unit_price
+                    rewards_earned_calc = total_sales_calc * 0.02
+                    
+                    data = {
+                        'sale_id': sale_id,
+                        'customer_name': customer_name,
+                        'customer_email': customer_email,
+                        'customer_id': customer_id if customer_id else None,
+                        'phone': phone if phone else None,
+                        'product_category': product_category,
+                        'product': product,
+                        'quantity': quantity,
+                        'unit_price': unit_price,
+                        'total_sales': total_sales_calc,
+                        'rewards_earned': rewards_earned_calc,
+                        'sale_date': now.strftime('%Y-%m-%d'),
+                        'sale_month': now.strftime('%b').upper(),
+                        'sale_year': now.year,
+                        'sale_time': now.strftime('%H:%M:%S'),
+                        'timestamp_utc': now.isoformat(),
+                        'recorded_by': user_name,
+                        'etl_processed': 0,
+                        'etl_processed_at': None
+                    }
+                    
+                    success, message = send_to_webhook(data)
+                    send_admin_notification(customer_name, sale_id, product, quantity, total_sales_calc, rewards_earned_calc, customer_email)
+                    
+                    if success:
+                        st.success(f"✅ Sale recorded! ID: {sale_id}")
+                        st.balloons()
+                        # Increment the counter to create new widgets with new keys
+                        st.session_state.admin_form_counter += 1
+                        st.rerun()
                     else:
-                        now = datetime.now()
-                        sale_id = generate_sale_id()
-                        total_sales_calc = quantity * unit_price
-                        rewards_earned_calc = total_sales_calc * 0.02
-                        
-                        data = {
-                            'sale_id': sale_id,
-                            'customer_name': customer_name,
-                            'customer_email': customer_email,
-                            'customer_id': customer_id if customer_id else None,
-                            'phone': phone if phone else None,
-                            'product_category': product_category,
-                            'product': product,
-                            'quantity': quantity,
-                            'unit_price': unit_price,
-                            'total_sales': total_sales_calc,
-                            'rewards_earned': rewards_earned_calc,
-                            'sale_date': now.strftime('%Y-%m-%d'),
-                            'sale_month': now.strftime('%b').upper(),
-                            'sale_year': now.year,
-                            'sale_time': now.strftime('%H:%M:%S'),
-                            'timestamp_utc': now.isoformat(),
-                            'recorded_by': user_name,
-                            'etl_processed': 0,
-                            'etl_processed_at': None
-                        }
-                        
-                        success, message = send_to_webhook(data)
-                        send_admin_notification(customer_name, sale_id, product, quantity, total_sales_calc, rewards_earned_calc, customer_email)
-                        
-                        if success:
-                            st.success(f"✅ Sale recorded! ID: {sale_id}")
-                            st.balloons()
-                            # Increment the counter to create a new form with a new key
-                            st.session_state.admin_form_counter += 1
-                            st.rerun()
-                        else:
-                            st.warning(f"⚠️ {message}")
+                        st.warning(f"⚠️ {message}")
             
             st.markdown('</div>', unsafe_allow_html=True)
         
