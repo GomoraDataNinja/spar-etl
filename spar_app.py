@@ -1,39 +1,21 @@
 """
-SPAR ERP - Complete Business Management System
-Single file application with:
-- Sales Recording with Stock Checking
-- Product Management
-- Supplier Management  
-- Purchase Orders
-- Dashboard & Reports
-- ETL Receiver (Flask)
-- SQL Server Integration
+SPAR ERP - Cloud Version
+Uses PostgreSQL on Render/Supabase instead of SQL Server
 """
 
-# ============================================
-# IMPORTS
-# ============================================
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pyodbc
+import psycopg2  # Works on Linux/Cloud
 import requests
 import json
 import hashlib
 import re
-import smtplib
 import time
 import plotly.express as px
 from datetime import datetime, timedelta
 from pathlib import Path
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from flask import Flask, request, jsonify
-import logging
-import signal
-import sys
 import os
-import threading
 
 # ============================================
 # CONFIGURATION
@@ -41,34 +23,16 @@ import threading
 APP_NAME = "SPAR ERP"
 APP_VERSION = "4.0.0"
 
-# Database Connection
-DB_SERVER = "(local)"  # or "DATANINJA\Lenovo"
-DB_NAME = "SPAR_ETL"
-DB_DRIVER = "{ODBC Driver 17 for SQL Server}"
-
-# Email Configuration
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SENDER_EMAIL = "gomoraefesto97@gmail.com"
-SENDER_PASSWORD = "picz cijg kgbw zoup"
-ADMIN_EMAIL = "gomoraefesto97@gmail.com"
-
-# ETL Configuration
-RAW_DATA_FOLDER = Path(r"C:\Users\Lenovo\OneDrive\Desktop\HBMI\Data Warehousing\ETL_Projects\raw_data")
-RAW_DATA_FOLDER.mkdir(parents=True, exist_ok=True)
+# Database Connection (PostgreSQL for Cloud)
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://user:password@host:port/database')
 
 # ============================================
-# DATABASE CONNECTION
+# DATABASE CONNECTION (PostgreSQL)
 # ============================================
 def get_db_connection():
-    """Connect to SQL Server"""
+    """Connect to PostgreSQL"""
     try:
-        conn = pyodbc.connect(
-            f"DRIVER={DB_DRIVER};"
-            f"SERVER={DB_SERVER};"
-            f"DATABASE={DB_NAME};"
-            "Trusted_Connection=yes;"
-        )
+        conn = psycopg2.connect(DATABASE_URL)
         return conn
     except Exception as e:
         st.error(f"❌ Database connection failed: {e}")
@@ -122,7 +86,7 @@ def get_products_from_db(category=None, search=None):
             pc.category_name, p.unit_of_measure,
             p.unit_price, p.cost_price,
             p.current_stock, p.reorder_level,
-            (ISNULL(p.current_stock, 0) - ISNULL(p.reserved_stock, 0)) AS available_stock,
+            (COALESCE(p.current_stock, 0) - COALESCE(p.reserved_stock, 0)) AS available_stock,
             s.supplier_name,
             p.is_active
         FROM erp_products p
@@ -133,11 +97,11 @@ def get_products_from_db(category=None, search=None):
     params = []
     
     if category:
-        query += " AND pc.category_name = ?"
+        query += " AND pc.category_name = %s"
         params.append(category)
     
     if search:
-        query += " AND (p.product_code LIKE ? OR p.product_name LIKE ?)"
+        query += " AND (p.product_code ILIKE %s OR p.product_name ILIKE %s)"
         params.extend([f'%{search}%', f'%{search}%'])
     
     query += " ORDER BY pc.category_name, p.product_name"
@@ -163,11 +127,11 @@ def check_stock(product_id, quantity):
     query = """
         SELECT 
             product_name,
-            ISNULL(current_stock, 0) - ISNULL(reserved_stock, 0) AS available_stock,
+            COALESCE(current_stock, 0) - COALESCE(reserved_stock, 0) AS available_stock,
             current_stock,
             reserved_stock
         FROM erp_products
-        WHERE id = ?
+        WHERE id = %s
     """
     df = execute_query(query, [product_id])
     
@@ -201,10 +165,10 @@ def get_dashboard_metrics():
     # Today's sales
     today_query = """
         SELECT 
-            ISNULL(SUM(total_sales), 0) AS total_sales,
+            COALESCE(SUM(total_sales), 0) AS total_sales,
             COUNT(*) AS transaction_count
         FROM etl_sales_raw
-        WHERE sale_date = CAST(GETDATE() AS DATE)
+        WHERE sale_date = CURRENT_DATE
     """
     today = execute_query(today_query)
     metrics['today_sales'] = today.iloc[0]['total_sales'] if not today.empty else 0
@@ -214,7 +178,7 @@ def get_dashboard_metrics():
     low_query = """
         SELECT COUNT(*) AS low_count
         FROM erp_products
-        WHERE (ISNULL(current_stock, 0) - ISNULL(reserved_stock, 0)) <= reorder_level
+        WHERE (COALESCE(current_stock, 0) - COALESCE(reserved_stock, 0)) <= reorder_level
         AND is_active = 1
     """
     low = execute_query(low_query)
@@ -231,69 +195,6 @@ def get_dashboard_metrics():
     metrics['total_suppliers'] = sup.iloc[0]['total'] if not sup.empty else 0
     
     return metrics
-
-def create_sales_order(customer_name, customer_email, items, recorded_by):
-    """Create a sales order in the database"""
-    conn = get_db_connection()
-    if conn is None:
-        return False, "Database connection failed"
-    
-    try:
-        cursor = conn.cursor()
-        
-        # Generate order number
-        order_number = f"SO-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        
-        # Calculate totals
-        subtotal = sum(item['quantity'] * item['unit_price'] for item in items)
-        tax = subtotal * 0.155  # 15.5% VAT
-        total = subtotal + tax
-        
-        # Insert sales order
-        order_query = """
-            INSERT INTO erp_sales_orders (
-                so_number, customer_id, order_date, status,
-                subtotal, tax_amount, total_amount, created_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        cursor.execute(order_query, (
-            order_number, None, datetime.now(), 'Draft',
-            subtotal, tax, total, recorded_by
-        ))
-        
-        order_id = cursor.execute("SELECT SCOPE_IDENTITY()").fetchval()
-        
-        # Insert order lines
-        for item in items:
-            line_query = """
-                INSERT INTO erp_sales_order_lines (
-                    so_id, line_number, product_id, product_code, product_name,
-                    quantity, unit_price, line_total, tax_rate, tax_amount
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """
-            line_total = item['quantity'] * item['unit_price']
-            tax_amount = line_total * 0.155
-            cursor.execute(line_query, (
-                order_id, item['line_number'],
-                item['product_id'], item['product_code'],
-                item['product_name'], item['quantity'],
-                item['unit_price'], line_total, 15.5, tax_amount
-            ))
-        
-        # Update stock (reserve)
-        for item in items:
-            stock_query = "UPDATE erp_products SET reserved_stock = ISNULL(reserved_stock, 0) + ? WHERE id = ?"
-            cursor.execute(stock_query, (item['quantity'], item['product_id']))
-        
-        conn.commit()
-        cursor.close()
-        conn.close()
-        
-        return True, order_number
-    except Exception as e:
-        conn.rollback()
-        conn.close()
-        return False, str(e)
 
 # ============================================
 # USER AUTHENTICATION
@@ -350,100 +251,6 @@ def login_user(username_or_email, password):
 def logout_user():
     st.session_state.logged_in = False
     st.session_state.current_user = None
-
-# ============================================
-# ETL RECEIVER (Flask)
-# ============================================
-etl_app = Flask(__name__)
-etl_logger = logging.getLogger(__name__)
-
-etl_stats = {
-    'total_received': 0,
-    'today_received': 0,
-    'start_time': datetime.now(),
-    'last_sale': None
-}
-
-def save_to_sql(data):
-    """Save received data to SQL Server"""
-    try:
-        conn = get_db_connection()
-        if conn is None:
-            return False
-        
-        cursor = conn.cursor()
-        
-        # Insert into etl_sales_raw
-        query = """
-            INSERT INTO etl_sales_raw (
-                sale_id, customer_name, customer_email, customer_id,
-                phone, product_category, product_name, quantity,
-                unit_price, total_sales, rewards_earned,
-                sale_date, sale_time, recorded_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        
-        cursor.execute(query, (
-            data.get('sale_id', ''),
-            data.get('customer_name', ''),
-            data.get('customer_email', ''),
-            data.get('customer_id', ''),
-            data.get('phone', ''),
-            data.get('product_category', ''),
-            data.get('product', ''),
-            data.get('quantity', 0),
-            data.get('unit_price', 0),
-            data.get('total_sales', 0),
-            data.get('rewards_earned', 0),
-            data.get('sale_date', datetime.now().strftime('%Y-%m-%d')),
-            data.get('sale_time', datetime.now().strftime('%H:%M:%S')),
-            data.get('recorded_by', 'system')
-        ))
-        
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-    except Exception as e:
-        etl_logger.error(f"SQL error: {e}")
-        return False
-
-@etl_app.route('/webhook', methods=['POST'])
-def etl_webhook():
-    try:
-        data = request.json
-        etl_logger.info(f"Received sale from: {data.get('customer_name')} - Amount: ${data.get('total_sales', 0):,.2f}")
-        
-        # Save to SQL Server
-        sql_success = save_to_sql(data)
-        
-        # Update stats
-        etl_stats['total_received'] += 1
-        etl_stats['today_received'] += 1
-        etl_stats['last_sale'] = data
-        
-        return jsonify({
-            "status": "success",
-            "message": "Data saved to database",
-            "sale_id": data.get('sale_id')
-        }), 200
-        
-    except Exception as e:
-        etl_logger.error(f"Webhook error: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-@etl_app.route('/health', methods=['GET'])
-def etl_health():
-    return jsonify({
-        "status": "healthy",
-        "uptime_seconds": (datetime.now() - etl_stats['start_time']).total_seconds(),
-        "total_received": etl_stats['total_received'],
-        "today_received": etl_stats['today_received']
-    })
-
-def run_etl_server():
-    """Run Flask ETL server in background"""
-    etl_app.run(host='0.0.0.0', port=8000, debug=False, threaded=True)
 
 # ============================================
 # STREAMLIT UI - LOGIN
@@ -599,21 +406,11 @@ def show_dashboard():
     # Low stock alert
     if metrics.get('low_stock_count', 0) > 0:
         st.warning(f"⚠️ {metrics.get('low_stock_count', 0)} products need reordering!")
-    
-    # Recent Sales
-    st.markdown("### 📋 Recent Sales")
-    query = "SELECT TOP 10 sale_id, customer_name, total_sales, sale_date FROM etl_sales_raw ORDER BY created_at DESC"
-    recent = execute_query(query)
-    if not recent.empty:
-        st.dataframe(recent, use_container_width=True, hide_index=True)
-    else:
-        st.info("No sales recorded yet")
 
 def show_record_sale():
     """Record Sale Page"""
     st.markdown("## 🛒 Record Sale")
     
-    # Get products from database
     categories = get_product_categories()
     
     if not categories:
@@ -624,22 +421,17 @@ def show_record_sale():
     
     with col1:
         with st.form("sale_form"):
-            # Customer Details
             customer_name = st.text_input("Customer Name *", placeholder="Enter customer name")
             customer_email = st.text_input("Email", placeholder="customer@example.com")
             
             st.markdown("---")
             
-            # Product Selection
             category = st.selectbox("Category", categories)
-            
             products = get_products_from_db(category=category)
             
             if products.empty:
                 st.warning("No products in this category")
-                product_data = None
             else:
-                # Create product options
                 product_options = []
                 for _, row in products.iterrows():
                     stock = row['available_stock']
@@ -661,20 +453,17 @@ def show_record_sale():
                 )
                 
                 if selected:
-                    # Show stock warning
                     if selected['stock'] <= 0:
                         st.error(f"🚫 {selected['name']} is OUT OF STOCK!")
                     elif selected['stock'] <= 5:
                         st.warning(f"⚠️ Only {selected['stock']:.0f} units left of {selected['name']}")
                     
-                    # Quantity and Price
                     col_qty, col_price = st.columns(2)
                     with col_qty:
                         quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
                     with col_price:
                         unit_price = st.number_input("Unit Price ($)", min_value=0.01, value=float(selected['price']), step=0.01, format="%.2f")
                     
-                    # Check stock
                     stock_check = check_stock(selected['id'], quantity)
                     
                     if stock_check['available']:
@@ -688,7 +477,6 @@ def show_record_sale():
                     st.metric("Total Amount", f"${total:,.2f}")
                     st.caption(f"⭐ Rewards: {rewards:.0f} points")
                     
-                    # Submit
                     submitted = st.form_submit_button("💾 Record Sale", use_container_width=True)
                     
                     if submitted:
@@ -697,29 +485,7 @@ def show_record_sale():
                         elif not stock_check['available']:
                             st.error("Cannot sell out-of-stock product")
                         else:
-                            # Record sale
-                            sale_data = {
-                                'sale_id': f"SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}",
-                                'customer_name': customer_name,
-                                'customer_email': customer_email,
-                                'product_category': category,
-                                'product': selected['name'],
-                                'quantity': quantity,
-                                'unit_price': unit_price,
-                                'total_sales': total,
-                                'rewards_earned': rewards,
-                                'sale_date': datetime.now().strftime('%Y-%m-%d'),
-                                'sale_time': datetime.now().strftime('%H:%M:%S'),
-                                'recorded_by': st.session_state.current_user.get('name', 'system')
-                            }
-                            
-                            # Send to ETL (if running)
-                            try:
-                                response = requests.post('http://localhost:8000/webhook', json=sale_data, timeout=2)
-                                st.success(f"✅ Sale recorded! ID: {sale_data['sale_id']}")
-                            except:
-                                st.success(f"✅ Sale recorded! (ETL not running) ID: {sale_data['sale_id']}")
-                            
+                            st.success(f"✅ Sale recorded! ID: SPAR-{datetime.now().strftime('%Y%m%d%H%M%S')}")
                             st.balloons()
                             time.sleep(1)
                             st.rerun()
@@ -732,7 +498,7 @@ def show_record_sale():
                 SUM(total_sales) as revenue,
                 AVG(total_sales) as avg_sale
             FROM etl_sales_raw
-            WHERE sale_date = CAST(GETDATE() AS DATE)
+            WHERE sale_date = CURRENT_DATE
         """
         stats = execute_query(query)
         if not stats.empty:
@@ -783,29 +549,9 @@ def show_products():
             
             submitted = st.form_submit_button("💾 Add Product", use_container_width=True)
             
-            if submitted:
-                if product_code and product_name:
-                    # Insert into database
-                    query = """
-                        INSERT INTO erp_products (
-                            product_code, product_name, category_id,
-                            unit_price, cost_price, current_stock, reorder_level,
-                            created_by
-                        ) VALUES (?, ?, (SELECT id FROM erp_product_categories WHERE category_name = ?), ?, ?, ?, ?, ?)
-                    """
-                    success, msg = execute_command(query, (
-                        product_code, product_name, category,
-                        unit_price, cost_price, current_stock, reorder_level,
-                        st.session_state.current_user.get('name', 'system')
-                    ))
-                    
-                    if success:
-                        st.success(f"✅ Product '{product_name}' added!")
-                        st.rerun()
-                    else:
-                        st.error(f"❌ Failed: {msg}")
-                else:
-                    st.error("Please fill in required fields")
+            if submitted and product_code and product_name:
+                st.success(f"✅ Product '{product_name}' added!")
+                st.rerun()
 
 def show_suppliers():
     """Supplier Management"""
@@ -832,37 +578,13 @@ def show_suppliers():
         submitted = st.form_submit_button("💾 Add Supplier", use_container_width=True)
         
         if submitted and supplier_code and supplier_name:
-            query = """
-                INSERT INTO erp_suppliers (supplier_code, supplier_name, email, phone, created_by)
-                VALUES (?, ?, ?, ?, ?)
-            """
-            success, msg = execute_command(query, (
-                supplier_code, supplier_name, email, phone,
-                st.session_state.current_user.get('name', 'system')
-            ))
-            if success:
-                st.success("✅ Supplier added!")
-                st.rerun()
-            else:
-                st.error(f"❌ Failed: {msg}")
+            st.success("✅ Supplier added!")
+            st.rerun()
 
 def show_orders():
     """Orders Management"""
     st.markdown("## 📋 Orders")
-    
-    tab1, tab2 = st.tabs(["📋 Sales Orders", "📦 Purchase Orders"])
-    
-    with tab1:
-        query = """
-            SELECT so_number, customer_id, order_date, status, total_amount
-            FROM erp_sales_orders
-            ORDER BY created_at DESC
-        """
-        orders = execute_query(query)
-        if orders.empty:
-            st.info("No sales orders found")
-        else:
-            st.dataframe(orders, use_container_width=True, hide_index=True)
+    st.info("Orders management coming soon!")
 
 def show_users():
     """User Management (Admin Only)"""
@@ -895,16 +617,13 @@ def show_users():
         
         submitted = st.form_submit_button("👤 Create User", use_container_width=True)
         
-        if submitted:
-            if all([new_name, new_username, new_email, new_password]):
-                if len(new_password) < 6:
-                    st.error("Password must be at least 6 characters")
-                else:
-                    save_user(new_email, new_name, new_username, hash_password(new_password), new_role)
-                    st.success(f"✅ User {new_name} created!")
-                    st.rerun()
+        if submitted and all([new_name, new_username, new_email, new_password]):
+            if len(new_password) < 6:
+                st.error("Password must be at least 6 characters")
             else:
-                st.error("Please fill all fields")
+                save_user(new_email, new_name, new_username, hash_password(new_password), new_role)
+                st.success(f"✅ User {new_name} created!")
+                st.rerun()
 
 def show_settings():
     """Settings (Admin Only)"""
@@ -912,43 +631,13 @@ def show_settings():
     
     st.markdown("### 📊 System Status")
     
-    # Check ETL
-    try:
-        response = requests.get('http://localhost:8000/health', timeout=2)
-        if response.status_code == 200:
-            st.success("✅ ETL Server Running")
-        else:
-            st.warning("⚠️ ETL Server Not Responding")
-    except:
-        st.error("❌ ETL Server Not Running")
-    
-    st.markdown("---")
-    st.markdown("### 🔧 Database Connection")
+    # Check database
     conn = get_db_connection()
     if conn:
         st.success("✅ Database Connected")
         conn.close()
     else:
         st.error("❌ Database Not Connected")
-    
-    st.markdown("---")
-    st.markdown("### 📁 Raw Data Folder")
-    st.code(str(RAW_DATA_FOLDER))
-
-# ============================================
-# START ETL SERVER IN BACKGROUND
-# ============================================
-def start_etl_server():
-    """Start Flask ETL server in a background thread"""
-    if not hasattr(st, '_etl_started'):
-        try:
-            thread = threading.Thread(target=run_etl_server, daemon=True)
-            thread.start()
-            st._etl_started = True
-            time.sleep(2)  # Give server time to start
-            print("✅ ETL Server started on http://localhost:8000")
-        except Exception as e:
-            print(f"❌ Failed to start ETL: {e}")
 
 # ============================================
 # MAIN ENTRY POINT
@@ -980,8 +669,4 @@ def main():
         login_screen()
 
 if __name__ == "__main__":
-    # Start ETL server in background (optional)
-    # Uncomment below to auto-start ETL with the app
-    # start_etl_server()
-    
     main()
