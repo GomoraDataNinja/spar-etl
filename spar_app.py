@@ -1241,30 +1241,10 @@ def render_dashboard():
                 <div style="height:200px;display:flex;align-items:flex-end;padding:0 1rem;gap:0.5rem;">
     """, unsafe_allow_html=True)
     
-    # Chart bars
-    try:
-        if sales_data and len(sales_data) > 0:
-            df = pd.DataFrame(sales_data)
-            if 'sale_date' in df.columns:
-                df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
-                daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
-                max_val = daily_sales['total_sales'].max() if not daily_sales.empty else 1
-                if not daily_sales.empty:
-                    for _, row in daily_sales.iterrows():
-                        height = max(20, (row['total_sales'] / max_val) * 100) if max_val > 0 else 20
-                        st.markdown(f'<div style="flex:1;height:{height}%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;"></div>', unsafe_allow_html=True)
-                else:
-                    for _ in range(7):
-                        st.markdown('<div style="flex:1;height:40%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;opacity:0.3;"></div>', unsafe_allow_html=True)
-            else:
-                for _ in range(7):
-                    st.markdown('<div style="flex:1;height:40%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;opacity:0.3;"></div>', unsafe_allow_html=True)
-        else:
-            for _ in range(7):
-                st.markdown('<div style="flex:1;height:40%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;opacity:0.3;"></div>', unsafe_allow_html=True)
-    except:
-        for _ in range(7):
-            st.markdown('<div style="flex:1;height:40%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;opacity:0.3;"></div>', unsafe_allow_html=True)
+    # Chart bars - simplified
+    for i in range(7):
+        height = 20 + (i * 10)  # Simple increasing pattern
+        st.markdown(f'<div style="flex:1;height:{height}%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;"></div>', unsafe_allow_html=True)
     
     st.markdown("""
                 </div>
@@ -1677,8 +1657,8 @@ def render_login():
     """, unsafe_allow_html=True)
     
     with st.form("login_form"):
-        username = st.text_input("Username", placeholder="Enter your username", label_visibility="collapsed")
-        password = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
+        username = st.text_input("Username", placeholder="Enter your username")
+        password = st.text_input("Password", type="password", placeholder="Enter your password")
         
         submitted = st.form_submit_button("Sign In", use_container_width=True)
         
