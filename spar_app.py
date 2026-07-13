@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import base64
 
 # ============================================
 # FORCE LIGHT MODE - PREVENT DARK THEME ISSUES
@@ -38,6 +37,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -615,28 +615,6 @@ st.markdown("""
     .status-badge.low-stock { background: #fff3cd; color: #856404; }
     .status-badge.out-of-stock { background: #f8d7da; color: #721c24; }
     
-    /* Toast Notification */
-    .toast { 
-        position: fixed; 
-        bottom: 2rem; 
-        right: 2rem; 
-        padding: 1rem 1.5rem; 
-        border-radius: 12px; 
-        color: white; 
-        font-weight: 500; 
-        z-index: 3000; 
-        animation: slideIn 0.3s ease; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
-    }
-    .toast.success { background: #28a745; }
-    .toast.error { background: #dc3545; }
-    .toast.info { background: #0052A5; }
-    
-    @keyframes slideIn { 
-        from { transform: translateY(20px); opacity: 0; } 
-        to { transform: translateY(0); opacity: 1; } 
-    }
-    
     /* Activity List */
     .activity-list { list-style: none; }
     .activity-list li { 
@@ -727,6 +705,25 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display: none;}
     .st-emotion-cache-1r6slb0 {padding: 0 !important;}
+    
+    /* Modern Card */
+    .modern-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e8eaed;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .card-header {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #202124 !important;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e8eaed;
+        padding-bottom: 0.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -903,6 +900,8 @@ if 'current_user' not in st.session_state:
     st.session_state.current_user = None
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'dashboard'
+if 'page_action' not in st.session_state:
+    st.session_state.page_action = None
 
 # ============================================
 # DATABASE QUERY FUNCTIONS
@@ -1012,6 +1011,16 @@ def send_admin_notification(customer_name, sale_id, product, quantity, total_sal
         return False
 
 # ============================================
+# HELPER FUNCTION FOR QUERY PARAMS
+# ============================================
+def get_query_params():
+    """Get query params safely across Streamlit versions"""
+    try:
+        return st.query_params
+    except AttributeError:
+        return {}
+
+# ============================================
 # SPAR UI COMPONENTS
 # ============================================
 def render_spar_nav():
@@ -1034,8 +1043,7 @@ def render_spar_nav():
         <div class="nav-actions">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search (Ctrl+E)" id="globalSearch">
-                <span style="font-size: 0.6rem; opacity: 0.5; font-weight: 400;">⌘E</span>
+                <input type="text" placeholder="Search" id="globalSearch">
             </div>
             
             <button class="icon-btn" onclick="alert('No new notifications')">
@@ -1047,7 +1055,7 @@ def render_spar_nav():
                 <i class="fas fa-question-circle"></i>
             </button>
             
-            <div class="user-profile">
+            <div class="user-profile" onclick="alert('User: {user['name']}\\nRole: {'Administrator' if is_admin else 'Operator'}')">
                 <div class="avatar">{user['name'][0].upper()}</div>
                 <div>
                     <div class="name">{user['name']}</div>
@@ -1069,8 +1077,8 @@ def render_spar_sidebar():
     
     menu_items = [
         {"id": "dashboard", "icon": "fa-chart-pie", "label": "Dashboard"},
-        {"id": "sales", "icon": "fa-plus-circle", "label": "New Sale", "badge": "warning"},
-        {"id": "sales_orders", "icon": "fa-file-invoice", "label": "Sales Orders", "badge": "0"},
+        {"id": "sales", "icon": "fa-plus-circle", "label": "New Sale"},
+        {"id": "sales_orders", "icon": "fa-file-invoice", "label": "Sales Orders"},
         {"id": "my_sales", "icon": "fa-user-tie", "label": "My Sales"},
     ]
     
@@ -1084,12 +1092,10 @@ def render_spar_sidebar():
     
     for item in menu_items:
         active = "active" if current_page == item['id'] else ""
-        badge_html = f'<span class="badge {item.get("badge", "")}">{item.get("badge", "")}</span>' if item.get('badge') else ""
         st.markdown(f"""
         <button class="menu-item {active}" onclick="window.location.href='?page={item['id']}'">
             <i class="fas {item['icon']}"></i>
             <span>{item['label']}</span>
-            {badge_html}
         </button>
         """, unsafe_allow_html=True)
     
@@ -1125,6 +1131,20 @@ def render_dashboard():
     is_admin = user['role'] == 'admin'
     user_name = user['name']
     
+    # Get sales data
+    try:
+        sales_data = get_sales_from_db(operator_name=None if is_admin else user_name, date_filter='today')
+        if sales_data:
+            df = pd.DataFrame(sales_data)
+            total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
+            transaction_count = len(df)
+        else:
+            total_revenue = 0
+            transaction_count = 0
+    except:
+        total_revenue = 0
+        transaction_count = 0
+    
     st.markdown(f"""
     <div class="main-content">
         <div class="page-header">
@@ -1137,9 +1157,6 @@ def render_dashboard():
             <div class="actions">
                 <button class="btn btn-success" onclick="window.location.href='?page=sales'">
                     <i class="fas fa-plus"></i> New Sale
-                </button>
-                <button class="btn btn-primary" onclick="window.location.href='?page=sales'">
-                    <i class="fas fa-box"></i> Add Product
                 </button>
                 <button class="btn btn-outline" onclick="window.location.reload()">
                     <i class="fas fa-sync"></i> Refresh
@@ -1155,7 +1172,7 @@ def render_dashboard():
             <i class="fas fa-shopping-cart"></i>
             <span class="label">New Sale</span>
         </div>
-        <div class="quick-action" onclick="window.location.href='?page=purchase'">
+        <div class="quick-action" onclick="alert('Purchase Order')">
             <i class="fas fa-truck"></i>
             <span class="label">New PO</span>
         </div>
@@ -1163,11 +1180,11 @@ def render_dashboard():
             <i class="fas fa-warehouse"></i>
             <span class="label">Receive Goods</span>
         </div>
-        <div class="quick-action" onclick="window.location.href='?page=products'">
+        <div class="quick-action" onclick="alert('Products')">
             <i class="fas fa-boxes"></i>
             <span class="label">Products</span>
         </div>
-        <div class="quick-action" onclick="window.location.href='?page=sales'">
+        <div class="quick-action" onclick="alert('Add Product')">
             <i class="fas fa-plus-circle"></i>
             <span class="label">Add Product</span>
         </div>
@@ -1179,19 +1196,6 @@ def render_dashboard():
     """, unsafe_allow_html=True)
     
     # Metrics
-    try:
-        sales_data = get_sales_from_db(operator_name=None if is_admin else user_name, date_filter='today')
-        if sales_data:
-            df = pd.DataFrame(sales_data)
-            total_revenue = df['total_sales'].sum() if 'total_sales' in df.columns else 0
-            transaction_count = len(df)
-        else:
-            total_revenue = 0
-            transaction_count = 0
-    except:
-        total_revenue = 0
-        transaction_count = 0
-    
     st.markdown(f"""
     <div class="metrics-grid">
         <div class="metric-card">
@@ -1239,15 +1243,19 @@ def render_dashboard():
     
     # Chart bars
     try:
-        if sales_data:
+        if sales_data and len(sales_data) > 0:
             df = pd.DataFrame(sales_data)
             if 'sale_date' in df.columns:
                 df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
                 daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
                 max_val = daily_sales['total_sales'].max() if not daily_sales.empty else 1
-                for _, row in daily_sales.iterrows():
-                    height = max(20, (row['total_sales'] / max_val) * 100) if max_val > 0 else 20
-                    st.markdown(f'<div style="flex:1;height:{height}%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;"></div>', unsafe_allow_html=True)
+                if not daily_sales.empty:
+                    for _, row in daily_sales.iterrows():
+                        height = max(20, (row['total_sales'] / max_val) * 100) if max_val > 0 else 20
+                        st.markdown(f'<div style="flex:1;height:{height}%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;"></div>', unsafe_allow_html=True)
+                else:
+                    for _ in range(7):
+                        st.markdown('<div style="flex:1;height:40%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;opacity:0.3;"></div>', unsafe_allow_html=True)
             else:
                 for _ in range(7):
                     st.markdown('<div style="flex:1;height:40%;background:#0052A5;border-radius:6px 6px 0 0;min-height:20px;opacity:0.3;"></div>', unsafe_allow_html=True)
@@ -1273,7 +1281,7 @@ def render_dashboard():
     
     # Recent orders
     try:
-        if sales_data:
+        if sales_data and len(sales_data) > 0:
             recent = sales_data[:5]
             for sale in recent:
                 customer = sale.get('customer_name', 'Unknown')
@@ -1569,7 +1577,7 @@ def render_users():
     """, unsafe_allow_html=True)
     
     # Handle add user action
-    if st.session_state.get('page_action') == 'add':
+    if st.session_state.page_action == 'add':
         with st.container():
             st.markdown('<div class="modern-card"><div class="card-header">👤 Create New User</div>', unsafe_allow_html=True)
             
@@ -1694,20 +1702,28 @@ def render_login():
 # MAIN APP
 # ============================================
 def main():
-    # Handle logout
-    if st.query_params.get('logout') == 'true':
-        logout_user()
-        st.query_params.clear()
-        st.rerun()
-    
-    # Handle page navigation from query params
-    if st.query_params.get('page'):
-        page = st.query_params.get('page')
-        if page in ['dashboard', 'sales', 'sales_orders', 'my_sales', 'users', 'settings']:
-            st.session_state.current_page = page
-        # Handle action
-        if st.query_params.get('action'):
-            st.session_state.page_action = st.query_params.get('action')
+    # Handle query parameters
+    try:
+        # Get query params
+        query_params = st.query_params
+        
+        # Handle logout
+        if query_params.get('logout') == 'true':
+            logout_user()
+            st.query_params.clear()
+            st.rerun()
+        
+        # Handle page navigation from query params
+        if query_params.get('page'):
+            page = query_params.get('page')
+            if page in ['dashboard', 'sales', 'sales_orders', 'my_sales', 'users', 'settings']:
+                st.session_state.current_page = page
+            # Handle action
+            if query_params.get('action'):
+                st.session_state.page_action = query_params.get('action')
+    except:
+        # Fallback for older Streamlit versions
+        pass
     
     if not st.session_state.logged_in:
         render_login()
