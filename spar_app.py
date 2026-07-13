@@ -927,6 +927,8 @@ if 'purchase_orders' not in st.session_state:
     st.session_state.purchase_orders = []
 if 'auto_refresh' not in st.session_state:
     st.session_state.auto_refresh = True
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = None
 
 # ============================================
 # API FUNCTIONS
@@ -1256,9 +1258,12 @@ def get_stock_color(stock, reorder):
 
 def load_all_data():
     """Load all data from the API"""
-    st.session_state.products = fetch_products()
-    st.session_state.sales_orders = fetch_sales_orders()
-    st.session_state.purchase_orders = fetch_purchase_orders()
+    try:
+        st.session_state.products = fetch_products()
+        st.session_state.sales_orders = fetch_sales_orders()
+        st.session_state.purchase_orders = fetch_purchase_orders()
+    except Exception as e:
+        print(f"Error loading data: {e}")
 
 # ============================================
 # LOGIN SCREEN
@@ -1311,6 +1316,9 @@ def main_app_interface():
     user_name = st.session_state.current_user['name']
     user_role = st.session_state.current_user['role']
     is_admin = (user_role == 'admin')
+    
+    # Store user_name in session state for use in other functions
+    st.session_state.user_name = user_name
     
     if is_admin:
         st.markdown("""
@@ -1396,7 +1404,7 @@ def operator_view():
                 with col_e:
                     quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
                 with col_f:
-                    default_price = selected_product_data.get('unit_price', 0) if selected_product_data else 0
+                    default_price = selected_product_data.get('unit_price', 0.01) if selected_product_data else 0.01
                     unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=float(default_price), step=0.01, format="%.2f")
                 
                 total_sales = quantity * unit_price
@@ -1491,9 +1499,7 @@ def operator_view():
 # ADMIN VIEW
 # ============================================
 def admin_view():
-    user_name = st.session_state.current_user['name']
-    
-    # Load data
+    # Load data if not already loaded
     if not st.session_state.products:
         load_all_data()
     
@@ -1534,15 +1540,33 @@ def render_dashboard():
     
     # Calculate metrics
     today = datetime.now().date()
-    today_sales = [s for s in recent_sales if pd.to_datetime(s.get('sale_date', '')).date() == today] if recent_sales else []
+    today_sales = []
+    if recent_sales:
+        for s in recent_sales:
+            try:
+                sale_date = pd.to_datetime(s.get('sale_date', '')).date()
+                if sale_date == today:
+                    today_sales.append(s)
+            except:
+                pass
+    
     total_revenue = sum(float(s.get('total_sales', 0)) for s in today_sales)
     transaction_count = len(today_sales)
     
     total_products = len(products) if products else 0
-    low_stock = sum(1 for p in products if get_stock_status(p.get('current_stock'), p.get('reorder_level')) == 'low-stock') if products else 0
-    out_of_stock = sum(1 for p in products if get_stock_status(p.get('current_stock'), p.get('reorder_level')) == 'out-of-stock') if products else 0
+    low_stock = 0
+    out_of_stock = 0
+    if products:
+        for p in products:
+            status = get_stock_status(p.get('current_stock'), p.get('reorder_level'))
+            if status == 'low-stock':
+                low_stock += 1
+            elif status == 'out-of-stock':
+                out_of_stock += 1
     
-    pending_pos = len([p for p in purchase_orders if p.get('status') not in ['Received', 'Cancelled']]) if purchase_orders else 0
+    pending_pos = 0
+    if purchase_orders:
+        pending_pos = len([p for p in purchase_orders if p.get('status') not in ['Received', 'Cancelled']])
     
     # Cash balance
     cash_data = fetch_cash_balance()
@@ -1618,22 +1642,25 @@ def render_dashboard():
     """, unsafe_allow_html=True)
     
     # Sales Trend
-    if recent_sales:
-        df = pd.DataFrame(recent_sales)
-        if 'sale_date' in df.columns and 'total_sales' in df.columns:
-            df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
-            daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
-            daily_sales = daily_sales.sort_values('sale_date').tail(7)
-            
-            if len(daily_sales) > 0:
-                fig = px.line(daily_sales, x='sale_date', y='total_sales', 
-                              title="📈 Sales Trend (Last 7 Days)", markers=True,
-                              color_discrete_sequence=['#0052A5'])
-                fig.update_layout(height=300, plot_bgcolor='white', paper_bgcolor='white')
-                st.plotly_chart(fig, use_container_width=True)
+    if recent_sales and len(recent_sales) > 0:
+        try:
+            df = pd.DataFrame(recent_sales)
+            if 'sale_date' in df.columns and 'total_sales' in df.columns:
+                df['sale_date'] = pd.to_datetime(df['sale_date']).dt.date
+                daily_sales = df.groupby('sale_date')['total_sales'].sum().reset_index()
+                daily_sales = daily_sales.sort_values('sale_date').tail(7)
+                
+                if len(daily_sales) > 0:
+                    fig = px.line(daily_sales, x='sale_date', y='total_sales', 
+                                  title="📈 Sales Trend (Last 7 Days)", markers=True,
+                                  color_discrete_sequence=['#0052A5'])
+                    fig.update_layout(height=300, plot_bgcolor='white', paper_bgcolor='white')
+                    st.plotly_chart(fig, use_container_width=True)
+        except Exception as e:
+            st.info("No sales data for trend chart")
     
     # Recent Orders
-    if recent_sales:
+    if recent_sales and len(recent_sales) > 0:
         st.markdown('<div class="modern-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-header">📋 Recent Orders</div>', unsafe_allow_html=True)
         
@@ -1660,7 +1687,7 @@ def render_dashboard():
 # SALE FORM (ADMIN)
 # ============================================
 def render_sale_form_admin():
-    user_name = st.session_state.current_user['name']
+    user_name = st.session_state.user_name or "admin"
     
     st.markdown('<div class="modern-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-header">📋 New Purchase</div>', unsafe_allow_html=True)
@@ -1688,7 +1715,7 @@ def render_sale_form_admin():
         with col_e:
             quantity = st.number_input("Quantity", min_value=1, value=1, step=1)
         with col_f:
-            default_price = selected_product_data.get('unit_price', 0) if selected_product_data else 0
+            default_price = selected_product_data.get('unit_price', 0.01) if selected_product_data else 0.01
             unit_price = st.number_input("Unit Price (USD)", min_value=0.01, value=float(default_price), step=0.01, format="%.2f")
         
         total_sales = quantity * unit_price
@@ -1756,7 +1783,8 @@ def render_sales_orders():
         
         # Receipt button
         if 'order_number' in df.columns:
-            selected_order = st.selectbox("Generate Receipt", ["Select Order"] + df['order_number'].tolist())
+            order_list = ["Select Order"] + df['order_number'].tolist()
+            selected_order = st.selectbox("Generate Receipt", order_list)
             if selected_order != "Select Order":
                 if st.button("🧾 View Receipt"):
                     receipt, error = fetch_receipt(selected_order)
@@ -1839,6 +1867,8 @@ def render_receipt(receipt_data):
 # PURCHASE ORDERS
 # ============================================
 def render_purchase_orders():
+    user_name = st.session_state.user_name or "admin"
+    
     st.markdown('<div class="modern-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-header">📦 Purchase Orders</div>', unsafe_allow_html=True)
     
@@ -1867,7 +1897,7 @@ def render_purchase_orders():
                 with col2:
                     qty = st.number_input(f"Quantity", min_value=1, value=1, key=f"po_qty_{i}")
                 with col3:
-                    price = st.number_input(f"Unit Price", min_value=0.01, value=0.00, key=f"po_price_{i}")
+                    price = st.number_input(f"Unit Price", min_value=0.01, value=0.01, step=0.01, key=f"po_price_{i}")
                 
                 items.append({
                     "product_id": product_id,
@@ -1880,7 +1910,7 @@ def render_purchase_orders():
             if submitted:
                 if not supplier_name:
                     st.error("Please enter supplier name")
-                elif not all(i.get('product_id') and i.get('quantity') and i.get('unit_price') for i in items):
+                elif not all(i.get('product_id') and i.get('quantity') and i.get('unit_price', 0) > 0 for i in items):
                     st.error("Please fill all item details")
                 else:
                     po_data = {
@@ -1909,7 +1939,10 @@ def render_purchase_orders():
         
         # Actions
         st.markdown("#### Actions")
-        selected_po = st.selectbox("Select PO", ["Select PO"] + df['po_number'].tolist() if 'po_number' in df.columns else [])
+        po_list = ["Select PO"]
+        if 'po_number' in df.columns:
+            po_list.extend(df['po_number'].tolist())
+        selected_po = st.selectbox("Select PO", po_list)
         
         if selected_po != "Select PO":
             col1, col2, col3 = st.columns(3)
@@ -1959,6 +1992,8 @@ def render_purchase_orders():
 # PRODUCTS
 # ============================================
 def render_products():
+    user_name = st.session_state.user_name or "admin"
+    
     st.markdown('<div class="modern-card">', unsafe_allow_html=True)
     st.markdown('<div class="card-header">📦 Product Management</div>', unsafe_allow_html=True)
     
@@ -2130,7 +2165,6 @@ def render_admin_panel():
 # MAIN
 # ============================================
 if st.session_state.logged_in:
-    user_name = st.session_state.current_user.get('name', 'User')
     main_app_interface()
 else:
     login_screen()
